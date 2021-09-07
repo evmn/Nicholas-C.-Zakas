@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Setting up SSL on an Amazon Elastic Load Balancer - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/08/15/setting-up-ssl-on-an-amazon-elastic-load-balancer/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Setting up SSL on an Amazon Elastic Load Balancer">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/08/15/setting-up-ssl-on-an-amazon-elastic-load-balancer/" />
+<meta name="og:title" content="Setting up SSL on an Amazon Elastic Load Balancer">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="In my last post, I talked about setting up Apache as an SSL front end to Play, with the goal of having SSL to the end-user while using normal HTTP internally. That approach...">
+<meta name="keywords" content="Apache,AWS,ELB,Play Framework,SSL,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Setting up SSL on an Amazon Elastic Load Balancer</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-08-15T00:00:00+00:00" itemprop="datePublished">August 15, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/apache" rel="tag">Apache</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/aws" rel="tag">AWS</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/elb" rel="tag">ELB</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/play-framework" rel="tag">Play Framework</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ssl" rel="tag">SSL</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>In my last post, I talked about setting up Apache as an SSL front end to Play, with the goal of having SSL to the end-user while using normal HTTP internally. That approach works well when you have just one server. When you have multiple servers behind a load balancer, the approach is a little bit different.</p>
+
+<p>We’re using Amazon web services for WellFurnished and so are using an elastic load balancer (ELB) to handle traffic. It’s possible to have SSL terminated at the ELB and HTTP the rest of the way, creating a similar set up as with Apache. You basically upload your SSL certificates to the ELB and open up port 443 and you’re in business. In theory, it’s a very simple set up, but I found that in reality there were a few hiccups.</p>
+
+<h2 id="setting-up-ssl">Setting up SSL</h2>
+
+<p>The Amazon web services console lets you go right to an ELB (in the EC2 section under “Load Balancers”). When you click on an ELB, you get its properties in the bottom pane. Click on the Listeners tab and you see all the ports that are enabled currently. The last row is reserve so that you can add new ports. If you change the first drop-down to HTTPS, then the entire row changes so you can enter the appropriate information.</p>
+
+<p><a href="https://humanwhocodes.com/images/wp-content/uploads/2012/08/elb.png"><img src="../../../../../images/wp-content/uploads/2012/08/elb-300x57.png" alt="Amazon web services ELB listeners" title="" width="300" height="57" /></a></p>
+
+<p>In this dialog, the load balancer protocol and port are set to HTTPS and 443, respectively. The instance protocol and port are still set at HTTP and 80, meaning that the ELB will talk HTTP to all of its instances.</p>
+
+<p>Of course, HTTPS is useless without a valid certificate so that web browsers can verify the site.</p>
+
+<h2 id="uploading-certificates-to-an-elb">Uploading certificates to an ELB</h2>
+
+<p>When you click on the Select link to specify an SSL certificate you get the following dialog:</p>
+
+<p><a href="https://humanwhocodes.com/images/wp-content/uploads/2012/08/awssl.png"><img src="../../../../../images/wp-content/uploads/2012/08/awssl-300x200.png" alt="Amazon Web Services Dialog" title="" width="300" height="200" /></a></p>
+
+<p>The dialog asks you to enter four pieces of information:</p>
+
+<ul>
+  <li><strong>Certificate Name</strong> – The name you want to use to keep track of the certificate within the AWS console.</li>
+  <li><strong>Private Key</strong> – The key file you generated as part of your request for certificate.</li>
+  <li><strong>Public Key Certificate</strong> – The public facing certificate provided by your certificate authority.</li>
+  <li><strong>Certificate Chain</strong> – An optional group of certificates to validate your certificate.</li>
+</ul>
+
+<p>Providing the certificate name is pretty straightforward, it can be anything you want. The name itself is just so you can keep track of it and has no other value.</p>
+
+<p>The other three fields are a little bit trickier. Depending on the source of your SSL certificates, you may have to do a few more steps in order to get things working. We started out by getting a Comodo PositiveSSL certificate. When we received our certificate, we actually received three files in a single zip:</p>
+
+<ul>
+  <li>www_welfurnished_com.crt</li>
+  <li>PositiveSSLCA2.crt</li>
+  <li>AddTrustExternalCARoot.crt</li>
+</ul>
+
+<p>The actual names of the files may vary depending on the type of SSL certificate you purchase and the certificate authority. The first file is the file that is unique to your domain while the other two are used to form a certificate chain<sup><a href="https://humanwhocodes.com/images/wp-content/uploads/2012/08/elb.png">1</a></sup> for your domain. You will always have a file with the word “root” in it, which is the root certificate<sup><a href="https://humanwhocodes.com/images/wp-content/uploads/2012/08/awssl.png">2</a></sup> for your domain while the other is an intermediate certificate.</p>
+
+<p>All Amazon Web services work with PEM files for certificates and you’ll note none of the files we received were in that format. So before using the files, they have to be translated into a format that Amazon will understand.</p>
+
+<h3 id="private-key">Private key</h3>
+
+<p>The private key is something that you generated along with your certificate request. Hopefully, you kept it safe knowing that you would need it again one day. To get the Amazon supported format for your key, you need to use OpenSSL<sup><a href="https://humanwhocodes.com/images/wp-content/uploads/2012/08/ffssl.png">3</a></sup> in this way:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl rsa -in host.key -text
+</code></pre></div></div>
+
+<p>The result of this command is a lot of text, the final piece of which is what Amazon is looking for. You’ll see something that looks like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-----BEGIN RSA PRIVATE KEY-----
+(tons of text)
+-----END RSA PRIVATE KEY-----
+</code></pre></div></div>
+
+<p>Copy this whole block, including the delimiters to begin and end the private key text, and copy that into the Private Key box in the AWS dialog.</p>
+
+<h3 id="public-certificate">Public certificate</h3>
+
+<p>The public certificate is the domain-specific file that you receive, in our case, <code class="highlighter-rouge">www_wellfurnished_com.crt</code>. This certificate file must be changed into PEM format for Amazon to use (your certificate might already be in PEM format, in which case you can just open it up in a text editor, copy the text, and paste it into the dialog). Once again, OpenSSL saves the day by transforming the certificate file into PEM format:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl x509 -inform PEM -in www_example_com.crt
+</code></pre></div></div>
+
+<p>The output you’ll see look something like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-----BEGIN CERTIFICATE-----
+(tons of text)
+-----END CERTIFICATE-----
+</code></pre></div></div>
+
+<p>Copy this entire text block, including the begin and end delimiters, and paste it into the Public Certificate field in the AWS dialog.</p>
+
+<h3 id="certificate-chain">Certificate chain</h3>
+
+<p>Don’t be fooled by the AWS dialog, the certificate chain isn’t really optional when your ELB is talking directly to a browser. The certificate chain is the part that verifies that fully verifies which certificate authority issued the certificate and therefore whether or not the browser can trust that the domain certificate is valid. Different browsers handle things in different ways, but if you are missing the certificate chain and Firefox, you get a pretty scary warning page:</p>
+
+<p><a href="https://humanwhocodes.com/images/wp-content/uploads/2012/08/ffssl.png"><img src="../../../../../images/wp-content/uploads/2012/08/ffssl-300x175.png" alt="Firefox SSL warning page" title="" width="300" height="175" /></a></p>
+
+<p>So if your ELB is going to be talking to browsers directly, you definitely need to provide the certificate chain.</p>
+
+<p>The certificate chain is exactly what it sounds like: a series of certificates. For the AWS dialog, you need to include the intermediate certificate and the root certificate one after the other without any blank lines. Both certificates need to be in PEM format, so you need to go through the same steps as with the domain certificate.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(openssl x509 -inform PEM -in PositiveSSLCA2.crt; openssl x509 -inform PEM -in AddTrustExternalCARoot.crt)
+</code></pre></div></div>
+
+<p>The output of this command is the concatenation of the two certificates in PEM format. Copy the entire output into the Certificate Chain box in the dialog.</p>
+
+<h3 id="note-on-errors">Note on errors</h3>
+
+<p>The AWS dialog will give you an error message if any of the fields contains an invalid value. This is very helpful, as it prevents you from needing to debug errors down the line if you misconfigured the certificate information. On the other hand, the error message is usually completely unhelpful along the lines of, “Invalid private key”. It will never give you more specific information about why your information is wrong, though the most common reason is that the format is incorrect. The most common errors are not using PEM format, not including all of the delimiters, and having additional blank lines.</p>
+
+<h2 id="use-with-play">Use with Play</h2>
+
+<p>When setting this up in production, I noticed an interesting wrinkle with our Play server. I had it set up with <code class="highlighter-rouge">XForwardedSupport=127.0.0.1</code> to enable the use of <code class="highlighter-rouge">X-Forwarded-*</code> headers with Apache<sup><a href="http://publib.boulder.ibm.com/infocenter/wmqv6/v6r0/index.jsp?topic=%2Fcom.ibm.mq.csqzas.doc%2Fsy10600_.htm">4</a></sup> in our integration environment. When I put this into production, I started getting all kinds of errors. The problem is that the <code class="highlighter-rouge">X-Forwarded-For</code> header is set by the ELB to be the ELB IP address rather than the Apache IP address (Apache is still used on the front end servers to front Play). The result was that Play was not allowing requests through.</p>
+
+<p>I disabled <code class="highlighter-rouge">XForwardedSupport</code> in production only, figuring I would go back and solve that problem later. As it turned out, I actually didn’t need to do anything else. My first test and production works correctly and <code class="highlighter-rouge">request.secure</code> was already returning the correct value. Upon looking at the source code, it appears that <code class="highlighter-rouge">XForwardedSupport</code> only affects the values of <code class="highlighter-rouge">request.host</code> and <code class="highlighter-rouge">request.remoteAddress</code>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The process of setting up SSL on an Amazon elastic load balancer isn’t as straightforward as it seems from the simple dialog. I spent several hours scouring the Internet for tips on how to deal with certificates on an ELB. I hope that this post saves you some time when setting up SSL on an ELB.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://publib.boulder.ibm.com/infocenter/wmqv6/v6r0/index.jsp?topic=%2Fcom.ibm.mq.csqzas.doc%2Fsy10600_.htm">How certificate chains work</a> (IBM)</li>
+  <li><a href="http://en.wikipedia.org/wiki/Root_certificate">Root certificate</a> (Wikipedia)</li>
+  <li><a href="http://www.openssl.org/">OpenSSL: The Open Source Toolkis for SSL/TLS</a> (OpenSSL)</li>
+  <li><a href="../../08/setting-up-apache-as-a-ssl-front-end-for-play/index.html">Setting up Apache as a SSL front-end for Play</a></li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/08/15/setting-up-ssl-on-an-amazon-elastic-load-balancer/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

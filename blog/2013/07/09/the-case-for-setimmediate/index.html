@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>The case for setImmediate() - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2013/07/09/the-case-for-setimmediate/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="The case for setImmediate()">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2013/07/09/the-case-for-setimmediate/" />
+<meta name="og:title" content="The case for setImmediate()">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="One of my favorite new APIs that has been beaten about is setImmediate(). While I’ll concede the naming is completely wrong, the functionality is completely awesome. The basic idea is to tell the...">
+<meta name="keywords" content="Performance,process.nextTick,setImmediate,setTimeout,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">The case for setImmediate()</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2013-07-09T00:00:00+00:00" itemprop="datePublished">July 9, 2013</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/performance" rel="tag">Performance</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/process-nexttick" rel="tag">process.nextTick</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/setimmediate" rel="tag">setImmediate</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/settimeout" rel="tag">setTimeout</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>One of my favorite new APIs that has been beaten about is <code class="highlighter-rouge">setImmediate()</code>. While I’ll concede the naming is completely wrong, the functionality is completely awesome. The basic idea is to tell the browser that you want some JavaScript code executed after the last UI task in the event loop completes. To put it more simply, this is a much better implementation of <code class="highlighter-rouge">setTimeout(fm, 0)</code>. Since browsers clamp their timers to 4ms, it really doesn’t matter if you say 0, 1, 2, 3, or 4. You aren’t actually going to get exactly what you specified and so using <code class="highlighter-rouge">setTimeout(fn, 0)</code> introduces an observable delay as well as the overhead of using a timer when it’s not needed (see more about this in my Velocity talk from last year<sup><a href="https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/setImmediate/Overview.html">1</a></sup>). The <code class="highlighter-rouge">setImmediate()</code> function was designed to do what <code class="highlighter-rouge">setTimeout(fn, 0)</code> <em>seems</em> like it should do.</p>
+
+<p>The <code class="highlighter-rouge">setImmediate()</code> method was first described in Efficient Script Yielding<sup><a href="https://developer.mozilla.org/en-US/docs/Web/API/window.setImmediate">2</a></sup> and spearheaded by Microsoft. To date, Internet Explorer 10+ is the only browser to implement <code class="highlighter-rouge">setImmediate()</code>. For some reason both Mozilla and WebKit are against adding this method<sup><a href="../../../../2009/08/11/timed-array-processing-in-javascript/index.html">3</a></sup> despite what I consider to be a large amount of evidence that this would be a useful addition to the web platform. Here’s why.</p>
+
+<h2 id="animations-and-requestanimationframe">Animations and requestAnimationFrame()</h2>
+
+<p>One of the primary arguments against including <code class="highlighter-rouge">setImmediate()</code> is that we already have <code class="highlighter-rouge">requestAnimationFrame()</code>, and that is actually what people mean to do when they use <code class="highlighter-rouge">setTimeout(fn, 0)</code>. If I were to make up statistics about the correctness of this assumption, I would say that this is probably the case 50% of the time. That is to say, I believe that half of the <code class="highlighter-rouge">setTimeout(fn, 0)</code> calls on the Internet are likely tied to animations in some way, and in that case <code class="highlighter-rouge">requestAnimationFrame()</code> is the correct answer.</p>
+
+<p>However I have been a big proponent of using timers to break up large chunks of work that need to be done (see my post, Timed array processing in JavaScript<sup><a href="http://ie.microsoft.com/testdrive/Performance/setImmediateSorting/Default.html">4</a></sup>). In fact, my work was cited on Microsoft’s demo page<sup><a href="http://howtonode.org/understanding-process-next-tick">5</a></sup> as part of the reason for introducing <code class="highlighter-rouge">setImmediate()</code>. This particular use case is ill-suited to use <code class="highlighter-rouge">requestAnimationFrame()</code> because it doesn’t necessarily require a UI update.</p>
+
+<p>Keep in mind that <code class="highlighter-rouge">requestAnimationFrame()</code> schedules a new paint task in the event loop queue and allows the specified code to execute prior to that paint task occurring. This is in sharp contrast to <code class="highlighter-rouge">setImmediate()</code> where its JavaScript task is inserted after the last paint task already existing in the event loop queue. The implementation differences lend to the use case differences.</p>
+
+<h2 id="processnexttick-and-callbacks">process.nextTick() and callbacks</h2>
+
+<p>The assertion that <code class="highlighter-rouge">setTimeout(fn, 0)</code> is always used for animations also falls apart when you look at Node.js. Node.js has had a method called <code class="highlighter-rouge">process.nextTick()</code><sup><a href="http://nodejs.org/api/process.html#process_process_nexttick_callback">6</a></sup> for a long time. This method is similar to <code class="highlighter-rouge">setImmediate()</code> in Node.js, it simply inserts a task at the end of the current event loop turn queue (whereas <code class="highlighter-rouge">setImmediate()</code> inserts a task at the beginning of the <em>next</em> event loop turn). If <code class="highlighter-rouge">setTimeout(fn, 0)</code> is mostly used for animations then why would Node.js, an environment devoid of graphics, find it necessary to add such a method?</p>
+
+<p>First and foremost, Node.js was designed to use asynchronous processing wherever possible. That means using callbacks to be notified when an operation is complete. The callbacks must always be executed asynchronously for consistency even when the result could be achieved synchronously. To illustrate this, consider a read-through cache of a remote data fetch, such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var remote = require("./remote"),
+    cache = {};
+
+function getValue(key, callback) {
+
+    if (key in cache) {
+        process.nextTick(function() {
+            callback(key, cache[key]);
+        });
+    } else {
+        remote.fetch(key, function(value) {
+            cache[key] = value;
+            callback(key, cache[key]);
+        });
+    }
+
+}
+</code></pre></div></div>
+
+<p>In this case, remote data is stored in a variable called <code class="highlighter-rouge">cache</code> whenever it is retrieved. Whenever <code class="highlighter-rouge">getValue()</code> is called, the cache is checked first to see if the data is there and otherwise makes the remote call. Here’s the issue: the actual remote call will return asynchronously while reading from <code class="highlighter-rouge">cache</code> is executed synchronously. You wouldn’t want <code class="highlighter-rouge">callback()</code> to be called synchronously in the cached situation and asynchronously in the non-cached situation as it would completely destroy the application flow. So <code class="highlighter-rouge">process.nextTick()</code> is used to ensure the same flow by deferring execution of the callback until the next time through the event loop.</p>
+
+<p>When you want to do something like the previous example, using a timer is incredibly inefficient, which is why <code class="highlighter-rouge">process.nextTick()</code> was created (as mentioned in the Node.js documentation itself<sup><a href="http://dbaron.org/log/20100309-faster-timeouts">7</a></sup>). Node.js as of v0.9 also includes <code class="highlighter-rouge">setImmediate()</code>, which is equivalent to the browser version.</p>
+
+<p>This asynchronous callback pattern isn’t unique to Node.js, as more browser APIs moved to asynchronous models, the need to be able to defer code execution until the next time through the event loop is becoming more and more important. Read-through caches in the browser will only become more prominent, as I suspect will be the need to defer execution so that it doesn’t block UI interaction (something that can sometimes, but not always, be done via web workers).</p>
+
+<h2 id="polyfills-etc">Polyfills, etc.</h2>
+
+<p>In 2010, David Baron of Mozilla wrote was has become the definitive resource for creating truly zero-millisecond timeout calls entitled, setTimeout with a shorter delay<sup><a href="https://github.com/NobleJS/setImmediate">8</a></sup>. David’s post highlighted the desire for shorter timeout delays and introduced a method to achieve it using the <code class="highlighter-rouge">postMessage()</code> API.</p>
+
+<p>The approach is a bit circuitous but nonetheless effective. The <code class="highlighter-rouge">onmessage</code> event handler is called asynchronously after a window receives a message, so the approach is to post a message to your own window and then use <code class="highlighter-rouge">onmessage</code> to execute what would otherwise be passed into <code class="highlighter-rouge">setTimeout()</code>. This approach works because the messaging mechanism is effectively using the same methodology as <code class="highlighter-rouge">setImmediate()</code> under the hood.</p>
+
+<p>Since David’s post, a number of polyfills, most notably the NobleJS version<sup><a href="https://code.google.com/p/chromium/issues/detail?id=146172">9</a></sup>, have been released. Such polyfills continue to get used despite the availability of <code class="highlighter-rouge">requestAnimationFrame()</code> due to the different use case.</p>
+
+<h2 id="whats-holding-us-back">What’s holding us back?</h2>
+
+<p>As mentioned previously, both Mozilla and WebKit have been against <code class="highlighter-rouge">setImmediate()</code> for some reason. The arguments seem to range from “you should just to use <code class="highlighter-rouge">requestAnimationFrame()</code>” to “it’s easy enough to create a polyfill, just do that instead.” The first argument I hope has already dispelled in this argument, the second argument I find devoid of meaning as there are plenty of things that are easy to polyfill (note: <code class="highlighter-rouge">setImmediate()</code> is not actually one of them) and yet are still standardized. The <code class="highlighter-rouge">classList</code> property of DOM elements comes to mind.</p>
+
+<p>What’s most surprising has been the reaction of the Chrome team, a group who I’ve credited numerous times for pushing forward on incremental API changes that make the web platform better. In a ticket asking for support<sup><a href="https://code.google.com/p/chromium/issues/detail?id=255074">10</a></sup> there is a conversation that has gone nowhere, instead focusing on how polyfills could work (the bug is still open but hasn’t been updated in a while). A more recent one looking at Chrome’s poor performance on an IE11 demo<sup>[11]</sup> that uses <code class="highlighter-rouge">setImmediate()</code> has a rather disappointing sequence of comments:</p>
+
+<blockquote>
+  <p>…Yup, it looks like a bug in their test. They’re specifically using setTimeout() in the Chrome version which gets clamped to 5ms (as per the spec). If they used postMessage() instead then it would run fine in Chrome…</p>
+
+  <p>…To summarize my findings, this test is running intentionally slow JS in all browsers besides IE. This is because setTimeout(0) is incorrectly used as a polyfill for setImmediate()…</p>
+
+  <p>…Yes, that’s due to a bug in the test, see comment #7. The test basically has a check for IE11 (more or less) and does something unnecessarily slow on all other browsers…</p>
+</blockquote>
+
+<p>So basically, the commenters are saying that the IE demo was rigged to make IE look faster than the other browsers because it wasn’t including the <em>correct hack to do something similar in Chrome</em>. Lest we ascribe evil to every single thing Microsoft does, I would suggest several alternative explanations:</p>
+
+<ol>
+  <li>Many people are using <code class="highlighter-rouge">setTimeout(fn, 0)</code> when they would much rather use <code class="highlighter-rouge">setImmediate()</code>, so this is a reasonable, cross-browser fallback.</li>
+  <li>The person writing the test likely didn’t have the bandwidth to fully develop a polyfill for <code class="highlighter-rouge">setImmediate()</code>. The person’s goal was to write a demo page, not write a library.</li>
+  <li>Why would they include a <code class="highlighter-rouge">postMessage()</code>-based solution when the whole point of the demo was to show the utility of <code class="highlighter-rouge">setImmediate()</code>?</li>
+  <li>This was an omission because the person writing the demo didn’t have the knowledge about alternative polyfills.</li>
+</ol>
+
+<p>I would comment on the bug itself, but comments have been locked-down for some reason.</p>
+
+<p>The interesting thing is that with a <code class="highlighter-rouge">postMessage()</code> polyfill, the commenters claim that Chrome runs faster than IE11 in this demo. That’s great, now why not just wrap that into a formal <code class="highlighter-rouge">setImmediate()</code> implementation and then brag about how you beat IE at their own API? I’d buy you a beer for that!</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I’m still not entirely sure why there’s such an allergy to <code class="highlighter-rouge">setImmediate()</code> outside of Microsoft. It has demonstrated utility and some pretty clear use cases that are not adequately serviced by <code class="highlighter-rouge">requestAnimationFrame()</code> or any other means. Node.js recognized this from the start so we know for sure that there are non-UI-based reasons for using <code class="highlighter-rouge">setTimeout(fn, 0)</code>.</p>
+
+<p>I can’t draw any conclusions as to why this particular API, which pretty much just exposes something that’s already in the browser, is being vilified. It seems like there’s enough data at this point to say that <code class="highlighter-rouge">setImmediate()</code> is useful – the presence of polyfills alone is a strong indicator as are the continuing discussions around why <code class="highlighter-rouge">postMessage()</code> is faster than <code class="highlighter-rouge">setTimeout(fn, 0)</code>. I think it’s time for the holdouts to listen to what developers are asking for and implement <code class="highlighter-rouge">setImmediate()</code>.</p>
+
+<p><strong>Update (09-July-2013):</strong> Updated description of <code class="highlighter-rouge">process.nextTick()</code> per Isaac’s comments below.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li>&lt;a href=”“http://www.slideshare.net/nzakas/javascript-timers-power-consumption-and-performance”&gt;Timers, Power Consumptions, and Performance&lt;/a&gt; by me (Slideshare)</li>
+  <li><a href="https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/setImmediate/Overview.html">Efficient Script Yielding</a> (W3C)</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/window.setImmediate">window.setImmediate</a> (MDN)</li>
+  <li><a href="../../../../2009/08/11/timed-array-processing-in-javascript/index.html">Timed array processing in JavaScript</a> by me (NCZOnline)</li>
+  <li><a href="http://ie.microsoft.com/testdrive/Performance/setImmediateSorting/Default.html">setImmediate API</a> (IE TestDrive)</li>
+  <li><a href="http://howtonode.org/understanding-process-next-tick">Understanding process.nextTick()</a> by Kishore Nallan (How To Node)</li>
+  <li><a href="http://nodejs.org/api/process.html#process_process_nexttick_callback">process.nextTick()</a> (Nodejs.org)</li>
+  <li><a href="http://dbaron.org/log/20100309-faster-timeouts">setTimeout with a shorter delay</a> by David Baron (dbaron.org)</li>
+  <li><a href="https://github.com/NobleJS/setImmediate">NobleJS – setImmediate polyfill</a> (GitHub)</li>
+  <li><a href="https://code.google.com/p/chromium/issues/detail?id=146172">Implement setImmediate/clearImmediate</a> (Chromium)</li>
+  <li><a href="https://code.google.com/p/chromium/issues/detail?id=255074">Investigate poor performance on Lawn Mark</a> (Chromium)</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2013/07/09/the-case-for-setimmediate/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>XPath in JavaScript, Part 3 - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/04/04/xpath-in-javascript-part-3/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="XPath in JavaScript, Part 3">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/04/04/xpath-in-javascript-part-3/" />
+<meta name="og:title" content="XPath in JavaScript, Part 3">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="In my previous two posts, I talked about the DOM Level 3 XPath JavaScript implementation available in Firefox, Safari, Chrome, and Opera. Internet Explorer as of version 8 still hasn’t implemented this feature...">
+<meta name="keywords" content="Internet Explorer,JavaScript,XPath,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">XPath in JavaScript, Part 3</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-04-04T00:00:00+00:00" itemprop="datePublished">April 4, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/internet-explorer" rel="tag">Internet Explorer</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/xpath" rel="tag">XPath</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>In my previous <a href="../../../03/17/xpath-in-javascript-part-1/index.html">two</a> <a href="../../../03/24/xpath-in-javascript-part-2/index.html">posts</a>, I talked about the DOM Level 3 XPath JavaScript implementation available in Firefox, Safari, Chrome, and Opera. Internet Explorer as of version 8 still hasn’t implemented this feature set, but it does have some support for XPath. Unlike the other browsers, Internet Explorer’s XPath functionality is available on XML documents and can’t be used on the <code class="highlighter-rouge">document</code> object.</p>
+
+<h2 id="creating-xml-documents">Creating XML documents</h2>
+
+<p>There are three basic ways of creating XML documents in Internet Explorer. The first is to create an XML DOM document object directly. Internet Explorer uses an ActiveX library called MSXML to implement XML support in JavaScript, so you need to create an <code class="highlighter-rouge">ActiveXObject</code> instance and pass in the correct identifier. Microsoft recommends using one of the following three: <code class="highlighter-rouge">MSXML2.DOMDocument.6.0</code>, <code class="highlighter-rouge">MSXML2.DOMDocument.3.0</code>, and <code class="highlighter-rouge">MSXML2.DOMDocument</code>. Of course, there is no way to detect which is the correct version to use directly, so you need to attempt to create each. When an ActiveX object fails to be created, it throws an error, which must be trapped to know that this is not the version to use. Ultimately, you end up with a function that looks something like this (excerpted from <a href="http://www.amazon.com/gp/product/047022780X?ie=UTF8&amp;tag=nczonline-20&amp;linkCode=as2&amp;camp=1789&amp;creative=390957&amp;creativeASIN=047022780X">Professional JavaScript, 2nd Edition</a>):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function createDocument(){
+    if (typeof arguments.callee.activeXString != "string"){
+        var versions = ["MSXML2.DOMDocument.6.0",
+                        "MSXML2.DOMDocument.3.0",
+                        "MSXML2.DOMDocument"];
+
+        for (var i=0,len=versions.length; i &lt; len; i++){
+            try {
+                var xmldom = new ActiveXObject(versions[i]);
+                arguments.callee.activeXString = versions[i];
+                return xmldom;
+            } catch (ex){
+                //skip
+            }
+        }
+    }
+
+    return new ActiveXObject(arguments.callee.activeXString);
+}
+</code></pre></div></div>
+
+<p>Once you have an XML DOM document instance, you can fill it with XML using either <code class="highlighter-rouge">loadXML()</code> and passing in an XML string or by using <code class="highlighter-rouge">load()</code> and passing in the URL of an XML file. The latter should be avoided in favor of using the <code class="highlighter-rouge">XMLHttpRequest</code> object.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var xmldoc = createDocument();
+xmldoc.loadXML("");
+</code></pre></div></div>
+
+<p>The second way to create an XML document is to request the XML via <code class="highlighter-rouge">XMLHttpRequest</code> and access the <code class="highlighter-rouge">responseXML</code> property. This property contains a DOM document whenever the server’s response has a content type of <code class="highlighter-rouge">text/xml</code>. The DOM document is created for you using the most recent (and appropriate) MSXML version.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var xhr = new XMLHttpRequest(),
+    xmldoc;
+xhr.open("get", "data.xml", true);
+xhr.onreadystatechange = function(){
+    if (xhr.readyState == 4){
+        if (xhr.status &gt;= 200 &amp;&amp; xhr.status &lt; 300){
+            xmldoc = xhr.responseXML;
+        }
+};
+xhr.send(null);
+</code></pre></div></div>
+
+<p>This is the most-often used approach to loading XML into a JavaScript object, largely because it’s supported across all browsers.</p>
+
+<p>The third way to create an XML document in Internet Explorer is to use the <code class="highlighter-rouge">&lt;xml&gt;</code> tag. This proprietary extension allows you to embed XML right inside of an HTML page; Microsoft calls these <a href="http://msdn.microsoft.com/en-us/library/ms766512(VS.85).aspx">XML data islands</a>. Using the <code class="highlighter-rouge">&lt;xml&gt;</code> tag requires that you either set its <code class="highlighter-rouge">src</code> attribute to an XML file or include the XML data inline. Examples:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;xml id="myXML" src="data.xml"&gt;&lt;/xml&gt;
+
+&lt;xml id="books"&gt;
+    &lt;books&gt;
+        &lt;book&gt;
+            &lt;title&gt;Professional JavaScript&lt;/title&gt;
+            &lt;edition&gt;2nd&lt;/edition&gt;
+            &lt;author&gt;Nicholas C. Zakas&lt;/author&gt;
+        &lt;/book&gt;
+        &lt;book&gt;
+            &lt;title&gt;Professional Ajax&lt;/title&gt;
+            &lt;edition&gt;2nd&lt;/edition&gt;
+            &lt;author&gt;Nicholas C. Zakas&lt;/author&gt;
+            &lt;author&gt;Jeremy McPeak&lt;/author&gt;
+            &lt;author&gt;Joe Fawcett&lt;/author&gt;
+        &lt;/book&gt;
+    &lt;/books&gt;
+&lt;/xml&gt;
+</code></pre></div></div>
+
+<p>With an <code class="highlighter-rouge">&lt;xml&gt;</code> tag in the page, you can get a reference to its DOM document object using the <code class="highlighter-rouge">XMLDocument</code> property:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var xmldoc = document.getElementById("myXML").XMLDocument;
+</code></pre></div></div>
+
+<p>As with the <code class="highlighter-rouge">XMLHttpRequest</code> object, this approach will automatically create the correct ActiveX version of an XML document. XML data islands are rarely used because they are IE-specific.</p>
+
+<h2 id="xpath-support">XPath support</h2>
+
+<p>All XML DOM document objects in Internet Explorer have built-in support for XPath via two methods: <code class="highlighter-rouge">selectSingleNode()</code> and <code class="highlighter-rouge">selectNodes()</code>. Each method accepts an XPath expression as an argument and returns the first matching node and a <code class="highlighter-rouge">NodeSet</code> of all matching nodes, respectively. If there are no matching nodes, <code class="highlighter-rouge">selectSingleNode()</code> returns <code class="highlighter-rouge">null</code> while <code class="highlighter-rouge">selectNodes()</code> returns an empty <code class="highlighter-rouge">NodeList</code> object. Every element in the document has these two methods, making it easy to execute an XPath query in the correct context. Before using these methods, though, it’s recommended to set the selection language of the XML DOM document to be XPath. This is necessary to avoid some of the nuanced differences between Microsoft’s first XPath implementation (which came before the specification was final) and the W3C recommendation:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xmldoc.setProperty("SelectionLanguage", "XPath");
+</code></pre></div></div>
+
+<p>XPath will work without setting this property, but there are small differences that may cause issues without it. After setting the property, you can use XPath queries in the same format as other browsers:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var books = xmldoc.documentElement.selectNodes("//book");
+var secondBook = xmldoc.documentElement.selectSingleNode("//book[2]");
+var secondAuthor = secondBook.selectSingleNode("author[2]");
+</code></pre></div></div>
+
+<p>Note that unlike the W3C’s XPath interfaces, Internet Explorer will only ever return a single node or a <code class="highlighter-rouge">NodeSet</code>; there are no other possible return types, so you can’t run queries that return non-node values such as those using <code class="highlighter-rouge">count()</code>.</p>
+
+<h2 id="namespace-support">Namespace support</h2>
+
+<p>By default, Internet Explorer’s XPath engine doesn’t work with namespaces (the same as the DOM Level 3 XPath implementation). Namespace information must be specified ahead of time as a property on the XML DOM document object itself. Consider the following XML code:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;books xmlns:wrox="http://www.wrox.com/" xmlns="http://www.amazon.com/"&gt;
+    &lt;wrox:book&gt;Professional JavaScript&lt;/book&gt;
+&lt;/books&gt;
+</code></pre></div></div>
+
+<p>In order to use XPath queries on this document, you’d first need to define namespace information for the <code class="highlighter-rouge">wrox</code> and default namespaces. You can do so via the <code class="highlighter-rouge">setProperty()</code> method, passing in <code class="highlighter-rouge">"SelectionNamespaces"</code> and a space-separated string of namespace declarations. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xmldoc.setProperty("SelectionNamespaces", 
+    "xmlns:wrox='http://www.wrox.com/' xmlns='http://www.amazon.com/'");
+var book = xmldoc.documentElement.selectSingleNode("wrox:book");
+</code></pre></div></div>
+
+<p>Note that the namespace declarations are in the same format as they appear in the XML. Unfortunately, there is no automatic way to extract the namespace information from the document for use with XPath queries.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Internet Explorer does have XPath support, but it comes with several caveats. First is that XPath queries only work on XML documents, not on HTML documents and therefore can’t be used on <code class="highlighter-rouge">document</code> to help find elements on the page. Second, the XPath implementation is very basic and allows only basic return types (nodes and <code class="highlighter-rouge">NodeSet</code> objects). Still, if you’re dealing with XML data, XPath remains a fast and convenient way to find specific elements without walking the DOM manually.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/04/04/xpath-in-javascript-part-3/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

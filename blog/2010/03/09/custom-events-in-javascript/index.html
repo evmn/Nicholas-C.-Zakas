@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Custom events in JavaScript - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2010/03/09/custom-events-in-javascript/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Custom events in JavaScript">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2010/03/09/custom-events-in-javascript/" />
+<meta name="og:title" content="Custom events in JavaScript">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Without a doubt, the most often-used paradigm in JavaScript is events. Events are a manifestation of the observer pattern, a well-defined computer science design pattern for loose coupling. Loose coupling is incredibly important...">
+<meta name="keywords" content="BOM,DOM,Events,JavaScript,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Custom events in JavaScript</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2010-03-09T00:00:00+00:00" itemprop="datePublished">March 9, 2010</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/bom" rel="tag">BOM</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/dom" rel="tag">DOM</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/events" rel="tag">Events</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Without a doubt, the most often-used paradigm in JavaScript is events. Events are a manifestation of the <a href="http://en.wikipedia.org/wiki/Observer_pattern">observer pattern</a>, a well-defined computer science design pattern for loose coupling. <a href="http://en.wikipedia.org/wiki/Loose_coupling">Loose coupling</a> is incredibly important for creating maintainable, stable codebases. I talk a lot about loose coupling and its importance in my talk, <a href="http://www.slideshare.net/nzakas/scalable-javascript-application-architecture">Scalable JavaScript Application Architecture</a> (<a href="http://developer.yahoo.com/yui/theater/video.php?v=zakas-architecture">video</a>), so I won’t talk too much about it here. However, the concept is very important to grasp if you wish to progress as a software engineer.</p>
+
+<h2 id="events">Events</h2>
+
+<p>Unless you’ve never written any JavaScript before, you’ve used events at some point in time (admittedly, if you’ve never written JavaScript before, the chances of your reading my blog are probably pretty slim). Put quite simply: the way that you tie behavior to web pages is through events. Events are a way of letting interested parties know that an important moment has occurred in the lifecycle of the application. For instance:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>window.onload = function(){
+    Application.init();
+};
+</code></pre></div></div>
+
+<p>In this example, the <code class="highlighter-rouge">load</code> event is the interesting moment. I want to know when the window is fully loaded so that I can initialized the JavaScript application. The <code class="highlighter-rouge">onload</code> event handler is the location to where an event handler is assigned. The brilliant part is that <code class="highlighter-rouge">window</code> doesn’t care what web page is loaded or who is writing the code; it just knows that there’s a function to call when <code class="highlighter-rouge">load</code> occurs. This is the essence of loose coupling: when parts of an application have very limited knowledge of one another.</p>
+
+<p>The <a href="http://javascript.about.com/od/browserobjectmodel/a/bom01.htm">Browser Object Model</a> (BOM) and <a href="http://www.w3.org/DOM/">Document Object Model</a> (DOM) publish events to allow developers access to the interesting moments of the browser and web page, respectively.</p>
+
+<h2 id="custom-events">Custom events</h2>
+
+<p>It’s no surprise that most JavaScript libraries rely heavily on custom events since this is a pattern that web developers are familiar with. Every major JavaScript library provides its own events, components to enable easy custom event definition, or both. This makes sense, of course, since libraries want to be loosely-coupled to the execution environment, and therefore, to your code.</p>
+
+<p>There’s nothing magic about custom events, though, and there’s no need to load an entire library if you’d like to experiment with custom events. An object that supports custom events needs to be able to do a small set of things:</p>
+
+<ol>
+  <li>Assign an event handler for a particular event.</li>
+  <li>Remove an event handler for a particular event.</li>
+  <li>Fire an event and call all assigned event handlers.</li>
+</ol>
+
+<p>The following implements all of this basic functionality:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//Copyright (c) 2010 Nicholas C. Zakas. All rights reserved.
+//MIT License
+
+function EventTarget(){
+    this._listeners = {};
+}
+
+EventTarget.prototype = {
+
+    constructor: EventTarget,
+
+    addListener: function(type, listener){
+        if (typeof this._listeners[type] == "undefined"){
+            this._listeners[type] = [];
+        }
+
+        this._listeners[type].push(listener);
+    },
+
+    fire: function(event){
+        if (typeof event == "string"){
+            event = { type: event };
+        }
+        if (!event.target){
+            event.target = this;
+        }
+
+        if (!event.type){  //falsy
+            throw new Error("Event object missing 'type' property.");
+        }
+
+        if (this._listeners[event.type] instanceof Array){
+            var listeners = this._listeners[event.type];
+            for (var i=0, len=listeners.length; i &lt; len; i++){
+                listeners[i].call(this, event);
+            }
+        }
+    },
+
+    removeListener: function(type, listener){
+        if (this._listeners[type] instanceof Array){
+            var listeners = this._listeners[type];
+            for (var i=0, len=listeners.length; i &lt; len; i++){
+                if (listeners[i] === listener){
+                    listeners.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    }
+};
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">EventTarget</code> type has three methods: <code class="highlighter-rouge">addListener()</code>, <code class="highlighter-rouge">fire()</code>, and <code class="highlighter-rouge">removeListener</code>.</p>
+
+<p>The <code class="highlighter-rouge">addListener()</code> uses the private <code class="highlighter-rouge">_listeners</code> object to store event handlers for various events. When an event handler is added, the method first checks to see if there’s a named property for that event type on the <code class="highlighter-rouge">_listeners</code> object, and if not, creates one containing an array. The event handler function is then saved to the array for later.</p>
+
+<p>The <code class="highlighter-rouge">fire()</code> method fires an event with a given name. In effect, this method’s only job is to execute each event handler for the given event type. The method accepts either an object, in which case it’s expected to have a <code class="highlighter-rouge">type</code> property, or a string, in which case a new object is created and the string is assigned as the value of <code class="highlighter-rouge">type</code>. Next, if the event object doesn’t have a <code class="highlighter-rouge">target</code> property assigned, it is set to the current instance. This effectively creates an event object similar to the one most are familiar with via the BOM and DOM. Once the event object is created, the <code class="highlighter-rouge">_listeners</code> object is checked for event handlers, and if found, they are executed. Note that in order to mimic the BOM/DOM approach, event handlers are executed in the scope of <code class="highlighter-rouge">this</code> via the <code class="highlighter-rouge">call()</code> method.</p>
+
+<p>The last method, <code class="highlighter-rouge">removeListener()</code>, simply reverses the process of <code class="highlighter-rouge">addListener()</code>. It searches through the <code class="highlighter-rouge">_listeners</code> property for the given event type to locate the specified event handler. If found, the event handler is removed by using the array’s <code class="highlighter-rouge">splice()</code> method, and otherwise it exits without doing anything.</p>
+
+<p>Basic usage:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var target = new EventTarget();
+function handleEvent(event){
+    alert(event.type);
+};
+
+target.addListener("foo", handleEvent);
+target.fire({ type: "foo" });    //can also do target.fire("foo")
+target.removeListener("foo", handleEvent);
+</code></pre></div></div>
+
+<p>Practically speaking, you’ll likely not want to use an instance of <code class="highlighter-rouge">EventTarget</code> directly, but rather inherit from it:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function MyObject(){
+    EventTarget.call(this);
+}
+
+MyObject.prototype = new EventTarget();
+MyObject.prototype.constructor = MyObject;
+MyObject.prototype.foo = function(){
+    this.fire("foo");
+};
+
+var o = new MyObject();
+
+o.addListener("foo", function(){
+    alert("Foo just happened.");
+});
+
+o.foo();
+</code></pre></div></div>
+
+<p>Typically, events are fired in reaction to some other method call, as in this example (events are usually not fired external to the object that is publishing the events).</p>
+
+<h2 id="what-about">What about…?</h2>
+
+<p>This is a pretty barebones implementation of a custom event providing object, so inevitably someone will come along and ask why I didn’t include one feature or another. There are, of course, a lot of enhancements you can make to custom events if you so desire. Some enhancements others have implemented:</p>
+
+<ul>
+  <li>Bubbling of events</li>
+  <li>Continue to execute event handlers even if one throws an error</li>
+  <li>Allow event handlers to cancel further processing or default actions</li>
+</ul>
+
+<p>Each of these can be built pretty easily on top of the base presented in this post.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Custom events are a very powerful and useful pattern in JavaScript programming, and your usage of them doesn’t have to rely on a large JavaScript library. Implementing your own custom events is easy. The implementation presented in this post is a minimum feature set that typically fulfills most requirements, but you can consider it as a starting point for more advanced functionality if your requirements are more complex.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2010/03/09/custom-events-in-javascript/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

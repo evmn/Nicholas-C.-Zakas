@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>eval() isn&#8217;t evil, just misunderstood - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2013/06/25/eval-isnt-evil-just-misunderstood/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="eval() isn&#8217;t evil, just misunderstood">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2013/06/25/eval-isnt-evil-just-misunderstood/" />
+<meta name="og:title" content="eval() isn&#8217;t evil, just misunderstood">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="In all of JavaScript, I’m not sure there is a more maligned piece than eval(). This simple function designed to execute a string as JavaScript code has been the more source of more...">
+<meta name="keywords" content="eval,JavaScript,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">eval() isn&#8217;t evil, just misunderstood</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2013-06-25T00:00:00+00:00" itemprop="datePublished">June 25, 2013</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/eval" rel="tag">eval</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>In all of JavaScript, I’m not sure there is a more maligned piece than <code class="highlighter-rouge">eval()</code>. This simple function designed to execute a string as JavaScript code has been the more source of more scrutiny and misunderstanding during the course of my career than nearly anything else. The phrase “eval() is evil” is most often attributed to Douglas Crockford, who has stated<sup><a href="http://www.jslint.com/lint.html">1</a></sup>:</p>
+
+<blockquote>
+  <p>The <code class="highlighter-rouge">eval</code> function (and its relatives, <code class="highlighter-rouge">Function</code>, <code class="highlighter-rouge">setTimeout</code>, and <code class="highlighter-rouge">setInterval</code>) provide access to the JavaScript compiler. This is sometimes necessary, but in most cases it indicates the presence of extremely bad coding. The <code class="highlighter-rouge">eval</code> function is the most misused feature of JavaScript.</p>
+</blockquote>
+
+<p>Since Douglas hasn’t put dates on most of his writings, it’s unclear whether he actually coined the term as an article in 2003<sup><a href="http://blogs.msdn.com/b/ericlippert/archive/2003/11/01/53329.aspx">2</a></sup> also used this phrase without mentioning him. Regardless, it has become the go-to phrase for anyone who sees <code class="highlighter-rouge">eval()</code> in code, whether or not they really understand its use.</p>
+
+<p>Despite popular theory (and Crockford’s insistence), the mere presence of <code class="highlighter-rouge">eval()</code> does not indicate a problem. Using <code class="highlighter-rouge">eval()</code> does not automatically open you up to a Cross-Site Scripting (XSS) attack nor does it mean there is some lingering security vulnerability that you’re not aware of. Just like any tool, you need to know how to wield it correctly, but even if you use it incorrectly, the potential for damage is still fairly low and contained.</p>
+
+<h2 id="misuse">Misuse</h2>
+
+<p>At the time when “eval() is evil” originated, it was a source of frequent misuse by those who didn’t understand JavaScript as a language. What may surprise you is that the misuse had nothing to do with performance or security, but rather with not understanding how to construct and use references in JavaScript. Suppose that you had several form inputs whose names contained a number, such as “option1″ and “option2″, it was common to see this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function isChecked(optionNumber) {
+    return eval("forms[0].option" + optionNumber + ".checked");
+}
+
+var result = isChecked(1);
+</code></pre></div></div>
+
+<p>In this case, the developer is trying to write <code class="highlighter-rouge">forms[0].option1.checked</code> but is unaware of how to do that without using <code class="highlighter-rouge">eval()</code>. You see this sort of pattern a lot in code that is around ten years old or older as developers of that time just didn’t understand how to use the language properly. The use of <code class="highlighter-rouge">eval()</code> is inappropriate here because it’s unnecessary not because it’s bad. You can easily rewrite this function as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function isChecked(optionNumber) {
+    return forms[0]["option" + optionNumber].checked;
+}
+
+var result = isChecked(1);
+</code></pre></div></div>
+
+<p>In most cases of this nature, you can replace the call to <code class="highlighter-rouge">eval()</code> by using bracket notation to construct the property name (that is, after all, one reason it exists). Those early bloggers who talked about misuse, Crockford included, were mostly talking about this pattern.</p>
+
+<h2 id="debugability">Debugability</h2>
+
+<p>A good reason to avoid <code class="highlighter-rouge">eval()</code> is for debugging purposes. Until recently, it was impossible to step into <code class="highlighter-rouge">eval()</code>ed code if something went wrong. That meant you were running code into a black box and then out of it. Chrome Developer Tools can now debug <code class="highlighter-rouge">eval()</code>ed code, but it’s still painful. You have to wait until the code executes once before it shows up in the Source panel.</p>
+
+<p>Avoiding <code class="highlighter-rouge">eval()</code>ed code makes debugging easier, allowing you to view and step through the code easily. That doesn’t make <code class="highlighter-rouge">eval()</code> evil, necessarily, just a bit problematic in a normal development workflow.</p>
+
+<h2 id="performance">Performance</h2>
+
+<p>Another big hit against <code class="highlighter-rouge">eval()</code> is its performance impact. In older browsers, you encountered a double interpretation penalty, which is to say that your code is interpreted and the code inside of <code class="highlighter-rouge">eval()</code> is interpreted. The result could be ten times slower (or worse) in browsers without compiling JavaScript engines.</p>
+
+<p>With today’s modern compiling JavaScript engines, <code class="highlighter-rouge">eval()</code> still poses a problem. Most engines can run code in one of two ways: fast path or slow path. Fast path code is code that is stable and predictable, and can therefore be compiled for faster execution. Slow path code is unpredictable, making it hard to compile and may still be run with an interpreter<sup><a href="http://www.slideshare.net/newmovie/know-yourengines-velocity2011">3</a></sup>. The mere presence of <code class="highlighter-rouge">eval()</code> in your code means that it is unpredictable and therefore will run in the interpreter – making it run at “old browser” speed instead of “new browser” speed (once again, a 10x difference).</p>
+
+<p>Also of note, <code class="highlighter-rouge">eval()</code> makes it impossible for YUI Compressor to munge variable names that are in scope of the call to <code class="highlighter-rouge">eval()</code>. Since <code class="highlighter-rouge">eval()</code> can access any of those variables directly, renaming them would introduce errors (other tools like Closure Compiler and UglifyJS may still munge those variables – ultimately causing errors).</p>
+
+<p>So performance is still a big concern when using <code class="highlighter-rouge">eval()</code>. Once again, that hardly makes it evil, but is a caveat to keep in mind.</p>
+
+<h2 id="security">Security</h2>
+
+<p>The trump card that many pull out when discussing <code class="highlighter-rouge">eval()</code> is security. Most frequently the conversation heads into the realm of XSS attacks and how <code class="highlighter-rouge">eval()</code> opens up your code to them. On the surface, this confusion is understandable, since by its definition <code class="highlighter-rouge">eval()</code> executes arbitrary code in the context of the page. This can be dangerous if you’re taking user input and running it through <code class="highlighter-rouge">eval()</code>. However, if your input isn’t from the user, is there any real danger?</p>
+
+<p>I’ve received more than one complaint from someone over a piece of code in my CSS parser that uses <code class="highlighter-rouge">eval()</code><sup><a href="https://github.com/nzakas/parser-lib/blob/master/src/css/PropertyValuePart.js#L145">4</a></sup>. The code in question uses <code class="highlighter-rouge">eval()</code> to convert a string token from CSS into a JavaScript string value. Short of creating my own string parser, this is the easiest way to get the true string value of the token. To date, no one has been able or willing to produce an attack scenario under which this code causes trouble because:</p>
+
+<ol>
+  <li>The value being <code class="highlighter-rouge">eval()</code>ed comes from the tokenizer.</li>
+  <li>The tokenizer has already verified that it’s a valid string.</li>
+  <li>The code is most frequently run on the command line.</li>
+  <li>Even when run in the browser, this code is enclosed in a closure and can’t be called directly.</li>
+</ol>
+
+<p>Of course, since this code has a primary destination of the command line, the story is a bit different.</p>
+
+<p>Code designed to be used in browsers face different issues, however, the security of <code class="highlighter-rouge">eval()</code> typically isn’t one of them. Once again, if you are taking user input and passing it through <code class="highlighter-rouge">eval()</code> in some way, then you are asking for trouble. Never ever do that. However, if your use of <code class="highlighter-rouge">eval()</code> has input that only you control and cannot be modified by the user, then there are no security risks.</p>
+
+<p>The most common attack vector cited these days is in <code class="highlighter-rouge">eval()</code>ing code that is returned from the server. This pattern famously began with the introduction of JSON, which rose in popularity specifically because it could quickly be converted into a JavaScript by using <code class="highlighter-rouge">eval()</code>. Indeed, Douglas Crockford himself used <code class="highlighter-rouge">eval()</code> in his original JSON utility due to the speed with which it could be converted. He did add checks to make sure there was no truly executable code but the implementation was fundamentally <code class="highlighter-rouge">eval()</code>.</p>
+
+<p>These days, most use the built-in JSON parsing capabilities of browsers for this purpose, though some still fetch arbitrary JavaScript to execute via <code class="highlighter-rouge">eval()</code> as part of a lazy-loading strategy. This, some argue, is the real security vulnerability. If a man-in-the-middle attack is in progress, then you will be executing arbitrary attacker code on the page.</p>
+
+<p>The man-in-the-middle attack is wielded as the ever-present danger of <code class="highlighter-rouge">eval()</code>, opening the security can of worms. However, this is one scenario that doesn’t concern me in the least, because anytime you can’t trust the server you’re contacting means any number of bad things are possible. Man-in-the-middle attacks can inject code onto the page in any number of ways:</p>
+
+<ol>
+  <li>By returning attacker-controlled code for JavaScript loaded via <code class="highlighter-rouge">&lt;script src=""&gt;</code>.</li>
+  <li>By returning attacker-controlled code for JSON-P requests.</li>
+  <li>By returning attacker-controlled code from an Ajax request that is then <code class="highlighter-rouge">eval()</code>ed.</li>
+</ol>
+
+<p>Additionally, such an attack can easily steal cookies and user data without altering anything, let alone the possibility for phishing by returning attacker-controlled HTML and CSS.</p>
+
+<p>In short, <code class="highlighter-rouge">eval()</code> doesn’t open you up to man-in-the-middle attacks any more than loading external JavaScript does. If you can’t trust the code from your server then you have much bigger problems than an <code class="highlighter-rouge">eval()</code> call here or there.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I’m not saying you should go run out and start using <code class="highlighter-rouge">eval()</code> everywhere. In fact, there are very few good use cases for running <code class="highlighter-rouge">eval()</code> at all. There are definitely concerns with code clarity, debugability, and certainly performance that should not be overlooked. But you shouldn’t be afraid to use it when you have a case where <code class="highlighter-rouge">eval()</code> makes sense. Try not using it first, but don’t let anyone scare you into thinking your code is more fragile or less secure when <code class="highlighter-rouge">eval()</code> is used appropriately.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://www.jslint.com/lint.html">About JSLint</a> by Douglas Crockford (JSLint)</li>
+  <li><a href="http://blogs.msdn.com/b/ericlippert/archive/2003/11/01/53329.aspx">Eval is evil, Part One</a> by Eric Lippert (Eric’s blog)</li>
+  <li><a href="http://www.slideshare.net/newmovie/know-yourengines-velocity2011">Know Your Engines</a> by David Mandelin (SlideShare)</li>
+  <li><a href="https://github.com/nzakas/parser-lib/blob/master/src/css/PropertyValuePart.js#L145">eval() usage in my CSS parser</a> by me (GitHub)</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2013/06/25/eval-isnt-evil-just-misunderstood/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

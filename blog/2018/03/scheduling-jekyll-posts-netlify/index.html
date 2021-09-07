@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Scheduling Jekyll posts with Netlify and AWS - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2018/03/scheduling-jekyll-posts-netlify/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Scheduling Jekyll posts with Netlify and AWS">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2018/03/scheduling-jekyll-posts-netlify/" />
+<meta name="og:title" content="Scheduling Jekyll posts with Netlify and AWS">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="https://humanwhocodes.com/blog/2018/03/scheduling-jekyll-posts-netlify/index.html">
+
+
+
+<meta name="description" content="Not too long ago I moved this site from a custom setup on Amazon Web Services (AWS) to Netlify[1]. My AWS setup was a bit cumbersome, consisting of a Jenkins machine that pulled...">
+<meta name="keywords" content="Netlify,Static Site,AWS,Lambda,Cloudwatch,Jekyll,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="../../../../index.html"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2018/03/scheduling-jekyll-posts-netlify/index.html#content">Skip to content</a></li>
+                <li><a href="../../../../books/index.html" class="dark-text no-underline">Books</a></li>
+                <li><a href="../../../../reading/index.html" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="../../../../donate/index.html" class="dark-text no-underline">Donate</a></li>
+                <li><a href="../../../../contact/index.html" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Scheduling Jekyll posts with Netlify and AWS</h1>
+        <p itemprop="description" class="no-margin-top">Using AWS Lambda functions to schedule Netlify builds.</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2018-03-27T00:00:00+00:00" itemprop="datePublished">March 27, 2018</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/netlify" rel="tag">Netlify</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/static-site" rel="tag">Static Site</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/aws" rel="tag">AWS</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/lambda" rel="tag">Lambda</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/cloudwatch" rel="tag">Cloudwatch</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/jekyll" rel="tag">Jekyll</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Not too long ago I moved this site from a custom setup on Amazon Web Services (AWS) to Netlify[1]. My AWS setup was a bit cumbersome, consisting of a Jenkins machine that pulled from a private GitHub repository, built the site using Jekyll[2], and published the result to S3. The benefit of this setup over using GitHub pages was that I could schedule posts to be published later. Jenkins was run every morning and new posts were automatically published without manual intervention. (Jenkins was also triggered whenever I pushed to the GitHub repository for instant builds.)</p>
+
+<p>My custom AWS setup worked well, but it cost around $14 every month and I wasn’t happy about that, especially given how infrequently I’ve been writing new posts in the past couple of years. I decided in the short-term to just move this site to Netlify and not worry about scheduling posts because I didn’t think I would be writing that much for the foreseeable future. If I ever wanted to post something, I could do so manually, and in the meantime I’d be saving $14 a month. As it turned out, scheduling posts on Netlify was a lot simpler than I thought it would be. All I needed was an AWS Lambda function and an AWS Cloudwatch event.</p>
+
+<p><strong>Note:</strong> This post assumes you already have a site setup on Netlify using a GitHub repository. While I assume the solution works the same for other source code repository types, like BitBucket, I’m not entirely sure. This post also assumes that you have an AWS account.</p>
+
+<h2 id="configuring-jekyll">Configuring Jekyll</h2>
+
+<p>By default, Jekyll generates all blog posts in the <code class="highlighter-rouge">_posts</code> directory regardless of the publish date associated with each. That obviously doesn’t work well when you want to schedule posts to be published in the future, so the first step is to configure Jekyll to ignore future posts. To do so, add this key to Jekyll’s <code class="highlighter-rouge">_config.yml</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>future: false
+</code></pre></div></div>
+
+<p>Setting <code class="highlighter-rouge">future</code> to <code class="highlighter-rouge">false</code> tells Jekyll to skip any posts with a publish date in the future. You can then set the <code class="highlighter-rouge">date</code> field in the front matter of a post to a future date and know that the post will not be generated until then, like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">---</span>
+<span class="nx">layout</span><span class="p">:</span> <span class="nx">post</span>
+<span class="nx">title</span><span class="p">:</span> <span class="dl">"</span><span class="s2">My future post</span><span class="dl">"</span>
+<span class="nx">date</span><span class="p">:</span> <span class="mi">2075</span><span class="o">-</span><span class="mi">01</span><span class="o">-</span><span class="mi">01</span> <span class="mi">00</span><span class="p">:</span><span class="mi">00</span><span class="p">:</span><span class="mi">00</span>
+<span class="o">---</span>
+</code></pre></div></div>
+
+<p>This post will be published on January 1, 2075, so it will not be built by Jekyll until that point in time. I find it easier to schedule all posts for midnight so that whenever the site gets published, so long as the date matches, the post will always be generated.</p>
+
+<h2 id="generating-a-netlify-build-hook">Generating a Netlify build hook</h2>
+
+<p>One of the things I like about Netlify is that you can trigger a new site build whenever you want, either manually or programmatically. Netlify has a useful feature called a build hook[3], which is a URL that triggers a new build. To generate a new build hook, go to the Netlify dashboard for your domain and go Site Settings and then to the Build &amp; Deploy page. When you scroll down, you’ll see a section for Build Hooks. Click “Add build hook”, give your new hook a name (something like “Daily Cron Job” would be appropriate here), and choose the branch to build from.</p>
+
+<p><img src="../../../../images/posts/netlify-build-hooks.png" alt="Netlify create build hook dialog" /></p>
+
+<p>You’ll be presented with a new URL that looks something like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://api.netlify.com/build_hooks/{some long unique identifier}
+</code></pre></div></div>
+
+<p>Whenever you send a <code class="highlighter-rouge">POST</code> request to the build hook, Netlify will pull the latest files from the GitHub repository, build the site, and deploy it. This is quite useful because you don’t need to worry about authenticating against the Netlify API; you can use this URL without credentials. Just make sure to keep this URL a secret. You can see the URL in your list of build hooks on the same page.</p>
+
+<p><img src="../../../../images/posts/netlify-build-hooks-2.png" alt="Netlify build hooks list" /></p>
+
+<p>(Don’t worry, the build hook URL in the screenshot has already been deleted.)</p>
+
+<h2 id="creating-the-aws-lambda-function">Creating the AWS Lambda function</h2>
+
+<p>AWS Lambda functions are standalone functions that don’t require you to setup and manage a server. As such, they are especially useful when you have very simple processes to run infrequently. All you need to do is create a Lambda function that sends a <code class="highlighter-rouge">POST</code> request to the build URL.</p>
+
+<p>The first step is to create a local Node.js application that will become the executable code for the Lamda function. Create a new directory (<code class="highlighter-rouge">build-netlify-lambda</code>, for example) and install the <code class="highlighter-rouge">request</code> module, which will make it easy to send an HTTP request:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cd build-netlify-lambda
+$ npm i request
+</code></pre></div></div>
+
+<p>You can create a <code class="highlighter-rouge">package.json</code> file if you want, but it’s not necessary.</p>
+
+<p>Next, create a file called <code class="highlighter-rouge">index.js</code> inside of <code class="highlighter-rouge">build-netlify-lamda</code> and paste the following code into it:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">request</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">request</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="nx">exports</span><span class="p">.</span><span class="nx">handler</span> <span class="o">=</span> <span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">request</span><span class="p">.</span><span class="nx">post</span><span class="p">(</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">URL</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>All Lamda functions export a <code class="highlighter-rouge">handler</code> function that receives three parameters: an <code class="highlighter-rouge">event</code> object with information about the event that triggered the function call, a <code class="highlighter-rouge">context</code> object with information about the runtime environment, and a <code class="highlighter-rouge">callback</code> function to call when the function is finished. In this case, you only need the <code class="highlighter-rouge">callback</code> function. The Netlify build hook will be stored in an environment variable called <code class="highlighter-rouge">URL</code> in the Lambda function, which you access using <code class="highlighter-rouge">process.env.URL</code>. That value is passed directly to <code class="highlighter-rouge">request.post()</code> along with the <code class="highlighter-rouge">callback</code>, making this Lamda function as small as possible.</p>
+
+<p>Now, you just need to zip up the entire <code class="highlighter-rouge">build-netlify-lambda</code> directory so it can be deployed to AWS Lambda:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ zip -r build-netlify-lamda.zip index.js node_modules/
+</code></pre></div></div>
+
+<p>Make sure the top level of the zip file has both <code class="highlighter-rouge">index.js</code> and <code class="highlighter-rouge">node_modules/</code>. If you mistakenly zip up the entire directory so that <code class="highlighter-rouge">build-netlify-lambda</code> is at the top level, AWS will not find the executable files.</p>
+
+<p>The last step is to upload this zip file to AWS. To do so, go to the AWS Console[4] and click “Create Function”.</p>
+
+<p><img src="../../../../images/posts/aws-lambda-create.png" alt="AWS Lambda create function dialog" /></p>
+
+<p>You’ll be presented with a form to fill out. Enter a name for the function, such as “publishNetlifySiteExample” and select one of the Node.js options as your runtime. The last field is for the Lambda role. If you already have other roles defined, you can use one that already exists; otherwise, select “Create role from template(s)”. This Lambda function doesn’t need a lot of permissions, so you can just add “Basic Edge Lambda Permissions” to allow access to logs. Click “Create Function”.</p>
+
+<p><img src="../../../../images/posts/aws-lambda-create.png" alt="AWS Lambda upload code and set environment variable" /></p>
+
+<p>When the Lambda function has been created, a new screen will load. This screen is a bit difficult to parse due to the amount of information on it. If this is your first Lambda function, don’t worry, you’ll get used to it quickly. Scroll down to the section called “Function Code” and select “Upload a .ZIP file” from the “Code entry type” dropdown. You can then select your zip file to upload to the Lambda function.</p>
+
+<p>Beneath the “Function Code” section is the “Environment Variables” section. Create a new environment variable named <code class="highlighter-rouge">URL</code> with its value set to your Netlify build hook. Once that’s complete, click “Save” at the top of the screen to upload the zip file and save your environment variables.</p>
+
+<p>You can test the Lambda function by creating a new test event. At the top of the screen, click the “Select a Test Event Dropdown” and select “Configure Test Events”.</p>
+
+<p><img src="../../../../images/posts/aws-lambda-test-dropdown.png" alt="AWS Lambda Test Event Dropdown" /></p>
+
+<p>A new dialog will open to create a test event. Since this Lambda function doesn’t use any incoming data, you can keep the default settings and give the event a meaningful name like “TestNetlifyBuild”. Click the “Create” button to save the test event.</p>
+
+<p><img src="../../../../images/posts/aws-lambda-test-create.png" alt="AWS Lambda Test Event Create Dialog" /></p>
+
+<p>In order to run the test, make sure “TestNetlifyBuild” is selected in the dropdown at the top of the screen and click the “Test” button. This will execute the function. If you look at your Netlify Deploys dashboard, you should see a new build begin.</p>
+
+<h2 id="setting-up-the-cloudwatch-event">Setting up the Cloudwatch event</h2>
+
+<p>At this point, the Lambda function is operational and will trigger a new Netlify deploy when executed. That’s somewhat useful but isn’t much more powerful than logging into the Netlify dashboard and manually triggering a build. The goal is to have Netlify build automatically on a certain schedule and Cloudwatch is the perfect solution.</p>
+
+<p>Cloudwatch is a service that generates events based on any number of criteria. You can use it to monitor your services on a variety of criteria and then respond with certain actions. For the purposes of this post, Cloudwatch will be set to run periodically and then trigger the Lambda function that builds the Netlify website.</p>
+
+<p>On the Cloudwatch console[5], click “Events” on the left menu and then the “Create Rule” button.</p>
+
+<p><img src="../../../../images/posts/aws-cloudwatch-create.png" alt="AWS Cloudwatch Create Rule Dialog - Step 1" /></p>
+
+<p>Under “Event Source” select “Schedule”. You’re now able to select the frequency with which you want the event to be triggered. You can select an interval of minutes, hours, or days, or you can create a custom schedule using a Cron expression. (If you want to control the exact time that an event is triggered, it’s best to use a Cron expression.) Under “Targets”, select “Lambda function” and your function name. There’s no need to configure the version/alias or input because the Lambda function isn’t using any of those. Click the “Configure Details” button. You’ll be brought to a second dialog.</p>
+
+<p><img src="../../../../images/posts/aws-cloudwatch-create-2.png" alt="AWS Cloudwatch Create Rule Dialog - Step 2" /></p>
+
+<p>In this dialog, fill in a meaningful name for your event (and optional description) and then click “Create Rule”. Rules are on by default so your new event should be triggered at the next interval. The Lambda function will then be called and regenerate the website.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This website has been running on the setup described in this post for over a month. In fact, this post was written ahead of time and published using my AWS Cloudwatch event and Lambda function. The functionality is the same as my previous setup with Jenkins and S3, however, this setup costs $0 compared to $14. I only run my Cloudwatch event two times a week (I’m not posting much these days) and each run of the Lambda function takes under two seconds to complete, which means I fall into the free tier and I’m not charged anything.</p>
+
+<p>The Lambda free tier is one million requests and 400,000 GB-seconds per month. A GB-second is one second of execution time with 1 GB of allocated memory. The Lambda function created in this post uses the default memory allocation of 128 MB. If you figure out the match, you’ll still be in the free tier even if you run your Lambda function every hour of the day each month. As the Lambda function only sends off an HTTPS request and then Netlify does the build, the real work isn’t done inside of Lambda.</p>
+
+<p>I’ve found this setup to be very simple and cost-efficient, not to mention a lot less complicated. I no longer have to log into a Jenkins server to figure out why a build of the website failed. There’s just one small function to manage and all of the important information is displayed in the Netlify dashboard.</p>
+
+<p>The most important thing to remember when using this setup is to set the <code class="highlighter-rouge">date</code> field of each post to some time in the future. When the Cloudwatch event triggers the Lambda function to execute, only those posts with a <code class="highlighter-rouge">date</code> in the past will be generated. You can play around with the timing of the Cloudwatch event to best suit your frequency of posts, and keep in mind that Netlify automatically builds the site whenever a change is pushed, so you still have just-in-time updates as needed.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="https://www.netlify.com">Netlify</a> (netlify.com)</li>
+  <li><a href="https://jekyllrb.com/">Jekyll</a> (jekyllrb.com/)</li>
+  <li><a href="https://www.netlify.com/docs/webhooks/#incoming-webhooks">Netlify Webhooks - Incoming Hooks</a> (netlify.com)</li>
+  <li><a href="https://console.aws.amazon.com/lambda/">AWS Console - Lambda</a> (console.aws.amazon.com)</li>
+  <li><a href="https://console.aws.amazon.com/cloudwatch/">AWS Console - Cloudwatch</a> (console.aws.amazon.com)</li>
+</ol>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="../../../../../github.com/scoutapm-sponsorships"><img src="../../../../../avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&amp;v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="../../../../../geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="../../../../snippets/2021/03/create-user-linux-ssh-key/index.html">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="../../../../snippets/2021/02/how-to-setup-deploy-web-application-dokku/index.html">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="../../../../snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/index.html">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="../../../../snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/index.html">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="../../../../snippets/2020/10/read-environment-variables-deno/index.html">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="../../../../snippets/2020/08/validate-github-webhook-signature-nodejs/index.html">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="../../../../snippets/2020/07/eleventy-heading-ids/index.html">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="../../../../snippets/2020/02/optionally-await-function-result/index.html">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="../../../../snippets/2019/05/jest-globals-intellisense-visual-studio-code/index.html">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="../../../../snippets/2019/05/nodejs-read-stream-promise/index.html">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='../../../2021/index.html'>2021</a></li>
+
+                <li><a href='../../../2020/index.html'>2020</a></li>
+
+                <li><a href='../../../2019/index.html'>2019</a></li>
+
+                <li><a href='../../index.html'>2018</a></li>
+
+
+                <li><a href='../../../2016/index.html'>2016</a></li>
+
+                <li><a href='../../../2015/index.html'>2015</a></li>
+
+                <li><a href='../../../2014/index.html'>2014</a></li>
+
+                <li><a href='../../../2013/index.html'>2013</a></li>
+
+                <li><a href='../../../2012/index.html'>2012</a></li>
+
+                <li><a href='../../../2011/index.html'>2011</a></li>
+
+                <li><a href='../../../2010/index.html'>2010</a></li>
+
+                <li><a href='../../../2009/index.html'>2009</a></li>
+
+                <li><a href='../../../2008/index.html'>2008</a></li>
+
+                <li><a href='../../../2007/index.html'>2007</a></li>
+
+                <li><a href='../../../2006/index.html'>2006</a></li>
+
+                <li><a href='../../../2005/index.html'>2005</a></li>
+
+                <li><a href='../../../2004/index.html'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="../../../../../eslint.org/index.html">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="https://humanwhocodes.com/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="../../../../../medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="../../../../../www.twitter.com/slicknet/index.html">Twitter</a></li>
+                    <li><a href="../../../../../www.github.com/nzakas/index.html">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="../../../../../www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="../../../../../www.slideshare.net/nzakas/presentations/index.html">Slideshare</a></li>
+                    <li><a href="../../../../../amazon.com/author/nzakas/index.html">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="../../../../../creativecommons.org/licenses/by-nc-nd/3.0/index.html" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

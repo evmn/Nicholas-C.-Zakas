@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Setting up Apache as a SSL front end for Play - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/08/08/setting-up-apache-as-a-ssl-front-end-for-play/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Setting up Apache as a SSL front end for Play">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/08/08/setting-up-apache-as-a-ssl-front-end-for-play/" />
+<meta name="og:title" content="Setting up Apache as a SSL front end for Play">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="We’ve been using the Play Framework1 on WellFurnished since the beginning and have been delighted with the results. If you’re unfamiliar with Play, it’s a Java based MVC framework that allows for rapid...">
+<meta name="keywords" content="Apache,Play Framework,SSL,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Setting up Apache as a SSL front end for Play</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-08-08T00:00:00+00:00" itemprop="datePublished">August 8, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/apache" rel="tag">Apache</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/play-framework" rel="tag">Play Framework</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ssl" rel="tag">SSL</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>We’ve been using the Play Framework<sup><a href="http://playframework.org">1</a></sup> on WellFurnished since the beginning and have been delighted with the results. If you’re unfamiliar with Play, it’s a Java based MVC framework that allows for rapid application development. I’ve honestly never use a framework that let me get up and running so quickly. It’s been a pleasure to work with and we generally use the recommended setup of having Apache as a front end to the Play server.</p>
+
+<p>Recently, I have begun working on a WellFurnished login to store our own usernames and passwords, thus eliminating the need to have a Facebook account to login. We put this off initially because it was easier to use somebody else’s login system (and security) to start getting users onto the site. We always intended to create our own login system, but we wanted to make sure that we were spending the majority of our time on features and not on implementing something that you can pretty much get for free. Now that the time has come, I’ve been investigating SSL and how to use it with Play. It was a little bit trickier than I thought, and so I wanted to share the steps in case anybody else ran into the same issues.</p>
+
+<h2 id="basic-setup">Basic setup</h2>
+
+<p>Before getting into SSL, it’s helpful to understand the overall setup and why it’s useful. The Play 1.X server is good but somewhat limited. It only recently gained SSL support and doesn’t have built-in support for gzipping of assets. As with most application servers, it’s pretty slow when serving up static content and is not designed to run on port 80 by default (it’s initially configured to run on port 9000). For all of these reasons, the documentation suggests using another server as a front end that listens to port 80, serves static assets, in general he talks to the world for Play.</p>
+
+<p>I chose to use Apache because I’m familiar with it but you could easily use nginx instead. Apache is installed on the same box as the Play server and acts as the gatekeeper to the box. Traffic coming in from a browser goes to Apache first and Apache talks to the Play server on behalf of the browser. When the Play server responds, it responds to Apache, which in turn responds to the browser.</p>
+
+<p style="text-align: center">
+  <a href="https://humanwhocodes.com/images/wp-content/uploads/2012/08/architecture.png"><img src="https://humanwhocodes.com/blog/wp-content/uploads/2012/08/architecture.png" alt="" width="600" height="201" /></a>
+</p>
+
+<p>This basic architecture works by using Apache as both a forward proxy, which accesses the Play server on behalf of the Internet, and a reverse proxy, which accesses the Internet on behalf of the Play server. Setting this up in Apache is fairly trivial, first make sure that <code class="highlighter-rouge">mod_proxy</code><sup><a href="http://httpd.apache.org/docs/2.2/mod/mod_proxy.html">2</a></sup> is enabled for Apache:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo a2enmod proxy
+</code></pre></div></div>
+
+<p>Then add the following into your virtual host:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ProxyPreserveHost On
+ProxyPass / http://127.0.0.1:9000/
+ProxyPassReverse / http://127.0.0.1:9000/
+</code></pre></div></div>
+
+<p>Since Apache is acting as a proxy, the <code class="highlighter-rouge">Host</code> HTTP header sent with the request to the Play server would contain the internal name of the server rather than the original <code class="highlighter-rouge">Host</code> Header as sent from the browser. By adding <code class="highlighter-rouge">ProxyPreserveHost On</code>, Apache note is to keep the same <code class="highlighter-rouge">Host</code> header for the request to the Play server. The next two lines just set up Apache as a forward (<code class="highlighter-rouge">ProxyPass</code>) and reverse (<code class="highlighter-rouge">ProxyPassReverse</code>) proxy to the Play server. After that, you just need to reload Apache:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo service apache2 reload
+</code></pre></div></div>
+
+<p>That’s all that’s needed to get Apache proxying between the Internet and the Play server.</p>
+
+<h2 id="enabling-ssl-on-apache">Enabling SSL on Apache</h2>
+
+<p>Play has built-in SSL support, but there is no reason to talk SSL directly to the Play server. After all, both Apache and the Play server are on the same box. Most setups with a forward proxy terminate the SSL at the proxy. That means a web browser uses SSL to talk to Apache but Apache talks to the Play server using plain old HTTP. Play is capable of determining that the request is secure or not using the <code class="highlighter-rouge">request.secure</code> flag, such as (Java):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// in a controller
+if (!request.secure) {
+    redirect("https://" + request.domain + request.url);
+}
+</code></pre></div></div>
+
+<p>This snippet of code redirects to the secure version of the page if the insecure version is accessed.</p>
+
+<p>But before you can use that, you have to get SSL traffic going to the Play server. The first step in that process is to make sure that SSL support is enabled for Apache via <code class="highlighter-rouge">mod_ssl</code><sup><a href="http://httpd.apache.org/docs/2.2/mod/mod_ssl.html">3</a></sup>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo a2enmod ssl
+</code></pre></div></div>
+
+<p>After that, you have to make sure that Apache is listening on port 443 for HTTPS traffic (in addition to port 80 for HTTP). Edit the <code class="highlighter-rouge">/etc/apache2/ports.conf</code> to add the port information. Port 80 should already be listed, you just need to add another line:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Port 80
+Port 443
+</code></pre></div></div>
+
+<p>Once that’s complete, restart Apache so that it will listen to port 443:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo service apache restart
+</code></pre></div></div>
+
+<p>You now need to create a separate virtual host entry for port 443:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;VirtualHost *:443&gt;
+    ProxyPreserveHost On
+    ServerName www.example.com
+
+    ProxyPass / http://127.0.0.1:9000/
+    ProxyPassReverse / http://127.0.0.1:9000/
+&lt;/VirtualHost&gt;
+</code></pre></div></div>
+
+<p>That sets up Apache to listen on port 443 for traffic and also sets it up as a forward and reverse proxy for the Play server. Note that there is no mention of HTTPS because Apache is speaking to the Play server using HTTP.</p>
+
+<p>Next, you need to enable SSL within the virtual host and provide the certificate and key files (assuming you already have them). These files can live anywhere but should not be in a publicly accessible location. You then reference them directly in the virtual host entry:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;VirtualHost *:443&gt;
+    ProxyPreserveHost On
+    ServerName www.example.com
+
+    &lt;strong&gt;SSLEngine On
+    SSLCertificateFile /etc/apache2/ssl/server.crt
+    SSLCertificateKeyFile /etc/apache2/ssl/server.key
+
+    &lt;Location/&gt;
+        SSLRequireSSL
+    &lt;/Location&gt;&lt;/strong&gt;
+
+    ProxyPass / http://127.0.0.1:9000/
+    ProxyPassReverse / http://127.0.0.1:9000/
+&lt;/VirtualHost&gt;
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">SSLEngine On</code> directive turns SSL on while the two others simply provide paths for the certificate and key files. After one more Apache reload, the server is now speaking SSL to the outside world and HTTP to the Play server. I’ve also added in <code class="highlighter-rouge">SSLRequireSSL</code> to the entire server, ensuring that regular HTTP requests will never be honored on port 443. There are several other options available in <code class="highlighter-rouge">mod_ssl</code> That you might want to look at, but this is enough to get started.</p>
+
+<h2 id="one-last-step">One last step</h2>
+
+<p>At this point, the Play server is effectively being used over SSL with the SSL connection terminated at Apache. The setup works fine if you’re not doing anything tricky. However, there is one significant problem: <code class="highlighter-rouge">request.secure</code> always returns false. This makes sense from the Play server point of view because it is being spoken to using HTTP from Apache. Technically, the Play server is never handling a secure request. However, it’s important to be able to tell whether or not someone is connecting to your application using SSL or not, so this is not acceptable.</p>
+
+<p>What you actually need is to forward along the protocol that was used to access the server. There is a de facto standard around the <code class="highlighter-rouge">X-Forwarded-Proto</code> header that is used with proxies. This header contains the original protocol (the forwarded protocol) of the request that the proxy received. The Play framework is smart enough to look for this header as part of its determination of <code class="highlighter-rouge">request.secure</code>. So you just need to add the header whenever request comes in via SSL.</p>
+
+<p>To do that, make sure that <code class="highlighter-rouge">mod_headers</code><sup><a href="http://httpd.apache.org/docs/2.2/mod/mod_headers.html">4</a></sup> Is enabled:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo a2enmod headers
+</code></pre></div></div>
+
+<p>Then you can specify the header as part of your virtual host configuration:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;VirtualHost *:443&gt;
+    &lt;strong&gt;RequestHeader set X-Forwarded-Proto "https"&lt;/strong&gt;
+    ProxyPreserveHost On
+    ServerName www.example.com
+
+    SSLEngine On
+    SSLCertificateFile /etc/apache2/ssl/server.crt
+    SSLCertificateKeyFile /etc/apache2/ssl/server.key
+
+    &lt;Location/&gt;
+        SSLRequireSSL
+    &lt;/Location&gt;
+
+    ProxyPass / http://127.0.0.1:9000/
+    ProxyPassReverse / http://127.0.0.1:9000/
+&lt;/VirtualHost&gt;
+</code></pre></div></div>
+
+<p>The first line in the virtual host configuration sets the <code class="highlighter-rouge">X-Forwarded-Proto</code> Header for every request that comes through. The Play framework can look at this header to determine whether or not the request is secure. You need to reload Apache after making this change.</p>
+
+<p>That might seem like the only change that’s necessary but there is one more that is a bit tricky to track down. Because it’s possible for multiple proxies to talk to a server, the server needs to distinguish between requests from a known proxy and an unknown one that might be trying to do harm. By default, the Play server doesn’t accept any headers beginning with <code class="highlighter-rouge">X-Forwarded</code> as truth because it can’t know for sure. You need to edit the Play <code class="highlighter-rouge">application.conf</code> file to add a list of known proxies in the <code class="highlighter-rouge">XForwardedSupport</code> key, such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>XForwardedSupport = 127.0.0.1
+</code></pre></div></div>
+
+<p>This example includes only localhost as a valid proxy for which <code class="highlighter-rouge">X-Forwarded</code> headers should be used. Once this is included, <code class="highlighter-rouge">request.secure</code> reads the <code class="highlighter-rouge">X-Forwarded-Proto</code> header to determine if the request is secure. Now everything in the stack is behaving correctly.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>This post took you through setting up Apache as a SSL front end for a Play application. As mentioned earlier, WellFurnished is currently using the 1.x version of Play, though expect to move to the 2.x version in the future. The Apache setup for handling SSL is fairly straightforward. If you would prefer to use nginx or another server as a front end, I suspect that setup would be roughly the same. The biggest sticking point for me when setting this up the first time was the last step, enabling <code class="highlighter-rouge">XForwardedSupport</code> for the application so that <code class="highlighter-rouge">request.secure</code> works as expected.</p>
+
+<p>All of this work is going in so that we can have our own WellFurnished login and be less reliant on Facebook for handling that process. Stay tuned to WellFurnished for further details.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://playframework.org">Play Framework</a></li>
+  <li><a href="http://httpd.apache.org/docs/2.2/mod/mod_proxy.html">mod_proxy</a> (Apache)</li>
+  <li><a href="http://httpd.apache.org/docs/2.2/mod/mod_ssl.html">mod_ssl</a> (Apache)</li>
+  <li><a href="http://httpd.apache.org/docs/2.2/mod/mod_headers.html">mod_headers</a> (Apache)</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/08/08/setting-up-apache-as-a-ssl-front-end-for-play/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

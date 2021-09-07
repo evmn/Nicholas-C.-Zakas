@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Introduction to Server-Sent Events - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2010/10/19/introduction-to-server-sent-events/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Introduction to Server-Sent Events">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2010/10/19/introduction-to-server-sent-events/" />
+<meta name="og:title" content="Introduction to Server-Sent Events">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="While the web development world is abuzz over the “exciting future” of Web Sockets, there’s another spec along the same lines that has me far more excited: Server-Sent Events. This spec is based...">
+<meta name="keywords" content="EventSource,JavaScript,Server Sent Events,Web Sockets,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Introduction to Server-Sent Events</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2010-10-19T00:00:00+00:00" itemprop="datePublished">October 19, 2010</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/eventsource" rel="tag">EventSource</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/server-sent-events" rel="tag">Server Sent Events</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/web-sockets" rel="tag">Web Sockets</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>While the web development world is abuzz over the “exciting future” of <a href="http://dev.w3.org/html5/websockets/">Web Sockets</a>, there’s another spec along the same lines that has me far more excited: <a href="http://dev.w3.org/html5/eventsource/">Server-Sent Events</a>. This spec is based on a feature that was first called Server-Sent DOM Events and implemented in Opera 9. The idea is pretty simple: a web page can subscribe to a stream of events generated by the server. Whenever an event occurs on the server, a notification is sent to the client and a JavaScript event is generated.</p>
+
+<h2 id="differences-from-web-socket">Differences from Web Socket</h2>
+
+<p>The biggest difference between Web Sockets and Server-Sent Events is that the former is bidirectional while the latter is not. Server-Sent Events, as the name implies, are sent from the server to the browser only. If you wish to send data to the server, you’ll have to do so through another mechanism, such as <code class="highlighter-rouge">XMLHttpRequest</code>.</p>
+
+<p>The second fairly large difference is that Server-Sent Events are sent over plain old HTTP without any modification. This is good news for implementers as there won’t be changes on the server aside from ensuring that high-duration requests don’t crash your server. Using HTTP ensures that Server-Sent Events won’t be hampered in its progress by the same protocol angst that is still swirling around Web Sockets.</p>
+
+<h2 id="the-api">The API</h2>
+
+<p>The JavaScript API for Server-Sent Events is very similar to that of Web Sockets. To subscribe to a new event stream, you start by creating a new EventSource object and pass in the entrypoint:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var source = new EventSource("myevents.php");
+</code></pre></div></div>
+
+<p>Note that the referenced URL must be on the same origin (scheme, domain, and port) as the page in which the object is created. The <code class="highlighter-rouge">EventSource</code> instance has a <code class="highlighter-rouge">readyState</code> property that is set to 0 to indicate it’s connecting to the server, 1 to indicate an open connection, and 2 to indicate a closed connection.</p>
+
+<p>There are also three events: <code class="highlighter-rouge">open</code>, which is fired when the connection is established, <code class="highlighter-rouge">message</code>, which is fired when a new event is received from the server, and <code class="highlighter-rouge">error</code>, which is fired when no connection can be made. In general usage, the <code class="highlighter-rouge">onmessage</code> event handler is likely the one you’ll use the most:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>source.onmessage = function(event){
+    var data = event.data;
+};
+</code></pre></div></div>
+
+<p>Information sent back from the server is returned via <code class="highlighter-rouge">event.data</code> as a string.</p>
+
+<p>By default, the <code class="highlighter-rouge">EventSource</code> object will attempt to keep the connection alive with the server. You can force the object to disconnect immediately and stop attempting to reconnect by calling the close() method:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>source.close();
+</code></pre></div></div>
+
+<h2 id="the-event-stream">The event stream</h2>
+
+<p>The server events are sent along a long-lasting HTTP request with a MIME type of <code class="highlighter-rouge">text/event-stream</code>. The format of the response is plain text and, in its simplest form, is made up of the prefix <code class="highlighter-rouge">data:</code> followed by text, such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>data: foo
+
+data: bar
+
+data: foo
+data: bar
+</code></pre></div></div>
+
+<p>The first part of this stream fires a <code class="highlighter-rouge">message</code> event with <code class="highlighter-rouge">event.data</code> set to “foo”; the second part fires a <code class="highlighter-rouge">message</code> event with <code class="highlighter-rouge">event.data</code> set to “bar”; the third fires a <code class="highlighter-rouge">message</code> event with <code class="highlighter-rouge">event.data</code> set to “foo\nbar” (note the newline character in between). When there are two or more consecutive lines beginning with <code class="highlighter-rouge">data:</code>, it is interpreted as a multiline piece of data and the values are concatenated together with a newline character. The message event is never fired until a blank line is encountered after a line containing <code class="highlighter-rouge">data:</code>, so be certain to include that extra newline when generating the event stream on the server.</p>
+
+<p>You can also associate an ID with a particular event by including an <code class="highlighter-rouge">id:</code> line before or after the <code class="highlighter-rouge">data:</code> line(s):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>data: foo
+id: 1
+</code></pre></div></div>
+
+<p>By setting an ID, the <code class="highlighter-rouge">EventSource</code> object keeps track of the last event fired. If the connection is dropped, a special HTTP header called <code class="highlighter-rouge">Last-Event-ID</code> is sent along with the request so that the server can determine which event is appropriate to fire next.</p>
+
+<h2 id="wrap-up">Wrap up</h2>
+
+<p>Server-Sent events are a simpler alternative to Web Sockets for server push technology. Although some people seem convinced that bidirectional communication is an absolute necessity, many of the proposed use cases for Web Sockets are actually implementable using Server-Sent Events. This includes streaming stock quotes, score updates for games, bidding updates for auctions, etc. Opera 10.7 has an implementation of Server-Sent Events, and an implementation has already made it into the WebKit repository as well. Before jumping on the Web Sockets bandwagon, consider if Server-Sent Events can accomplish the same task.</p>
+
+<p><strong>Update (2010-Oct-22):</strong> Fixed typo.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2010/10/19/introduction-to-server-sent-events/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

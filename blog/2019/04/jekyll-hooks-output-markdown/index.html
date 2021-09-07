@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Outputting Markdown from Jekyll using hooks - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Outputting Markdown from Jekyll using hooks">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/" />
+<meta name="og:title" content="Outputting Markdown from Jekyll using hooks">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html">
+
+
+
+<meta name="description" content="One of the things I most enjoy about Jekyll1 is writing my blog posts in Markdown. I love not worrying about HTML and just letting Jekyll generate it for me when a post...">
+<meta name="keywords" content="Jekyll,Liquid,Ruby,Markdown,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Outputting Markdown from Jekyll using hooks</h1>
+        <p itemprop="description" class="no-margin-top">Jekyll hooks provide enough flexibility to modify posts before output.</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2019-04-16T00:00:00+00:00" itemprop="datePublished">April 16, 2019</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/jekyll" rel="tag">Jekyll</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/liquid" rel="tag">Liquid</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ruby" rel="tag">Ruby</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/markdown" rel="tag">Markdown</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>One of the things I most enjoy about Jekyll<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:1" class="footnote">1</a></sup> is writing my blog posts in Markdown. I love not worrying about HTML and just letting Jekyll generate it for me when a post is published. Using Liquid tags directly in Markdown is also helpful, as I can define sitewide or page-specific variables and then replace them during site generation. This is a really useful capability that I wanted to take advantage of to output Markdown for use in other sites. Places like Medium and dev.to allow you to post Markdown articles, so I thought repurposing the Markdown I used in Jekyll would make crossposting to those sites easier.</p>
+
+<p>I assumed that there would be a property on the <code class="highlighter-rouge">page</code> variable that would give me access to the rendered Markdown, but I was wrong. This began a long journey through relatively undocumented corners of the Jekyll plugin ecosystem. I’m sharing that journey here in the hopes that others won’t have to go through the same frustrating experience.</p>
+
+<h2 id="an-introduction-to-jekyll-plugins">An introduction to Jekyll plugins</h2>
+
+<p>I was relatively unfamiliar with the Jekyll plugin system before trying to figure out how to get the rendered Markdown for a post. Jekyll supports a number of different plugin types<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:2" class="footnote">2</a></sup>. These plugin types affect Jekyll directly:</p>
+
+<ul>
+  <li><strong>Generators</strong> - plugins that create files. While it’s not required that generators create files, this is the most frequent use case. Plugins like <code class="highlighter-rouge">jekyll-archives</code> use generators to create files that wouldn’t otherwise exist.</li>
+  <li><strong>Converters</strong> - plugins that convert between text formats. Jekyll’s default of converting Markdown files into HTML is implemented using a converter. You can add support for other formats to be converted into HTML (or any other format) by creating your own converter.</li>
+  <li><strong>Hooks</strong> - plugins that listen for specific events in Jekyll and then perform some action in relation to the events.</li>
+</ul>
+
+<p>There are also two plugin types that are used primarily with Liquid:</p>
+
+<ul>
+  <li><strong>Tags</strong> - create a new tag in the format <code class="highlighter-rouge">{% tagname %}</code> for use in your templates.</li>
+  <li><strong>Filters</strong> - create a new filter that you can use to transform input, such as <code class="highlighter-rouge">{{ data | filter }}</code></li>
+</ul>
+
+<p>There is also a <em>command</em> plugin type that allows you to create new commands to use with the <code class="highlighter-rouge">jekyll</code> command line tool. The <code class="highlighter-rouge">jekyll build</code> command is implemented using this plugin type.</p>
+
+<h2 id="designing-the-solution">Designing the solution</h2>
+
+<p>My goal was to get the Liquid-rendered Markdown content (so all data processing was complete) for each post into a <code class="highlighter-rouge">page</code> property so that I could output that content into a JSON file on my server. That JSON file would then be fetched by an AWS Lambda function that crossposted that content to other locations. I didn’t need to generate any extra files or convert from one format to another, so it seemed clear that using a hook would be the best approach.</p>
+
+<p>Hooks are basically event handlers in which you specify a container and the event to listen to. Jekyll passes you the relevant information for that event and you can then perform any action you’d like. There are four containers you can use with hooks:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">:site</code> - the <code class="highlighter-rouge">site</code> object</li>
+  <li><code class="highlighter-rouge">:page</code> - the <code class="highlighter-rouge">page</code> object for each non-collection page</li>
+  <li><code class="highlighter-rouge">:post</code> - the <code class="highlighter-rouge">post</code> object for each blog post</li>
+  <li><code class="highlighter-rouge">:document</code> - the <code class="highlighter-rouge">document</code> object for each document in each collection (including blog posts and custom collections)</li>
+</ul>
+
+<p>Because I wanted this solution to work for all collections in my site, I chose to use <code class="highlighter-rouge">:document</code> as an easy way to make the same change for all collection types.</p>
+
+<p>There were two events for <code class="highlighter-rouge">:document</code> that immediately seemed relevant to my goal:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">:pre_render</code> - fires before the document content is rendered</li>
+  <li><code class="highlighter-rouge">:post_render</code> - fires after the document content is rendered but before the content is written to disk</li>
+</ul>
+
+<p>It seemed clear that getting the Markdown content would require using the <code class="highlighter-rouge">:pre_render</code> event, so I started by using this setup:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Jekyll</span><span class="o">::</span><span class="no">Hooks</span><span class="p">.</span><span class="nf">register</span> <span class="ss">:documents</span><span class="p">,</span> <span class="ss">:pre_render</span> <span class="k">do</span> <span class="o">|</span><span class="n">doc</span><span class="p">,</span> <span class="n">payload</span><span class="o">|</span>
+
+  <span class="c1"># code goes here</span>
+
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Each hook is passed its target container object, in this case <code class="highlighter-rouge">doc</code> is a document, and a <code class="highlighter-rouge">payload</code> object containing all of the relevant variables for working with the document (these are the variables available inside of a template when the document is rendered).</p>
+
+<p>The <code class="highlighter-rouge">:document, :prerender</code> hook is called just before each document is rendered, meaning you don’t need to worry about looping over collections manually.</p>
+
+<h2 id="the-catch-rendering-doesnt-mean-what-you-think-it-means">The catch: Rendering doesn’t mean what you think it means</h2>
+
+<p>I figured that the <code class="highlighter-rouge">content</code> property inside of a <code class="highlighter-rouge">:document, :pre_render</code> hook would contain the Liquid-rendered Markdown instead of the final HTML, but I was only half correct. The <code class="highlighter-rouge">content</code> property actually contains the unprocessed Markdown that still contains all of the Liquid variables. It turns out that “prerender” means something different than I thought.</p>
+
+<p>The lifecycle of the <code class="highlighter-rouge">content</code> property for a given document in Jekyll looks like this<sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:4" class="footnote">3</a></sup>:</p>
+
+<ol>
+  <li>The <code class="highlighter-rouge">content</code> property contains the file content with the front matter removed (typically Markdown)</li>
+  <li><code class="highlighter-rouge">:pre_render</code> hook fires</li>
+  <li>The <code class="highlighter-rouge">content</code> property is rewritten with Liquid tags rendered (this is what Jekyll internally refers to as <em>rendering</em>)</li>
+  <li>The <code class="highlighter-rouge">content</code> property is rewritten after being passed through a converter (this is what Jekyll internally refers to as <em>converting</em>)</li>
+  <li>The <code class="highlighter-rouge">:post_render</code> hook fires</li>
+</ol>
+
+<p>While Jekyll internally separates rendering (which is apply Liquid) and converting (the Markdown to HTML conversion, for example), the exposed hooks don’t make this distinction. That means if I want Markdown content with Liquid variables replaced then I’ll need to get the prerendered Markdown content and render it myself.</p>
+
+<h2 id="the-solution">The solution</h2>
+
+<p>At this point, my plan was to create a <code class="highlighter-rouge">pre_render</code> hook that did the following:</p>
+
+<ol>
+  <li>Retrieved the raw content for each document (contained in <code class="highlighter-rouge">doc.content</code>)</li>
+  <li>Render that content using Liquid</li>
+  <li>Store the result in a new property called <code class="highlighter-rouge">unconverted_content</code> that would be accessible inside my templates</li>
+</ol>
+
+<p>I started out with this basic idea of how things should look:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Jekyll</span><span class="o">::</span><span class="no">Hooks</span><span class="p">.</span><span class="nf">register</span> <span class="ss">:documents</span><span class="p">,</span> <span class="ss">:pre_render</span> <span class="k">do</span> <span class="o">|</span><span class="n">doc</span><span class="p">,</span> <span class="n">payload</span><span class="o">|</span>
+
+  <span class="c1"># get the raw content</span>
+  <span class="n">raw_content</span> <span class="o">=</span> <span class="n">doc</span><span class="p">.</span><span class="nf">content</span>
+
+  <span class="c1"># do something to that raw content</span>
+  <span class="n">rendered_content</span> <span class="o">=</span> <span class="n">doSomethingTo</span><span class="p">(</span><span class="n">raw_content</span><span class="p">)</span>
+
+  <span class="c1"># store it back on the document</span>
+  <span class="n">doc</span><span class="p">.</span><span class="nf">rendered_content</span> <span class="o">=</span> <span class="n">rendered_content</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>Of course, I’m not very familiar with Ruby, so it turned out this wouldn’t work quite the way I thought.</p>
+
+<p>First, <code class="highlighter-rouge">doc</code> is an instance of a class, and you cannot arbitrarily add new properties to objects in Ruby. Jekyll provides a <code class="highlighter-rouge">data</code> hash on the document object, however, that can be used to add new properties that are available in templates. So the last line needs to be rewritten:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Jekyll</span><span class="o">::</span><span class="no">Hooks</span><span class="p">.</span><span class="nf">register</span> <span class="ss">:documents</span><span class="p">,</span> <span class="ss">:pre_render</span> <span class="k">do</span> <span class="o">|</span><span class="n">doc</span><span class="p">,</span> <span class="n">payload</span><span class="o">|</span>
+
+  <span class="c1"># get the raw content</span>
+  <span class="n">raw_content</span> <span class="o">=</span> <span class="n">doc</span><span class="p">.</span><span class="nf">content</span>
+
+  <span class="c1"># do something to that raw content</span>
+  <span class="n">rendered_content</span> <span class="o">=</span> <span class="n">doSomethingTo</span><span class="p">(</span><span class="n">raw_content</span><span class="p">)</span>
+
+  <span class="c1"># store it back on the document</span>
+  <span class="n">doc</span><span class="p">.</span><span class="nf">data</span><span class="p">[</span><span class="s1">'rendered_content'</span><span class="p">]</span> <span class="o">=</span> <span class="n">rendered_content</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>The last line ensures that <code class="highlighter-rouge">page.rendered_content</code> will be available inside of templates later on (and remember, this is happening during <code class="highlighter-rouge">pre_render</code>, so the templates haven’t yet been used).</p>
+
+<p>The next step was to use Liquid to render the raw content. To figure out how to do this, I had to dig around in the Jekyll source<sup id="fnref:5"><a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:5" class="footnote">4</a></sup> as there wasn’t any documentation. Rendering Liquid the exact same way that Jekyll does by default requires a bit of setup and pulling in pieces of data from a couple different places. Here is the final code:</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Jekyll</span><span class="o">::</span><span class="no">Hooks</span><span class="p">.</span><span class="nf">register</span> <span class="ss">:documents</span><span class="p">,</span> <span class="ss">:pre_render</span> <span class="k">do</span> <span class="o">|</span><span class="n">doc</span><span class="p">,</span> <span class="n">payload</span><span class="o">|</span>
+
+  <span class="c1"># make some local variables for convenience</span>
+  <span class="n">site</span> <span class="o">=</span> <span class="n">doc</span><span class="p">.</span><span class="nf">site</span>
+  <span class="n">liquid_options</span> <span class="o">=</span> <span class="n">site</span><span class="p">.</span><span class="nf">config</span><span class="p">[</span><span class="s2">"liquid"</span><span class="p">]</span>
+
+  <span class="c1"># create a template object</span>
+  <span class="n">template</span> <span class="o">=</span> <span class="n">site</span><span class="p">.</span><span class="nf">liquid_renderer</span><span class="p">.</span><span class="nf">file</span><span class="p">(</span><span class="n">doc</span><span class="p">.</span><span class="nf">path</span><span class="p">).</span><span class="nf">parse</span><span class="p">(</span><span class="n">doc</span><span class="p">.</span><span class="nf">content</span><span class="p">)</span>
+
+  <span class="c1"># the render method expects this information</span>
+  <span class="n">info</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="ss">:registers</span>        <span class="o">=&gt;</span> <span class="p">{</span> <span class="ss">:site</span> <span class="o">=&gt;</span> <span class="n">site</span><span class="p">,</span> <span class="ss">:page</span> <span class="o">=&gt;</span> <span class="n">payload</span><span class="p">[</span><span class="s1">'page'</span><span class="p">]</span> <span class="p">},</span>
+    <span class="ss">:strict_filters</span>   <span class="o">=&gt;</span> <span class="n">liquid_options</span><span class="p">[</span><span class="s2">"strict_filters"</span><span class="p">],</span>
+    <span class="ss">:strict_variables</span> <span class="o">=&gt;</span> <span class="n">liquid_options</span><span class="p">[</span><span class="s2">"strict_variables"</span><span class="p">],</span>
+  <span class="p">}</span>
+
+  <span class="c1"># render the content into a new property</span>
+  <span class="n">doc</span><span class="p">.</span><span class="nf">data</span><span class="p">[</span><span class="s1">'rendered_content'</span><span class="p">]</span> <span class="o">=</span> <span class="n">template</span><span class="p">.</span><span class="nf">render!</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>The first step in this hook is to create a Liquid template object. While you can do this directly using <code class="highlighter-rouge">Liquid::Template</code>, Jekyll caches Liquid templates internally when using <code class="highlighter-rouge">site.liquid_renderer.file(doc.path)</code>, so it makes sense to use that keep the Jekyll build as fast as possible. The content is then parsed into a template object.</p>
+
+<p>The <code class="highlighter-rouge">template.render()</code> method needs not only the <code class="highlighter-rouge">payload</code> object but also some additional information. The <code class="highlighter-rouge">info</code> hash passes in <code class="highlighter-rouge">registers</code>, which are local variables accessible inside of the template, and some options for how liquid should behave. With all of that data ready, the content is rendered into the new property.</p>
+
+<p>This file then needs to be placed in the <code class="highlighter-rouge">_plugins</code> directory of a Jekyll site to run each time the site is built.</p>
+
+<h2 id="accessing-rendered_content">Accessing <code class="highlighter-rouge">rendered_content</code></h2>
+
+<p>With this plugin installed, the Markdown content is available through the <code class="highlighter-rouge">rendered_content</code> property, like this:</p>
+
+<div class="language-liquid highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{{</span><span class="w"> </span><span class="nv">page</span><span class="p">.</span><span class="nv">rendered_content</span><span class="w"> </span><span class="p">}}</span>
+</code></pre></div></div>
+
+<p>The only problem is that outputting <code class="highlighter-rouge">page.rendered_content</code> into a Markdown page will cause all of that Markdown to be converted into HTML. (Remember, Jekyll internally renders Liquid first and then the result is converted into HTML.) So in order to output the raw Markdown, you’ll need to either apply a filter that prevents the Markdown-to-HTML conversion from happening, or use a file type that doesn’t convert automatically.</p>
+
+<p>In my case, I’m storing the Markdown content in a JSON structure, so I’m using the <code class="highlighter-rouge">jsonify</code> filter, like this:</p>
+
+<div class="language-liquid highlighter-rouge"><div class="highlight"><pre class="highlight"><code>---
+layout: null
+---
+{
+    <span class="p">{%</span><span class="w"> </span><span class="nt">assign</span><span class="w"> </span><span class="nv">post</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">site</span><span class="p">.</span><span class="nv">posts</span><span class="p">.</span><span class="nf">first</span><span class="w"> </span><span class="p">%}</span>
+    "id": "<span class="p">{{</span><span class="w"> </span><span class="nv">post</span><span class="p">.</span><span class="nv">url</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">absolute_url</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">sha1</span><span class="w"> </span><span class="p">}}</span>",
+    "title": <span class="p">{{</span><span class="w"> </span><span class="nv">post</span><span class="p">.</span><span class="nv">title</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">jsonify</span><span class="w"> </span><span class="p">}}</span>,
+    "date_published": "<span class="p">{{</span><span class="w"> </span><span class="nv">post</span><span class="p">.</span><span class="nv">date</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">date_to_xmlschema</span><span class="w"> </span><span class="p">}}</span>",
+    "date_published_pretty": "<span class="p">{{</span><span class="w"> </span><span class="nv">post</span><span class="p">.</span><span class="nv">date</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">date</span><span class="p">:</span><span class="w"> </span><span class="s2">"%B %-d, %Y"</span><span class="w"> </span><span class="p">}}</span>",
+    "summary": <span class="p">{{</span><span class="w"> </span><span class="nv">post</span><span class="p">.</span><span class="nv">excerpt</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">strip_html</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">strip_newlines</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">jsonify</span><span class="w"> </span><span class="p">}}</span>,
+    "content_markdown": <span class="p">{{</span><span class="w"> </span><span class="nv">post</span><span class="p">.</span><span class="nv">rendered_content</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">jsonify</span><span class="w"> </span><span class="p">}}</span>,
+    "content_html": <span class="p">{{</span><span class="w"> </span><span class="nv">post</span><span class="p">.</span><span class="nv">content</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">jsonify</span><span class="w"> </span><span class="p">}}</span>,
+    "tags": <span class="p">{{</span><span class="w"> </span><span class="nv">post</span><span class="p">.</span><span class="nv">tags</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">jsonify</span><span class="w"> </span><span class="p">}}</span>,
+    "url": "<span class="p">{{</span><span class="w"> </span><span class="nv">post</span><span class="p">.</span><span class="nv">url</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nf">absolute_url</span><span class="w"> </span><span class="p">}}</span>"
+}
+</code></pre></div></div>
+
+<p>Another option is to create a <code class="highlighter-rouge">rendered_content.txt</code> file in the <code class="highlighter-rouge">_includes</code> directory that just contains this:</p>
+
+<div class="language-liquid highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{{</span><span class="w"> </span><span class="nv">page</span><span class="p">.</span><span class="nv">rendered_content</span><span class="w"> </span><span class="p">}}</span>
+</code></pre></div></div>
+
+<p>Then, you can include that file anywhere you want the unconverted Markdown content, like this:</p>
+
+<div class="language-liquid highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{%</span><span class="w"> </span><span class="nt">include</span><span class="w"> </span><span class="s2">"rendered_content.txt"</span><span class="w"> </span><span class="p">%}</span>
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Jekyll hooks are a useful feature that let you interact with Jekyll while it is generating your site, allowing you to intercept, modify, and add data along the way. While there aren’t a lot of examples in the wild, the concept is straightforward enough that with a few pointers, any programmer should be able to get something working. The biggest stumbling point for me was the lack of documentation on how to use Jekyll hooks, so I’m hoping that this writeup will help others who are trying to accomplish similar tasks in their Jekyll sites.</p>
+
+<p>To date, I’ve found Jekyll to be extremely versatile and customizable. Being able to get the Liquid-rendered Markdown (even though it took a bit of work) has made my publishing workflow much more flexible, as I’m now more easily able to crosspost my writing on various other sites.</p>
+
+<h2 id="references">References</h2>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://jekyllrb.com/">Jekyll</a> <a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p><a href="https://jekyllrb.com/docs/plugins/">Jekyll Plugins</a> <a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:4">
+      <p><a href="https://jekyllrb.com/tutorials/orderofinterpretation/">Jekyll Order of Interpretation</a> <a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:5">
+      <p><a href="https://github.com/jekyll/jekyll/blob/be78b4246c4513738eb4c18b76569182dd4f8578/lib/jekyll/renderer.rb#L70-L93">Jekyll renderer.rb</a> <a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="https://humanwhocodes.com/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="../../../../../geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="../../../../../amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='../../index.html'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Computer science in JavaScript: Binary search tree, Part 2 - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/06/16/computer-science-in-javascript-binary-search-tree-part-2/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Computer science in JavaScript: Binary search tree, Part 2">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/06/16/computer-science-in-javascript-binary-search-tree-part-2/" />
+<meta name="og:title" content="Computer science in JavaScript: Binary search tree, Part 2">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="In my previous post, I walked through the creation of a simple binary search tree in JavaScript. That post discussed adding nodes into the tree and traversing the tree to location and extra...">
+<meta name="keywords" content="Binary Search Tree,Computer Science,Data Structures,JavaScript,Programming,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Computer science in JavaScript: Binary search tree, Part 2</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-06-16T00:00:00+00:00" itemprop="datePublished">June 16, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/binary-search-tree" rel="tag">Binary Search Tree</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/computer-science" rel="tag">Computer Science</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/data-structures" rel="tag">Data Structures</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/programming" rel="tag">Programming</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>In my <a href="../../09/computer-science-in-javascript-binary-search-tree-part-1/index.html">previous post</a>, I walked through the creation of a simple binary search tree in JavaScript. That post discussed adding nodes into the tree and traversing the tree to location and extra information. The one major piece missing to the discussion was removing of nodes from a binary search tree. Removing nodes from a binary search tree can be complex because the tree must remain balanced, with all values on the left being less than all the values on the right.</p>
+
+<p>When removing a node, you’ll need to determine if it’s the root node. Root nodes are handled similarly to others with the obvious exception that the root node will need to be set to a different value at the end. To make things easy, this will be considered a special case in the JavaScript code.</p>
+
+<p>The first step to removing a node is to determine whether or not the node actually exists:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BinarySearchTree.prototype = {
+
+    //more code here
+
+    remove: function(value){
+
+        var found       = false,
+            parent      = null,
+            current     = this._root,
+            childCount,
+            replacement,
+            replacementParent;
+
+        //make sure there's a node to search
+        while(!found &amp;&amp; current){
+
+            //if the value is less than the current node's, go left
+            if (value &lt; current.value){
+                parent = current;
+                current = current.left;
+
+            //if the value is greater than the current node's, go right
+            } else if (value &gt; current.value){
+                parent = current;
+                current = current.right;
+
+            //values are equal, found it!
+            } else {
+                found = true;
+            }
+        }
+
+        //only proceed if the node was found
+        if (found){
+            //continue
+        }
+
+    },
+
+    //more code here
+
+};
+</code></pre></div></div>
+
+<p>The first part of the <code class="highlighter-rouge">remove()</code> method is to locate the node to remove using a binary search, going left if the value is less than the current node or right if it’s greater. As this traversal occurs, the <code class="highlighter-rouge">parent</code> node is also tracked because you’ll ultimately need to remove the node from its parent. When <code class="highlighter-rouge">found</code> is equal to <code class="highlighter-rouge">true</code>, the value of <code class="highlighter-rouge">current</code> is the node to remove.</p>
+
+<p>There are three conditions to worry about when removing a node:</p>
+
+<ol>
+  <li>A leaf node</li>
+  <li>A node with just one child</li>
+  <li>A node with two children</li>
+</ol>
+
+<p>Removing anything but a leaf node from a binary search tree means that values must be moved around to properly order the tree. The first two are relatively simple to implement, a leaf node is simply removed and a node with one child is removed and replaced with its child. The last case is a bit complex, so that will be visited later.</p>
+
+<p>Before knowing how to remove the node, you’ll need to know how many children exist on the node. Once that is known, you must determine if the node is the root, leaving a fairly straightforward decision tree:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BinarySearchTree.prototype = {
+
+    //more code here
+
+    remove: function(value){
+
+        var found       = false,
+            parent      = null,
+            current     = this._root,
+            childCount,
+            replacement,
+            replacementParent;
+
+        //find the node (removed for space)
+
+        //only proceed if the node was found
+        if (found){
+
+            //figure out how many children
+            childCount = (current.left !== null ? 1 : 0) + 
+                         (current.right !== null ? 1 : 0);
+
+            //special case: the value is at the root
+            if (current === this._root){
+                switch(childCount){
+
+                    //no children, just erase the root
+                    case 0:
+                        this._root = null;
+                        break;
+
+                    //one child, use one as the root
+                    case 1:
+                        this._root = (current.right === null ? 
+                                      current.left : current.right);
+                        break;
+
+                    //two children, little work to do
+                    case 2:
+
+                        //TODO
+
+                    //no default
+
+                }        
+
+            //non-root values
+            } else {
+
+                switch (childCount){
+
+                    //no children, just remove it from the parent
+                    case 0:
+                        //if the current value is less than its 
+                        //parent's, null out the left pointer
+                        if (current.value &lt; parent.value){
+                            parent.left = null;
+
+                        //if the current value is greater than its
+                        //parent's, null out the right pointer
+                        } else {
+                            parent.right = null;
+                        }
+                        break;
+
+                    //one child, just reassign to parent
+                    case 1:
+                        //if the current value is less than its 
+                        //parent's, reset the left pointer
+                        if (current.value &lt; parent.value){
+                            parent.left = (current.left === null ? 
+                                           current.right : current.left);
+
+                        //if the current value is greater than its 
+                        //parent's, reset the right pointer
+                        } else {
+                            parent.right = (current.left === null ? 
+                                            current.right : current.left);
+                        }
+                        break;    
+
+                    //two children, a bit more complicated
+                    case 2:
+
+                        //TODO          
+
+                    //no default
+
+                }
+
+            }
+
+        }
+
+    },
+
+    //more code here
+
+};
+</code></pre></div></div>
+
+<p>When dealing with the root, it’s a simple process of overwriting it. For non-root nodes, the appropriate pointer on the <code class="highlighter-rouge">parent</code> must be set based on the value of the node to remove: if the removed value was less than the parent, then the <code class="highlighter-rouge">left</code> pointer must be reset either to <code class="highlighter-rouge">null</code> (for nodes with no children) or removed node’s <code class="highlighter-rouge">left</code> pointer; if the removed value was greater than the parent, then the <code class="highlighter-rouge">right</code> pointer must be reset either to <code class="highlighter-rouge">null</code> or the removed node’s <code class="highlighter-rouge">right</code> pointer.</p>
+
+<p>Removing a node with two children, as mentioned previously, is the most complex operation. Consider the following representation of a binary search tree.</p>
+
+<p style="text-align: center;">
+  <a href="http://en.wikipedia.org/wiki/File:Binary_search_tree.svg"><img src="../../../../../images/wp-content/uploads/2009/06/500px-Binary_search_tree.svg_-300x250.png" alt="Binary search tree diagram" width="300" height="250" /></a>
+</p>
+
+<p>With a root of 8 and a left child of 3, what would happen if the 3 was removed? There are two possibilities: 1 (3′s left child, called the in-order predecessor) could take the place of 3 or 4 (the left-most child of the right subtree, called the in-order successor) can take the place of 3.</p>
+
+<p>Either of these two options is appropriate. To find the in-order predecessor, the value that comes before the value being removed, examine the left subtree of the node to remove and select the right-most descendant; to find the in-order successor, the value that comes immediately after the value being removed, reverse the process and examine the right subtree for the left-most descendant. Each of these requires another traversal of the tree to complete the operation:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BinarySearchTree.prototype = {
+
+    //more code here
+
+    remove: function(value){
+
+        var found       = false,
+            parent      = null,
+            current     = this._root,
+            childCount,
+            replacement,
+            replacementParent;
+
+        //find the node (removed for space)
+
+        //only proceed if the node was found
+        if (found){
+
+            //figure out how many children
+            childCount = (current.left !== null ? 1 : 0) + 
+                         (current.right !== null ? 1 : 0);
+
+            //special case: the value is at the root
+            if (current === this._root){
+                switch(childCount){
+
+                    //other cases removed to save space
+
+                    //two children, little work to do
+                    case 2:
+
+                        //new root will be the old root's left child
+                        //...maybe
+                        replacement = this._root.left;
+
+                        //find the right-most leaf node to be 
+                        //the real new root
+                        while (replacement.right !== null){
+                            replacementParent = replacement;
+                            replacement = replacement.right;
+                        }
+
+                        //it's not the first node on the left
+                        if (replacementParent !== null){
+
+                            //remove the new root from it's 
+                            //previous position
+                            replacementParent.right = replacement.left;
+
+                            //give the new root all of the old 
+                            //root's children
+                            replacement.right = this._root.right;
+                            replacement.left = this._root.left;
+                        } else {
+
+                            //just assign the children
+                            replacement.right = this._root.right;
+                        }
+
+                        //officially assign new root
+                        this._root = replacement;
+
+                    //no default
+
+                }        
+
+            //non-root values
+            } else {
+
+                switch (childCount){
+
+                    //other cases removed to save space 
+
+                    //two children, a bit more complicated
+                    case 2:
+
+                        //reset pointers for new traversal
+                        replacement = current.left;
+                        replacementParent = current;
+
+                        //find the right-most node
+                        while(replacement.right !== null){
+                            replacementParent = replacement;
+                            replacement = replacement.right;
+                        }
+
+                        replacementParent.right = replacement.left;
+
+                        //assign children to the replacement
+                        replacement.right = current.right;
+                        replacement.left = current.left;
+
+                        //place the replacement in the right spot
+                        if (current.value &lt; parent.value){
+                            parent.left = replacement;
+                        } else {
+                            parent.right = replacement;
+                        }          
+
+                    //no default
+
+                }
+
+            }
+
+        }
+
+    },
+
+    //more code here
+
+};
+</code></pre></div></div>
+
+<p>The code for both the root and non-root removal of nodes with two children are almost the same. This implementation always looks for the in-order predecessor by looking to the left subtree and finding the right-most descendant node. The traversal is done using the <code class="highlighter-rouge">replacement</code> and <code class="highlighter-rouge">replacementParent</code> variables in a <code class="highlighter-rouge">while</code> loop. The node in <code class="highlighter-rouge">replacement</code> ends up being the node to replace <code class="highlighter-rouge">current</code>, so it’s removed from its current location by setting its parent’s <code class="highlighter-rouge">right</code> pointer to the replacement’s <code class="highlighter-rouge">left</code> pointer. In the case of the root node, <code class="highlighter-rouge">replacementParent</code> will be <code class="highlighter-rouge">null</code> when the replacement is an immediate child of the root node, so the <code class="highlighter-rouge">replacement</code>‘s <code class="highlighter-rouge">right</code> pointer is just set to the root’s <code class="highlighter-rouge">right</code> pointer. The last step is to assign the replacement node into the correct location. For the root node, the replacement is set to be the new root; for non-root nodes, the replacement is assigned to the appropriate location on the original <code class="highlighter-rouge">parent</code>.</p>
+
+<p>A note about this implementation: always replacing nodes with the in-order predecessor can lead to an unbalanced tree, wherein most of the values are on one side of the tree. An unbalanced tree means less efficient searches and so are cause for concern in real-world scenarios. There are binary search tree implementations that determine whether to use the in-order predecessor or the in-order successor to keep the tree properly balanced (typically called self-balancing binary search trees).</p>
+
+<p>The full source code for this binary search tree implementation is available at my <a href="http://github.com/nzakas/computer-science-in-javascript/">Computer Science in JavaScript GitHub project</a>. For an alternate implementation, you can also check out <a href="http://www.foohack.com/">Isaac Schlueter</a>‘s <a href="http://github.com/isaacs/computer-science-in-javascript/">GitHub fork</a>.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/06/16/computer-science-in-javascript-binary-search-tree-part-2/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

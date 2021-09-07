@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Why I've stopped exporting defaults from my JavaScript modules - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Why I've stopped exporting defaults from my JavaScript modules">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/" />
+<meta name="og:title" content="Why I've stopped exporting defaults from my JavaScript modules">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html">
+
+
+
+<meta name="description" content="Last week, I tweeted something that got quite a few surprising responses: In 2019, one of the things I’m going to do is stop exporting things as default from my CommonJS/ES6 modules. Importing...">
+<meta name="keywords" content="JavaScript,Modules,CommonJS,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Why I've stopped exporting defaults from my JavaScript modules</h1>
+        <p itemprop="description" class="no-margin-top">After years of fighting with default exports, I've changed my ways.</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2019-01-15T00:00:00+00:00" itemprop="datePublished">January 15, 2019</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/modules" rel="tag">Modules</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/commonjs" rel="tag">CommonJS</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Last week, I tweeted something that got quite a few surprising responses:</p>
+
+<blockquote class="twitter-tweet tw-align-center">
+  <p>In 2019, one of the things I’m going to do is stop exporting things as default from my CommonJS/ES6 modules.</p>
+
+  <p>Importing a default export has grown to feel like a guessing game where I have a 50/50 chance of being wrong each time. Is it a class? Is it a function?</p>
+
+  <p>— Nicholas C. Zakas (@slicknet) <a href="https://twitter.com/slicknet/status/1084101377297506304?ref_src=twsrc%5Etfw">January 12, 2019</a></p>
+</blockquote>
+
+<p>I tweeted this after realizing that a lot of problems I had with JavaScript modules could be traced back to fights with default exports. It didn’t matter if I was using JavaScript modules (or ECMAScript modules, as many prefer to call them) or CommonJS, I was still stumbling over importing from modules with default exports. I got a variety of responses to the tweet, many of which questioned how I could come to this decision. This post is my attempt to clarify my thinking.</p>
+
+<h2 id="a-few-clarifications">A few clarifications</h2>
+
+<p>As is the case with all tweets, my tweet was meant as a snapshot into an opinion I had rather than a normative reference for my entire opinion. To clarify a few points people seem confused by on Twitter:</p>
+
+<ul>
+  <li>The use case of knowing whether an export is a function or a class was an example of the type of problems I’ve encountered. It is not the <em>only</em> problem I’ve found named exports solve for me.</li>
+  <li>The problems I’ve encountered don’t just happen with files in my own projects, they also happen with importing library and utility modules that I don’t own. That means naming conventions for filenames don’t solve all of the problems.</li>
+  <li>I’m not saying that everyone should abandon default exports. I’m saying that in modules I’m writing, I will choose not to use default exports. You may feel differently, and that’s fine.</li>
+</ul>
+
+<p>Hopefully those clarifications setup enough context to avoid confusion throughout the rest of this post.</p>
+
+<h2 id="default-exports-a-primer">Default exports: A primer</h2>
+
+<p>To the best of my knowledge, default exports from modules were first popularized in CommonJS, where a module can export a default value like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">LinkedList</span> <span class="p">{}</span>
+<span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">LinkedList</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>This code exports the <code class="highlighter-rouge">LinkedList</code> class but does not specify the name to be used by consumers of the module. Assuming the filename is <code class="highlighter-rouge">linked-list.js</code>, you can import that default in another CommonJS module like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">LinkedList</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">./linked-list</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">require()</code> function is returning a value that I just happened to name <code class="highlighter-rouge">LinkedList</code> to match what is in <code class="highlighter-rouge">linked-list.js</code>, but I also could have chosen to name it <code class="highlighter-rouge">foo</code> or <code class="highlighter-rouge">Mountain</code> or any random identifier.</p>
+
+<p>The popularity of default module exports in CommonJS meant that JavaScript modules were designed to support this pattern:</p>
+
+<blockquote>
+  <p>ES6 favors the single/default export style, and gives the sweetest syntax to importing the default.</p>
+
+  <p>— David Herman <a href="https://mail.mozilla.org/pipermail/es-discuss/2014-June/037905.html">June 19, 2014</a></p>
+</blockquote>
+
+<p>So in JavaScript modules, you can export a default like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="k">default</span> <span class="kd">class</span> <span class="nx">LinkedList</span> <span class="p">{}</span>
+</code></pre></div></div>
+
+<p>And then you can import like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">LinkedList</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./linked-list.js</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Once again, <code class="highlighter-rouge">LinkedList</code> is this context is an arbitrary (if not well-reasoned) choice and could just as well be <code class="highlighter-rouge">Dog</code> or <code class="highlighter-rouge">symphony</code>.</p>
+
+<h2 id="the-alternative-named-exports">The alternative: named exports</h2>
+
+<p>Both CommonJS and JavaScript modules support named exports in addition to default exports. Named exports allow for the name of a function, class, or variable to be transferred into the consuming file.</p>
+
+<p>In CommonJS, you create a named export by attaching a name to the <code class="highlighter-rouge">exports</code> object, such as:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">exports</span><span class="p">.</span><span class="nx">LinkedList</span> <span class="o">=</span> <span class="kd">class</span> <span class="nx">LinkedList</span> <span class="p">{};</span>
+</code></pre></div></div>
+
+<p>You can then import in another file like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">LinkedList</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">./linked-list</span><span class="dl">"</span><span class="p">).</span><span class="nx">LinkedList</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Once again, the name I’ve used with <code class="highlighter-rouge">const</code> can be anything I want, but I’ve chosen to match it to the exported name <code class="highlighter-rouge">LinkedList</code>.</p>
+
+<p>In JavaScript modules, a named export looks like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">LinkedList</span> <span class="p">{}</span>
+</code></pre></div></div>
+
+<p>And you can import like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">LinkedList</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./linked-list.js</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>In this code, <code class="highlighter-rouge">LinkedList</code> cannot be a randomly assigned identifier and must match an named export called <code class="highlighter-rouge">LinkedList</code>. That’s the only significant difference from CommonJS for the goals of this post.</p>
+
+<p>So the capabilities of both module types support both default and named exports.</p>
+
+<h2 id="personal-preferences">Personal preferences</h2>
+
+<p>Before going further, it’s helpful for you to know some of my own personal preferences when it comes to writing code. These are general principles I apply to all code that I write, regardless of the programming language I use:</p>
+
+<ol>
+  <li><strong>Explicit over implicit.</strong> I don’t like having code with secrets. What something does, what something should be called, etc., should always be made explicit whenever possible.</li>
+  <li><strong>Names should be consistent throughout all files.</strong> If something is an <code class="highlighter-rouge">Apple</code> in one file, I shouldn’t call it <code class="highlighter-rouge">Orange</code> in another file. An <code class="highlighter-rouge">Apple</code> should always be an <code class="highlighter-rouge">Apple</code>.</li>
+  <li><strong>Throw errors early and often.</strong> If it’s possible for something to be missing then it’s best to check as early as possible and, in the best case, throw an error that alerts me to the problem. I don’t want to wait until the code has finished executing to discover that it didn’t work correctly and then hunt for the problem.</li>
+  <li><strong>Fewer decisions mean faster development.</strong> A lot of the preferences I have are for eliminating decisions during coding. Every decision you make slows you down, which is why things like coding conventions lead to faster development. I want to decide things up front and then just go.</li>
+  <li><strong>Side trips slow down development.</strong> Whenever you have to stop and look something up in the middle of coding, I call that a side trip. Side trips are sometimes necessary but there are a lot of unnecessary side trips that can slow things down. I try to write code that eliminates the need for side trips.</li>
+  <li><strong>Cognitive overhead slows down development.</strong> Put simply: the more detail you need to remember to be productive when writing code, the slower your development will be.</li>
+</ol>
+
+<aside class="note">
+  <p>The focus on speed of development is a practical one for me. As I’ve struggled with my health for years, the amount of energy I’ve had to code continued to decrease. Anything I could do to reduce the amount of time spent coding while still accomplishing my task was key.</p>
+</aside>
+
+<h2 id="the-problems-ive-run-into">The problems I’ve run into</h2>
+
+<p>With all of this in mind, here are the top problems I’ve run into using default exports and why I believe that named exports are a better choice in most situations.</p>
+
+<h3 id="what-is-that-thing">What is that thing?</h3>
+
+<p>As I mentioned in my original tweet, I find it difficult to figure out what I’m importing when a module only has a default import. If you’re using a module or file you’re unfamiliar with, it can be difficult to figure out what is returned, for example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">list</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">./list</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>In this context, what would you expect <code class="highlighter-rouge">list</code> to be? It’s unlikely to be a primitive value, but it could logically be a function, class, or other type of object. How will I know for sure? I need a side trip. In this case, a side trip might be any of:</p>
+
+<ul>
+  <li>If I own <code class="highlighter-rouge">list.js</code>, then I may open the file and look for the export.</li>
+  <li>If I don’t own <code class="highlighter-rouge">list.js</code>, then I may open up some documentation.</li>
+</ul>
+
+<p>In either case, this now becomes an extra bit of information you need in your brain to avoid a second side trip penalty when you need to import from <code class="highlighter-rouge">list.js</code> again. If you are importing a lot of defaults from modules then either your cognitive overhead is increasing or the number of side trips is increasing. Both are suboptimal and can be frustrating.</p>
+
+<p>Some will say that IDEs are the answer to this problem, that the IDEs should be smart enough to figure out what is being imported and tell you. While I’m all for smarter IDEs to help developers, I believe requiring IDEs to effectively use a language feature is problematic.</p>
+
+<h3 id="name-matching-problems">Name matching problems</h3>
+
+<p>Named exports require consuming modules to at least specify the name of the thing they are importing from a module. The benefit is that I can easily search for everywhere that <code class="highlighter-rouge">LinkedList</code> is used in a code base and know that it all refers to the same <code class="highlighter-rouge">LinkedList</code>. As default exports are not prescriptive of the names used to import them, that means naming imports becomes more cognitive overhead for each developer. You need to determine the correct naming convention, and as extra overhead, you need to make sure every developer working in the application will use the same name for the same thing. (You can, of course, allow each developer to use different names for the same thing, but that introduces more cognitive overhead for the team.)</p>
+
+<p>Importing a named export means at least referencing the canonical name of a thing everywhere that it’s used. Even if you choose to rename an import, the decision is made explicit, and cannot be done without first referencing the canonical name in some way. In CommonJS:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">MyList</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">./list</span><span class="dl">"</span><span class="p">).</span><span class="nx">LinkedList</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>In JavaScript modules:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">LinkedList</span> <span class="k">as</span> <span class="nx">MyList</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./list.js</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>In both module formats, you’ve made an explicit statement that <code class="highlighter-rouge">LinkedList</code> is now going to be referred to as <code class="highlighter-rouge">MyList</code>.</p>
+
+<p>When naming is consistent across a codebase, you’re able to easily do things like:</p>
+
+<ol>
+  <li>Search the codebase to find usage information.</li>
+  <li>Refactor the name of something across the entire codebase.</li>
+</ol>
+
+<p>Is it possible to do this when using default exports and ad-hoc naming of things? My guess is yes, but I’d also guess that it would be a lot more complicated and error-prone.</p>
+
+<h3 id="importing-the-wrong-thing">Importing the wrong thing</h3>
+
+<p>Named exports in JavaScript modules have a particular advantage over default exports in that an error is thrown when attempting to import something that doesn’t exist in the module. Consider this code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">LinkedList</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./list.js</span><span class="dl">"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>If <code class="highlighter-rouge">LinkedList</code> doesn’t exist in <code class="highlighter-rouge">list.js</code>, then an error is thrown. Further, tools such as IDEs and ESLint<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fn:1" class="footnote">1</a></sup> are easily able to detect a missing reference before the code is executed.</p>
+
+<h2 id="worse-tooling-support">Worse tooling support</h2>
+
+<p>Speaking of IDEs, WebStorm is able to help write <code class="highlighter-rouge">import</code> statements for you.<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fn:2" class="footnote">2</a></sup> When you have finished typing an identifier that isn’t defined in the file, WebStorm will search the modules in your project to determine if the identifier is a named export in another file. At that point, it can do any of the following:</p>
+
+<ol>
+  <li>Underline the identifier that is missing its definition and show you the <code class="highlighter-rouge">import</code> statement that would fix it.</li>
+  <li>Automatically add the correct <code class="highlighter-rouge">import</code> statement (if you have enable auto import)
+can now automatically add an <code class="highlighter-rouge">import</code> statement based on an identifier that you type. In fact, WebStorm is able to help you a great deal when using named imports:</li>
+</ol>
+
+<p>There is a plugin for Visual Studio Code<sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fn:3" class="footnote">3</a></sup> that provides similar functionality. This type of functionality isn’t possible when using default exports because there is no canonical name for things you want to import.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I’ve had several productivity problems importing default exports in my projects. While none of the problems are necessarily impossible to overcome, using named imports and exports seems to better fit my preferences when coding. Making things explicit and leaning heavily on tooling makes me a productive coder, and insofar as named exports help me do that, I will likely favor them for the foreseeable future. Of course, I have no control over how third-party modules I use export their functionality, but I definitely have a choice over how my own modules export things and will choose named exports.</p>
+
+<p>As earlier, I remind you that this is my opinion and you may not find my reasoning to be persuasive. This post was not meant to persuade anyone to stop using default exports, but rather, to better explain to those that inquired why I, personally, will stop exporting defaults from the modules I write.</p>
+
+<h2 id="references">References</h2>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/named.md">esling-plugin-import <code class="highlighter-rouge">import/named</code> rule</a> <a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p><a href="https://www.jetbrains.com/help/webstorm/javascript-specific-guidelines.html#ws_js_auto_import">WebStorm: Auto Import in JavaScript</a> <a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p><a href="https://marketplace.visualstudio.com/items?itemName=NuclleaR.vscode-extension-auto-import">Visual Studio Extension: Auto Import</a> <a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="../../../../../geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="../../../../../amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='../../index.html'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

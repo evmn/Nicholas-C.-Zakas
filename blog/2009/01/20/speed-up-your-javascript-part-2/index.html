@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Speed up your JavaScript, Part 2 - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/01/20/speed-up-your-javascript-part-2/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Speed up your JavaScript, Part 2">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/01/20/speed-up-your-javascript-part-2/" />
+<meta name="og:title" content="Speed up your JavaScript, Part 2">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Last week, I covered the first reason why JavaScript can take too long to execute: too much happening in a loop. There’s a similar problem with functions in that sometimes they’re just doing...">
+<meta name="keywords" content="JavaScript,Loops,Memoization,Performance,Recursion,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Speed up your JavaScript, Part 2</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-01-20T00:00:00+00:00" itemprop="datePublished">January 20, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/loops" rel="tag">Loops</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/memoization" rel="tag">Memoization</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/performance" rel="tag">Performance</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/recursion" rel="tag">Recursion</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Last week, I covered the first reason why JavaScript can take too long to execute: <a href="../../13/speed-up-your-javascript-part-1/index.html" title="Speed up your JavaScript, Part 1">too much happening in a loop</a>. There’s a similar problem with functions in that sometimes they’re just doing too much. Usually this means there’s too many loops (as opposed to too much happening in a loop), too much recursion, or simply too many different operations being performed.</p>
+
+<p>Too many loops are often caused by having loops inside of loops, locking up the JavaScript engine until all iterations are complete. The most glaring example of this is the bubble sort algorithm. Though there’s no need to use this in JavaScript due to the native <code class="highlighter-rouge">sort()</code> method, it’s good to understand how it can be problematic so that you can identify similar patterns. A typical implementation of a bubble sort in JavaScript looks like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function bubbleSort(items){
+    for (var i=items.length-1; i &gt;= 0; i--){
+        for (var j=items.length-i; j &gt;= 0; j--){
+            if (items[j] &lt; items[j-1]){
+                var temp = items[j];
+                items[j] = items[j-1];
+                items[j-1] = temp;
+            }
+        }
+    }
+}
+</code></pre></div></div>
+
+<p>Thinking back to your computer science days, you’ll probably remember that bubble sort is one of the least efficient sorting algorithms. The problem is for every <em>n</em> items in the array, there must be *n<sup>2</sup> * loop iterations. This processing can take forever if there’s a large amount of array items. The comparison and swap operation done during the inner loop is actually quite simple, it’s just the number of times that it’s repeated in sequence that causes the problem. This can cause the browser to grind to a halt and, potentially, result in the long-running script dialog.</p>
+
+<p>A couple years ago, fellow Yahoo Julien Lecomte wrote a post entitled,<br />
+<a href="http://www.julienlecomte.net/blog/2007/10/28/">Running CPU Intensive JavaScript Computations in a Web Browser</a>, in which he described how to break up large JavaScript operations into several parts. One of his clearest examples was refactoring a bubble sort into multiple steps, each of which executes a single trip through the array. I’ve augmented his code somewhat, but the approach remains the same:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function bubbleSort(array, onComplete){
+
+    var pos = 0;
+
+    (function(){
+        var j, value;
+
+        for (j=array.length; j &gt; pos; j--){
+            if (array[j] &lt; array[j-1]){
+                value = data[j];
+                data[j] = data[j-1];
+                data[j-1] = value;
+            }
+        }
+
+        pos++;
+
+        if (pos &lt; array.length){
+            setTimeout(arguments.callee,10);
+        } else {
+            onComplete();
+        }
+    })();
+}
+</code></pre></div></div>
+
+<p>This function performs a bubble sort in an asynchronous manner, stopping after each trip through the array before continuing on to the next leg. The <code class="highlighter-rouge">onComplete()</code> function is called when the array is completely sorted as notification that the data is ready. The <code class="highlighter-rouge">bubbleSort()</code> function uses the same basic technique as the <code class="highlighter-rouge">chunk()</code> function presented in my last post: use an anonymous function to wrap the behavior and then pass <code class="highlighter-rouge">arguments.callee</code> into <code class="highlighter-rouge">setTimeout()</code> to repeat the process until complete. This function is a good example of how you can split up embedded loops into a series of steps to free up the browser.</p>
+
+<p>A similar problem is too much recursion. Each additional recursive call takes up memory, and eventually will slow down the browser. The annoying thing is that you may reach a memory limit before the long-running script dialog pops up and leave the browser in an unusable state. Crockford had a good discussion about this in his <a href="http://yuiblog.com/blog/2008/12/23/video-crockford-performance/" title="JavaScript Performance">latest talk</a>. The example he uses is a function that generates a Fibonacci sequence:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function fibonacci (n) {
+    return n &lt; 2 ? n :
+            fibonacci(n - 1) +
+            fibonacci(n - 2);
+};
+</code></pre></div></div>
+
+<p>As Crockford points out, a call to <code class="highlighter-rouge">fibonacci(40)</code> results in 331,160,280 calls to itself. The solution to avoid too much recursion is to use <a href="http://en.wikipedia.org/wiki/Memoization">memoization</a>, a technique for caching previously-calculated values. Crockford introduces the following memoization function that can be used to create memoized versions of functions dealing with numbers:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function memoizer(memo, fundamental) {
+    var shell = function (n) {
+        var result = memo[n];
+        if (typeof result !== 'number') {
+            result = fundamental(shell, n);
+            memo[n] = result;
+        }
+        return result;
+    };
+    return shell;
+};
+</code></pre></div></div>
+
+<p>He then applies this to the Fibonacci sequence generator:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var fibonacci =
+    memoizer([0, 1], function (recur, n) {
+       return recur(n - 1) + recur(n - 2);
+    });
+</code></pre></div></div>
+
+<p>Calling <code class="highlighter-rouge">fibonacci(40)</code> using this code results in only 40 calls to the function, a vast improvement over the original. The overall lesson from memoization is that you should never calculate the same result twice; if there’s a value you’ll need more than once, store it for later use rather than running the code to generate it again.</p>
+
+<p>The final thing that causes functions to execute slowly is, as mentioned previously, that it’s just doing too much. Usually it’s because of a pattern such as this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function doAlot(){
+    doSomething();
+    doSomethingElse();
+    doOneMoreThing();
+}
+</code></pre></div></div>
+
+<p>Here, there’s three clearly distinct pieces of code that are being executed. The important thing to notice is that none of the functions rely on the other functions to complete their task; they are essentially independent of one another and just need to happen in sequence at a given point in time. In situations like this, you can use a variant of the <code class="highlighter-rouge">chunk()</code> method to execute a series of functions in a row without holding up the browser:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function schedule(functions, context){
+    setTimeout(function(){
+        var process = functions.shift();
+        process.call(context);
+
+        if (functions.length &gt; 0){
+            setTimeout(arguments.callee, 100);
+        }
+    }, 100);
+}
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">schedule</code> function accepts two arguments, an array of functions to execute and a context object indicating the value of <code class="highlighter-rouge">this</code> inside of each function. The <code class="highlighter-rouge">functions</code> array acts as a queue, with the topmost function being removed and executed each time the timer is executed. This function can be used to execute a series of functions in a row like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>schedule([doSomething, doSomethingElse, doOneMoreThing], window);
+</code></pre></div></div>
+
+<p>I’m expecting that JavaScript libraries will soon start including more processing functions such as this. YUI has already added the <a href="http://developer.yahoo.com/yui/3/queue/">Queue</a> object in version 3.0 that helps to manage the running of several functions in a row using a timer.</p>
+
+<p>Regardless of the tools available to help split up complex processes, it’s still vital for developers to be able to understand and identify bottlenecks that will benefit from using this approach. Whether there be too many loops, too much recursion, or just plain too much going on, you now know how to deal with each. Remember, the techniques and functions presented here are just a starting point and not a golden bullet, you should (and will likely have to) modify the code presented so that it works for your specific usage.</p>
+
+<p><strong>Update (1/20):</strong> Fixed copy/paste error in <code class="highlighter-rouge">schedule()</code> function.</p>
+
+<h2 id="translations">Translations</h2>
+
+<ul>
+  <li><a href="http://cuimingda.com/2009/01/speed-up-your-javascript-part-2.html">Chinese (Simplified)</a><a href="index.html"><br />
+</a></li>
+</ul>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/01/20/speed-up-your-javascript-part-2/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Why I'm not using your open source project - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2015/12/why-im-not-using-your-open-source-project/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Why I'm not using your open source project">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2015/12/why-im-not-using-your-open-source-project/" />
+<meta name="og:title" content="Why I'm not using your open source project">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="When you think of open source software, you might think of a few specific projects depending on your area of interest. If you work on web applications, the term “open source” might conjure...">
+<meta name="keywords" content="Open Source,Maintainability,Software Design,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Why I'm not using your open source project</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2015-12-15T00:00:00+00:00" itemprop="datePublished">December 15, 2015</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/open-source" rel="tag">Open Source</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/maintainability" rel="tag">Maintainability</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/software-design" rel="tag">Software Design</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>When you think of open source software, you might think of a few specific projects depending on your area of interest. If you work on web applications, the term “open source” might conjure up visions of Apache or Node.js; if you’re into big data, then perhaps Hadoop comes to mind; if you care a lot about security, you might think of OpenSSL; if you’re a front-end developer, then maybe jQuery and React pop into your head. In all cases, you’re thinking about those projects that have succeeded and, to some degree, achieved a level of ubiquity in their respective arenas. It’s with this success in mind that a lot of open source authors venture out, sharing their code with the hopes of reaching a similar level of success and ubiquity.</p>
+
+<p>There’s a peculiar mix of altruism and egotism that goes into releasing an open source project. On the one hand, you might be solving a problem that others are struggling with, and sharing your solution will save them a lot of time. On the other, the near-fantastic rock star status of those who have created successful open source projects (think John Resig, Ryan Dahl, and Linus Torvalds) drives people to overshare in the hopes of also achieving such status. This has resulted in a glut of open source projects being released into the wild and their creators venturing out on marketing campaigns to attract users.</p>
+
+<p>You need to be aware of this trend and the reality of open source today: most open source projects are crap, and you need to be careful which ones you use.</p>
+
+<p><strong>Note:</strong> For the purposes of this post, the term “use” refers to including the project in your application.</p>
+
+<h2 id="background">Background</h2>
+
+<p>As the maintainer of a reasonably popular open source project (ESLint[1]), and an architect at Box, I make a lot of decisions around which open source projects should be used in some widely-used applications. I end up investigating some open source project roughly once a week, and most of the time, end up pretty disappointed with what I find. I want to use open source code as much as possible, but I can’t do it at the expense of maintainability, security, or a whole host of other concerns. Replacing a working custom-built solution with an open source one sounds like an easy win, but in reality, could cause a lot of problems if the wrong open source project is used.</p>
+
+<p>This post contains the top issues I find in open source projects that cause me to reject their usage.</p>
+
+<h2 id="your-project-doesnt-have-a-license">Your project doesn’t have a license</h2>
+
+<p>This might seem basic, but there are a significant number of open source projects that are published without a license. Simply saying “this is open source” doesn’t make it so, nor does sharing your code publicly on GitHub or BitBucket automatically mean it can be used. Any code that doesn’t explicitly have a license specified is considered “all rights reserved” by the author (this is standard copyright law in the United States[2]). That means you don’t have any legal right to use, reproduce, distribute, or otherwise use the code without the consent of the author.</p>
+
+<p>If the project seems promising and passes the other checks I use (see below), then I might contact the author and ask for a license to be added. I absolutely won’t use a project that doesn’t have its license terms explicitly defined in the source code repository, so I also will not accept just an email from the author granting me a license.</p>
+
+<p><strong>Takeaway:</strong> When you publish your project, make sure you have specified a license. Include a <code class="highlighter-rouge">LICENSE</code> file in the repository and mention the license in your <code class="highlighter-rouge">README</code>.</p>
+
+<h2 id="your-project-is-gpllgpl-licensed">Your project is GPL/LGPL licensed</h2>
+
+<p>Many credit GPL with the rise in popularity of open source as well as the success of Linux. For those unaware, the GPL has a clause that allows anyone to use the project in its compiled form with no repercussions but if you modify the source code or include it in another project then you must open source that as well. The exact text is as follows[3]:</p>
+
+<blockquote>
+  <p>You must cause any work that you distribute or publish, that in whole or in part contains or is derived from the Program or any part thereof, to be licensed as a whole at no charge to all third parties under the terms of this License.</p>
+</blockquote>
+
+<p>So when you license code as GPL, that license becomes viral whenever you distribute it, which means including the code in your own open source project. That is a showstopper for businesses wishing to incorporate code from these projects. (You can still safely use the code locally, such as running Linux on a server or using a build-time tool. It’s just including the code in your application that can be problematic.)</p>
+
+<p>The LGPL[4] slightly modifies the terms of the GPL such that you can link to the project so long as the application doesn’t contain any actual code from the project itself. Here’s the relevant clause:</p>
+
+<blockquote>
+  <p>A program that contains no derivative of any portion of the Library, but is designed to work with the Library by being compiled or linked with it, is called a “work that uses the Library”. Such a work, in isolation, is not a derivative work of the Library, and therefore falls outside the scope of this License.</p>
+</blockquote>
+
+<p>That means your open source project can link to a LGPL library without triggering the viral clause of the GPL, making it safe to use in business.</p>
+
+<p>However, most of the code I deal with is not compiled. JavaScript, Python, PHP, CSS, etc., are a significant gray area because there is no distinction between the source code and the distributed artifact - they are one in the same. If I use a GPL or LGPL JavaScript library that is sent to the browser as part of my application, does that count as distribution? I’ve asked a couple of lawyers about this and the general response I’ve received is, “this is definitely a gray area that hasn’t been decided by the courts.” Perhaps someday someone will bring such a case to the courts and we can know for sure, but in the meantime, I just don’t use GPL or LGPL projects.</p>
+
+<p><strong>Takeaway:</strong> If you can choose a more permissive license for your project than GPL or LGPL, please do.</p>
+
+<h2 id="you-arent-maintaining-the-code">You aren’t maintaining the code</h2>
+
+<p>It seems that a lot of people see open sourcing something as the pot of gold at the end of the rainbow. They worked hard on some code and the payoff is fame and appreciation from an adoring crowd. But how many of those projects will be around in six months? A year? Is the project something you’re committed to maintaining, or was it just a passing fancy? Why would I want to use that project? It was interesting to you this weekend, but if I come to rely on it, can I count on you continuing to update it?</p>
+
+<p>When evaluating a project, I typically look at:</p>
+
+<ol>
+  <li>When was the last commit?</li>
+  <li>Are there responses to the most recent issues?</li>
+  <li>When was the version released?</li>
+  <li>Are pull requests being merged at all?</li>
+</ol>
+
+<p>These all tell me how well the project is being maintained. If the most recent commit is a year ago, then I’m pretty sure no one is maintaining it. The larger the project, the more this means the project is likely abandoned. Further, it likely means the author hasn’t really thought about the project in a while and might not even remember all of how it works (both bad signs). The smaller the project, the shorter the timeframe I consider (a project with one author and zero commits in three months is likely abandoned).</p>
+
+<p>Similarly, the activity in issues and pull requests says a lot. Is the author engaging with people at all? Open to accepting feedback and patches? And are those turned around into new versions? If I’m going to rely on something, I need to know that either the author will fix problems or my patches will be accepted when I find problems.</p>
+
+<p>Periodically I’ll get people telling me that they’ll maintain something if I use it. That’s a nice though, but saying you’ll maintain something is very different from actually doing it. I prefer to see a track record of maintenance happening regardless of my involvement.</p>
+
+<p><strong>Takeaway:</strong> If you’re unsure that you want to work on this project for more than a year, think twice before encouraging people to adopt it. Don’t lead them down a dead end. Build up a pattern of maintaining your code and let that speak for itself.</p>
+
+<h2 id="you-dont-have-documentation-or-tests">You don’t have documentation or tests</h2>
+
+<p>I group documentation and tests together because they are similar: documentation describes how the end user should use the project and tests describe how the project should technically work. If a project is missing either of these or both, then I don’t consider it worth my time to investigate. A lack of documentation means I need to dig through the code to figure out how to use it and a lack of tests means there’s no way to tell when something breaks. Both situations are dire if you intend to rely on the functionality in a product.</p>
+
+<p><strong>Takeaway:</strong> Make sure you have documentation and tests for at least the core parts of the project.</p>
+
+<h2 id="you-arent-using-the-project">You aren’t using the project</h2>
+
+<p>This is an interesting occurrence in the world of open source: people who don’t use the projects they create. Sometimes, this the result of an open source project that began as a weekend hobby project and the author doesn’t want to leave the source code to die on their computer. Instead, they open source it with the hope of “letting it live,” like releasing an animal into the wild. I frequently see people announcing such projects on their Twitter stream, proudly proclaiming that this project they spent 48 hours on is now ready for use. They themselves aren’t using it in any product or in any way that could be considered “production,” but they would like you to do so.</p>
+
+<p>Weekend projects might be fun to play with, but relying on them for something important is placing a huge bet on an unknown quantity. I generally prefer to use projects that others are already using. The reason is simple: the more production-like places the project is used, the more someone is interested in maintaining it.</p>
+
+<p>If you yourself, the author, aren’t using the project in some production environment then you are essentially asking me to take a risk that you’ve been unwilling to take. I didn’t even attempt to use ESLint at Box until it had been in existence and use on my own personal projects for eight months. Even then, I ended up spending a lot of time chasing down bugs and fixing compatibility issues. ESLint got better not just because it was open source, but because I was putting it through a lot in my day-to-day work.</p>
+
+<p><strong>Takeaway:</strong> You should always be your project’s first user. Make sure you’ve created something that’s useful for yourself first, then ask friends to try it out.</p>
+
+<h2 id="in-closing">In closing</h2>
+
+<p>I think open source is wonderful for many reasons, but not all open source projects are created the same. “Free” isn’t the same as “good,” and projects that don’t measure up (based on the criteria) in this article should be handled with care. As I said in the introduction, the majority of open source projects are crap, so picking out the good ones is a tough job. When you succeed, you’re able to accelerate and stabilize your code base; when you fail, you can cause immeasurable harm to that same code base.</p>
+
+<p>This isn’t to dissuade anyone from open sourcing their work - please continue to do so. Just realize that there is a significant bar for open source projects that are reliable enough to use in a product. If you want your project to succeed, you should be aiming for that bar. If you’re just sharing so your code can live on, be sure to say so in your README. There’s plenty of room in the open source ecosystem for both categories of projects, we just really need people to be better about pointing out which is which.</p>
+
+<p><strong>Update(2015-Dec-15):</strong> Clarified language around GPL and LGPL license. Also added note that “use” means including in your application to further clarify the concerns.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="https://github.com/eslint/eslint">ESLint</a> (github.com)</li>
+  <li><a href="http://www.nolo.com/legal-encyclopedia/copyright-automatic.html">Copyright is Automatic</a> (nolo.com)</li>
+  <li><a href="https://opensource.org/licenses/GPL-2.0">GPL 2.0</a> (opensource.org)</li>
+</ol>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2015/12/why-im-not-using-your-open-source-project/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

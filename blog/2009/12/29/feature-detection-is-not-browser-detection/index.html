@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Feature detection is not browser detection - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/12/29/feature-detection-is-not-browser-detection/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Feature detection is not browser detection">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/12/29/feature-detection-is-not-browser-detection/" />
+<meta name="og:title" content="Feature detection is not browser detection">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Browser detection has been a hot-button topic in web development for a long time. This battle pre-dates JavaScript browser detection by a couple of years and begins with the introduction of Netscape Navigator,...">
+<meta name="keywords" content="Browser Detection,Feature Detection,JavaScript,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Feature detection is not browser detection</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-12-29T00:00:00+00:00" itemprop="datePublished">December 29, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/browser-detection" rel="tag">Browser Detection</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/feature-detection" rel="tag">Feature Detection</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Browser detection has been a hot-button topic in web development for a long time. This battle pre-dates JavaScript browser detection by a couple of years and begins with the introduction of Netscape Navigator, the first truly popular and widely-used web browser. Netscape Navigator 2.0 was so far beyond any of the other available web browsers that web sites began looking for its specific user-agent string before returning any useful content. This forced other browser vendors, notably Microsoft, to include things in their user-agent string to get around this form of browser detection. A very hairy situation, indeed.</p>
+
+<h2 id="feature-detection">Feature detection</h2>
+
+<p>Since that time, web developers repeatedly rant that browser detection, specifically user-agent sniffing, is a horrible practice that should never be considered. The argument is that the code isn’t “future proof” and will have to be changed when newer browsers appear. The preferred approach, the chorus echoes, is feature detection. So instead of doing something like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (navigator.userAgent.indexOf("MSIE 7") &gt; -1){
+    //do something
+}
+</code></pre></div></div>
+
+<p>You should do something like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if(document.all){
+    //do something
+}
+</code></pre></div></div>
+
+<p>There is a distinction between these two approaches. The first is testing for a specific browser by name and version while the second is testing for a specific feature/capability. So user-agent sniffing results in knowing the exact browser and version being used (or at least, the one being reported by the browser) while feature detection determines if a given object or method is available. Note that these are two completely different results.</p>
+
+<p>Because feature detection doesn’t rely on knowledge of which browser is being used, only on which features are available, it is trivial to ensure support in new browsers. For instance, when the DOM was young, not all browsers supported <code class="highlighter-rouge">getElementById()</code>, and so there was a lot of code that looked like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if(document.getElementById){  //DOM
+    element = document.getElementById(id);
+} else if (document.all) {  //IE
+    element = document.all[id];
+} else if (document.layers){  //Netscape &lt; 6
+    element = document.layers[id];
+}
+</code></pre></div></div>
+
+<p>This is a good and appropriate use of feature detection because the code tests for a feature and then, if it’s there, uses it. The best part about this code is that as other browsers began implementing <code class="highlighter-rouge">getElementById()</code>, the code didn’t have to change; support for the new browsers was baked-in using feature detection.</p>
+
+<h2 id="the-mixup">The mixup</h2>
+
+<p>Somewhere along the lines, a lot of web developers grew confused about the distinction between the two approaches. Code started being written similar to this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//AVOID!!!
+if (document.all) {  //IE
+    id = document.uniqueID;
+} else {
+    id = Math.random();
+}
+</code></pre></div></div>
+
+<p>The problem with this code is that a test for <code class="highlighter-rouge">document.all</code> is used as an implicit check for IE. Once knowing that the browser is IE, the assumption is that it’s safe to use <code class="highlighter-rouge">document.uniqueID</code>, which is IE-specific. However, all you tested was whether or not <code class="highlighter-rouge">document.all</code> is present, not whether the browser is IE. Just because <code class="highlighter-rouge">document.all</code> is present doesn’t mean that <code class="highlighter-rouge">document.uniqueID</code> is also available. There’s a false implication that can cause the code to break.</p>
+
+<p>As a clearer statement of this problem, people started replacing code like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var isIE = navigator.userAgent.indexOf("MSIE") &gt; -1;
+</code></pre></div></div>
+
+<p>With code like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var isIE = !!document.all;
+</code></pre></div></div>
+
+<p>Making this change indicates a misunderstanding of “don’t use user-agent sniffing.” Instead of looking for a particular browser, you’re looking for a feature and then <em>trying to infer</em> that it’s a specific browser, which is just as bad. This is called feature-based browser detection and is a very bad practice.</p>
+
+<p>Somewhere along the line, developers realized that <code class="highlighter-rouge">document.all</code> was not, in fact, the best way to determine if a browser was Internet Explorer. Then you started seeing code such as this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var isIE = !!document.all &amp;&amp; document.uniqueID;
+</code></pre></div></div>
+
+<p>This approach falls into the “too clever” category of programming. You’re trying too hard to identify something by describing an increasing number of identifying aspects. What’s worse, there’s nothing preventing other browsers from implementing the same capabilities, which will ultimately make this code return unreliable results.</p>
+
+<p>If you think such code isn’t being used widely, think again. The following snippet comes from <a href="http://www.mootools.net/">MooTools</a> 1.1.2 (note, the current version is 1.1.4, so this is from an older version):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//from MooTools 1.1.2
+if (window.ActiveXObject) window.ie = window[window.XMLHttpRequest ? 'ie7' : 'ie6'] = true;
+else if (document.childNodes &amp;&amp; !document.all &amp;&amp; !navigator.taintEnabled) window.webkit = window[window.xpath ? 'webkit420' : 'webkit419'] = true;
+else if (document.getBoxObjectFor != null || window.mozInnerScreenX != null) window.gecko = true;
+</code></pre></div></div>
+
+<p>Note how the code tries to determine which browser is being used based on feature detection. I can point out any number of problems with this, aside from philosophical, but the most glaring is that <code class="highlighter-rouge">window.ie</code> will report IE 8 as IE 7. Big problem.</p>
+
+<h2 id="why-doesnt-this-work">Why doesn’t this work?</h2>
+
+<p>To understand why feature-based browser detection doesn’t work, you need only look back to high school math class, where logic statements are typically taught as part of geometry. Logic statements are made up of a hypothesis (p) and a conclusion (q) in the form “if p then q”. You can try altering the statement form to determine truths. There are three ways to alter the statement:</p>
+
+<ul>
+  <li>Converse: if q then p</li>
+  <li>Inverse: if not p then not q</li>
+  <li>Contrapositive: if not q then not p</li>
+</ul>
+
+<p>There are two important relationships among the various forms of the statement. If the original statement is true, then the contrapositive is also true. For example, if the original statement was “If it’s a car, then it has wheels” (which is true) then the contrapositive, “if it doesn’t have wheels then it’s not a car,” is also true.</p>
+
+<p>The second relationship is between the converse and the inverse, so if one is true then the other must also be true. This logically makes sense because the relationship between converse and inverse is the same as between original and contrapositive.</p>
+
+<p>Perhaps more important than these two relationships are the relationships that don’t exist. If the original statement is true, then there is no guarantee that the converse is true. This is where feature-based browser detection falls apart. Consider the true statement, “if it’s Internet Explorer, then document.all is implemented.” The contrapositive, “if document.all is not implemented, then it’s not Internet Explorer” is also true. The converse, “if document.all is implemented, then it’s Internet Explorer” is not strictly true (for example, Opera implements it). Feature-based detection assumes that the converse is always true when, in fact, there is no such relationship.</p>
+
+<p>Adding more parts to the conclusion doesn’t help either. Consider once again the statement, “if it’s a car, then it’s has wheels.” The converse is obviously false, “if it has wheels, then it’s a car”. You could try making it more precise: “if it’s a car, then it has wheels and requires fuel.” Check the converse: “if it has wheels and requires fuel, then it’s a car.” Also not true because an airplane fits that description. So try again: “if it’s a car, then it has wheels, requires fuel, and uses two axles.” Once again, the converse isn’t going to be true.</p>
+
+<p>The problem is fundamental to human language: it’s very hard to use a collection of singular aspects to define the whole. We have the word “car” because it implies a lot of aspects that we’d otherwise have to list to identify that thing in which you drive to work. Trying to identify a browser by naming more and more features is the exact same problem. You’ll get close, but it will never be a reliable categorization.</p>
+
+<h2 id="the-fallout">The fallout</h2>
+
+<p>MooTools backed themselves, and their users, into a corner by opting for feature-based browser detection. Mozilla has warned since Firefox 3 that the <code class="highlighter-rouge">getBoxObjectFor()</code> method was deprecated and would be removed in a future release. Since MooTools relies on this method to determine if the browser is Gecko-based, Mozilla’s removal of this method in the upcoming Firefox 3.6 release means that anyone running older versions of MooTools may have their code impacted. This prompted MooTools to issue a <a href="http://mootools.net/blog/2009/11/02/upgrade-mootools/">call to upgrade</a> to the most recent version, which has the issue “fixed.” The explanation:</p>
+
+<blockquote>
+  <p>We have overhauled our browser detection to be based on the user agent string. This has become the standard practice among JavaScript libraries because of potential issues as Firefox 3.6 demonstrates. As browsers grow closer together, looking at â€œfeaturesâ€ to separate them will become more difficult and risky. From this point forward, browser detection will only be used where it would be impossible not to, in order to give the consistent experience across browsers that one would expect from a world-class JavaScript framework.</p>
+</blockquote>
+
+<p>Curiously, a quick look at MooTools 1.2.4 still shows feature-based browser detection using <code class="highlighter-rouge">getBoxObjectFor()</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//from MooTools 1.2.4
+var Browser = $merge({
+
+	Engine: {name: 'unknown', version: 0},
+
+	Platform: {name: (window.orientation != undefined) ? 'ipod' : (navigator.platform.match(/mac|win|linux/i) || ['other'])[0].toLowerCase()},
+
+	Features: {xpath: !!(document.evaluate), air: !!(window.runtime), query: !!(document.querySelector)},
+
+	Plugins: {},
+
+	Engines: {
+
+		presto: function(){
+			return (!window.opera) ? false : ((arguments.callee.caller) ? 960 : ((document.getElementsByClassName) ? 950 : 925));
+		},
+
+		trident: function(){
+			return (!window.ActiveXObject) ? false : ((window.XMLHttpRequest) ? ((document.querySelectorAll) ? 6 : 5) : 4);
+		},
+
+		webkit: function(){
+			return (navigator.taintEnabled) ? false : ((Browser.Features.xpath) ? ((Browser.Features.query) ? 525 : 420) : 419);
+		},
+
+		gecko: function(){
+			return (!document.getBoxObjectFor &amp;&amp; window.mozInnerScreenX == null) ? false : ((document.getElementsByClassName) ? 19 : 18);
+		}
+
+	}
+
+}, Browser || {});
+</code></pre></div></div>
+
+<p>The usage of <code class="highlighter-rouge">getBoxObjectFor()</code> is slightly different. In effect, the approach has changed from using the converse to using the contrapositive. The problem with this change is that you can only positively <em>not</em> identify the browser. And once again, testing for a newly-removed method doesn’t really help.</p>
+
+<h2 id="what-to-do">What to do?</h2>
+
+<p>Feature-based browser detection is a very bad practice that should be avoided at all costs. Straight feature detection is a best practice, and in almost every case, is exactly what you’ll need. Typically, you just need to know if a feature is implemented before using it. Don’t try to infer relationships between features because you’ll end up with false positives or false negatives.</p>
+
+<p>I won’t go so far as to say never use browser detection based on user-agent sniffing, because I do believe there are valid use cases. I don’t believe, however, that there are a lot of valid use cases. If you’re thinking about user-agent sniffing, keep this in mind: the only safe way to do so is to target a specific version of a specific browser. Trying to detect a range of browser versions is dangerous, fragile, and likely to break if the upper bound of the range is the most recent version of the browser. It’s also advisable to target a specific version that is <em>not the most recent version</em>. Why? Because you want to identify differences, and the easiest way to do that is to look backwards towards previous versions rather than trying to look forward at non-existent future versions. This also serves to protect your code from the future. The goal should always be to write code that won’t break when an unknown browser begins running it.</p>
+
+<p>Note: if you’re considering user-agent sniffing, I wouldn’t recommend worrying about user-agent spoofs. You should always honor exactly what the browser is reporting as a user-agent. My approach has always been that if you tell me you’re Firefox, I expect that you act like Firefox. If the browser identifies itself as Firefox and doesn’t act like Firefox, that’s not your fault. There’s no point in trying to second-guess the reported user-agent string.</p>
+
+<p>So the recommendation is to always use feature detection whenever possible. If it’s not possible, then fallback to user-agent sniffing browser detection. Never, ever use feature-based browser detection because you’ll be stuck with code that isn’t maintainable and will constantly require updating and changing as browsers continue to evolve.</p>
+
+<h2 id="apologies">Apologies</h2>
+
+<p>I really didn’t mean to pick on MooTools when I first started writing this post. It just happens to present a really good learning opportunity for other developers. The MooTools developers are smart folks who I’m sure are continuing to work to improve their library and actively support their large user base. We all go through a similar learning curve, and we can all learn from one another.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/12/29/feature-detection-is-not-browser-detection/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

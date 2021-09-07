@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Learning from XAuth: Cross-domain localStorage - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2010/09/07/learning-from-xauth-cross-domain-localstorage/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Learning from XAuth: Cross-domain localStorage">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2010/09/07/learning-from-xauth-cross-domain-localstorage/" />
+<meta name="og:title" content="Learning from XAuth: Cross-domain localStorage">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="I typically don’t get too excited when new open source JavaScript utilities are released. It may be the cynic in me, but generally I feel like there’s very little new under the sun...">
+<meta name="keywords" content="Cross Document Messaging,iframe,JavaScript,localStorage,XAuth,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Learning from XAuth: Cross-domain localStorage</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2010-09-07T00:00:00+00:00" itemprop="datePublished">September 7, 2010</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/cross-document-messaging" rel="tag">Cross Document Messaging</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/iframe" rel="tag">iframe</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/localstorage" rel="tag">localStorage</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/xauth" rel="tag">XAuth</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>I typically don’t get too excited when new open source JavaScript utilities are released. It may be the cynic in me, but generally I feel like there’s very little new under the sun that’s actually useful. Most of these utilities are knockoffs of other ones or are too large to be practically useful. When I first came across <a href="http://xauth.org/info/">XAuth</a>, though, a little tingly feeling of excitement swept over me. And the first coherent thought I had while looking at the source: this is absolutely brilliant.</p>
+
+<h2 id="what-is-xauth">What is XAuth?</h2>
+
+<p>I don’t want to spend too much time explaining exactly what XAuth is, since you can read the documentation yourself to find the nitty gritty details. In short, XAuth is a way to share third-party authentication information in the browser. Instead of every application needing to go through the authorization process for a service, XAuth is used to store this information in your browser and make it available to web developers. That means a site that can serve you a more relevant experience when you’re signed into Yahoo! doesn’t need to make any extra requests to determine if you’re signed in. You can read more about XAuth over on the <a href="http://blog.meebo.com/?p=2391">Meebo blog</a>.</p>
+
+<h2 id="the-cool-part">The cool part</h2>
+
+<p>This post is really less about the usage of XAuth and more about the implementation. What the smart folks at Meebo did is essentially create a data server in the browser. The way that they did this is by combining the power of <a href="http://msdn.microsoft.com/en-us/library/cc511311%28VS.85%29.aspx">cross-document messaging</a> and <code class="highlighter-rouge">&lt;a href="http://hacks.mozilla.org/2009/06/localstorage/"&gt;localStorage&lt;/a&gt;</code>. Since <code class="highlighter-rouge">localStorage</code> is tied to a single origin, you can’t get direct access to data that was stored by a different domain. This makes the sharing of data across domains strictly impossible when using just this API (note the difference with cookies: you can specify which subdomains may access the data but not completely different domains).</p>
+
+<p>Since the primary limitation is the same-origin policy of <code class="highlighter-rouge">localStorage</code>, circumventing that security issue is the way towards data freedom. The cross-document messaging functionality is designed to allow data sharing between documents from different domains while still being secure. The two-part technique used in XAuth is incredibly simple and consists of:</p>
+
+<ul>
+  <li><strong>Server Page</strong> – there’s a page that’s hosted at <a href="http://xauth.org/server.html">http://xauth.org/server.html</a> that acts as the “server”. It’s only job is to handle requests for <code class="highlighter-rouge">localStorage</code>. The page is as small as possible with minified JavaScript, but you can see the <a href="http://github.com/xauth/xauth/blob/master/src/server.js">full source</a> at GitHub.</li>
+  <li><strong>JavaScript Library</strong> – a single small script file contains the JavaScript API that exposes the functionality. This API needs to be included in your page. When you make a request through the API for the first time, it creates an <code class="highlighter-rouge">iframe</code> and points it to the server page. Once loaded, requests for data are passed through the <code class="highlighter-rouge">iframe</code> to the server page via cross-document messaging. The <a href="http://github.com/xauth/xauth/blob/master/src/xauth.js">full source</a> is also available on GitHub.</li>
+</ul>
+
+<p>Although the goal of XAuth is to provide authentication services, this same basic technique can be applied to any data.</p>
+
+<h2 id="general-technique">General technique</h2>
+
+<p>Suppose your page is running on www.example.com and you want to get some information stored in <code class="highlighter-rouge">localStorage</code> for foo.example.com. The first step is to create an iframe that points to a page on foo.example.com that acts as the data server. The page’s job is to handle incoming requests for data and pass the information back. A simple example is:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;!doctype html&gt;</span>
+<span class="c">&lt;!-- Copyright 2010 Nicholas C. Zakas. All rights reserved. BSD Licensed. --&gt;</span>
+<span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span><span class="nt">&gt;</span>
+<span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+
+    <span class="c1">//allowed domains</span>
+    <span class="kd">var</span> <span class="nx">whitelist</span> <span class="o">=</span> <span class="p">[</span><span class="dl">"</span><span class="s2">foo.example.com</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">www.example.com</span><span class="dl">"</span><span class="p">];</span>
+
+    <span class="kd">function</span> <span class="nx">verifyOrigin</span><span class="p">(</span><span class="nx">origin</span><span class="p">){</span>
+        <span class="kd">var</span> <span class="nx">domain</span> <span class="o">=</span> <span class="nx">origin</span><span class="p">.</span><span class="nx">replace</span><span class="p">(</span><span class="sr">/^https</span><span class="se">?</span><span class="sr">:</span><span class="se">\/\/</span><span class="sr">|:</span><span class="se">\d{1,4}</span><span class="sr">$/g</span><span class="p">,</span> <span class="dl">""</span><span class="p">).</span><span class="nx">toLowerCase</span><span class="p">(),</span>
+            <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="nx">len</span> <span class="o">=</span> <span class="nx">whitelist</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+
+        <span class="k">while</span><span class="p">(</span><span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">){</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">whitelist</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">==</span> <span class="nx">domain</span><span class="p">){</span>
+                <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="p">}</span>
+            <span class="nx">i</span><span class="o">++</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">handleRequest</span><span class="p">(</span><span class="nx">event</span><span class="p">){</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">verifyOrigin</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">origin</span><span class="p">)){</span>
+            <span class="kd">var</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">data</span><span class="p">),</span>
+                <span class="nx">value</span> <span class="o">=</span> <span class="nx">localStorage</span><span class="p">.</span><span class="nx">getItem</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">key</span><span class="p">);</span>
+            <span class="nx">event</span><span class="p">.</span><span class="nx">source</span><span class="p">.</span><span class="nx">postMessage</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span><span class="na">id</span><span class="p">:</span> <span class="nx">data</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="na">key</span><span class="p">:</span><span class="nx">data</span><span class="p">.</span><span class="nx">key</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="nx">value</span><span class="p">}),</span> <span class="nx">event</span><span class="p">.</span><span class="nx">origin</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">){</span>
+        <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">message</span><span class="dl">"</span><span class="p">,</span> <span class="nx">handleRequest</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nb">window</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">){</span>
+        <span class="nb">window</span><span class="p">.</span><span class="nx">attachEvent</span><span class="p">(</span><span class="dl">"</span><span class="s2">onmessage</span><span class="dl">"</span><span class="p">,</span> <span class="nx">handleRequest</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">})();</span>
+<span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>This is the minimal implementation that I would suggest. The key function is <code class="highlighter-rouge">handleRequest()</code>, which is called when the <code class="highlighter-rouge">message</code> event is fired on the window. Since I’m not using any JavaScript libraries here, I need to manually check for the appropriate way to attach the event handler.</p>
+
+<p>Inside of <code class="highlighter-rouge">handleRequest()</code>, the first step is to verify the origin from which the request is coming. This is a vital step to ensure that not just anyone can create an iframe, point to this file, and get all of your <code class="highlighter-rouge">localStorage</code> information. The <code class="highlighter-rouge">event</code> object contains a property called <code class="highlighter-rouge">origin</code> that specifies the scheme, domain, and (optionally) port from which the request originated (for example, “http://www.example.com”); this property does not contain any path or query string information. The <code class="highlighter-rouge">verifyOrigin()</code> function simply checks a whitelist of domains to ensure that the origin property indicates a whitelisted domain. It does so by stripping off the protocol and port using a regular expression and then normalizing to lowercase before matching against the domains in the <code class="highlighter-rouge">whitelist</code> array.</p>
+
+<p>If the origin is verified then the <code class="highlighter-rouge">event.data</code> property is parsed as a JSON object and the <code class="highlighter-rouge">key</code> property is used as the key to read from <code class="highlighter-rouge">localStorage</code>. A message is then sent back as a JSON object that contains the unique ID that was passed initially, the key name, and the value; this is done using <code class="highlighter-rouge">postMessage()</code> on <code class="highlighter-rouge">event.source</code>, which is a proxy for the <code class="highlighter-rouge">window</code> object that sent the request. The first argument is the JSON-serialized message containing the value from <code class="highlighter-rouge">localStorage</code> and the second is the origin to which the message should be delivered. Even though the second argument is optional, it’s good practice to include the destination origin as an extra measure of defense against cross-site scripting (XSS) attacks. In this case, the original origin is passed.</p>
+
+<p>For the page that wants to read data from the iframe, you need to create the iframe server and handle message passing. The following constructor creates an object to manage this process:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/*
+ * Copyright 2010 Nicholas C. Zakas. All rights reserved.
+ * BSD Licensed.
+ */
+function CrossDomainStorage(origin, path){
+    this.origin = origin;
+    this.path = path;
+    this._iframe = null;
+    this._iframeReady = false;
+    this._queue = [];
+    this._requests = {};
+    this._id = 0;
+}
+
+CrossDomainStorage.prototype = {
+
+    //restore constructor
+    constructor: CrossDomainStorage,
+
+    //public interface methods
+
+    init: function(){
+
+        var that = this;
+
+        if (!this._iframe){
+            if (window.postMessage &amp;&amp; window.JSON &amp;&amp; window.localStorage){
+                this._iframe = document.createElement("iframe");
+                this._iframe.style.cssText = "position:absolute;width:1px;height:1px;left:-9999px;";
+                document.body.appendChild(this._iframe);
+
+                if (window.addEventListener){
+                    this._iframe.addEventListener("load", function(){ that._iframeLoaded(); }, false);
+                    window.addEventListener("message", function(event){ that._handleMessage(event); }, false);
+                } else if (this._iframe.attachEvent){
+                    this._iframe.attachEvent("onload", function(){ that._iframeLoaded(); }, false);
+                    window.attachEvent("onmessage", function(event){ that._handleMessage(event); });
+                }
+            } else {
+                throw new Error("Unsupported browser.");
+            }
+        }
+
+        this._iframe.src = this.origin + this.path;
+
+    },
+
+    requestValue: function(key, callback){
+        var request = {
+                key: key,
+                id: ++this._id
+            },
+            data = {
+                request: request,
+                callback: callback
+            };
+
+        if (this._iframeReady){
+            this._sendRequest(data);
+        } else {
+            this._queue.push(data);
+        }   
+
+        if (!this._iframe){
+            this.init();
+        }
+    },
+
+    //private methods
+
+    _sendRequest: function(data){
+        this._requests[data.request.id] = data;
+        this._iframe.contentWindow.postMessage(JSON.stringify(data.request), this.origin);
+    },
+
+    _iframeLoaded: function(){
+        this._iframeReady = true;
+
+        if (this._queue.length){
+            for (var i=0, len=this._queue.length; i &lt; len; i++){
+                this._sendRequest(this._queue[i]);
+            }
+            this._queue = [];
+        }
+    },
+
+    _handleMessage: function(event){
+        if (event.origin == this.origin){
+            var data = JSON.parse(event.data);
+            this._requests[data.id].callback(data.key, data.value);
+            delete this._requests[data.id];
+        }
+    }
+
+};
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">CrossDomainStorage</code> type encapsulates all of the functionality for requesting values from a different domain through an iframe (note that it does not support saving values, which is a very different security scenario). The constructor takes an origin and a path which together are used to construct the iframe’s URL. The <code class="highlighter-rouge">_iframe</code> property will hold a reference to the iframe while <code class="highlighter-rouge">_iframeReady</code> indicates that the iframe has been fully loaded. The <code class="highlighter-rouge">_queue</code> property is an array of requests that might be queued before the iframe is ready. The <code class="highlighter-rouge">_requests</code> property stores meta data for ongoing requests and <code class="highlighter-rouge">_id</code> is the seed value from which unique request identifiers will be created.</p>
+
+<p>Before making any requests, the <code class="highlighter-rouge">init()</code> method must be called. This method’s sole job is to set up the iframe, add the <code class="highlighter-rouge">onload</code> and <code class="highlighter-rouge">onmessage</code> event handlers, and then assign the URL to the iframe. When the iframe is loaded, <code class="highlighter-rouge">_iframeLoaded()</code> is called and the <code class="highlighter-rouge">_iframeReady</code> flag is set to true. At that time, the <code class="highlighter-rouge">_queue</code> is checked to see if there are any requests that were made before the iframe was ready to receive them. The queue is emptied, sending each request again.</p>
+
+<p>The <code class="highlighter-rouge">requestValue()</code> method is the public API method to retrieve a value and it accepts two arguments: the key to return and a callback function to call when the value is available. The method creates a request object as well as a data object to store the meta data about the request. If the iframe is ready, then the request is sent to the iframe, otherwise the meta data is stored in the queue. The <code class="highlighter-rouge">_sendRequest()</code> method is then responsible for using <code class="highlighter-rouge">postMesage()</code> to send the request. Note that the request object must be serializes into JSON before being sent since <code class="highlighter-rouge">postMessage()</code> only accepts strings.</p>
+
+<p>When a message is received from the iframe, the <code class="highlighter-rouge">_handleMessage()</code> method is called. This method verifies the origin of the message and then retrieves the message’s meta data (the server iframe passes back the same unique identifier) to execute the associated callback. The meta data is then cleared.</p>
+
+<p>Basic usage of the <code class="highlighter-rouge">CrossDomainStorage</code> type is as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var remoteStorage = new CrossDomainStorage("http://www.example.com", "/util/server.htm");
+
+remoteStorage.requestValue("keyname", function(key, value){
+    alert("The value for '" + key + "' is '" + value + "'");
+});
+</code></pre></div></div>
+
+<p>Keep in mind that this technique works not just for different subdomains, but also for different domains.</p>
+
+<h2 id="pragmatism">Pragmatism</h2>
+
+<p>Another thing I love about XAuth is the pragmatic way in which it was written: instead of going for complete functionality in all browsers, Meebo chose to target only the most capable browsers. Essentially, the browser must support cross-document messaging, <code class="highlighter-rouge">localStorage</code>, and native JSON serialization/parsing in order to use the library. By making that simplifying assumption, they saved a lot of time and effort (and probably a lot of code) in making this utility. The result is a really tight, small footprint utility with little chance of significant bugs. I really want to applaud the authors for this pragmatism as I believe it will be a contributing factor to rapid adoption and ease of ongoing maintenance.</p>
+
+<h2 id="ironic-side-note">Ironic side note</h2>
+
+<p>Who knew cross-domain client-side data storage would be useful? Actually, the WHAT-WG did. In the first draft of the Web Storage specification (at that time, part of HTML5), there was an object called <code class="highlighter-rouge">globalStorage</code> that allowed you to specify which domains could access certain data. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//all domains can access this
+globalStorage["*"].setItem("foo", "bar");
+
+//only subdomains of example.com can access this
+globalStorage["*.example.com"].setItem("foo", "bar");
+
+//only www.example.com can access this
+globalStorage["www.example.com"].setItem("foo", "bar");
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">globalStorage</code> interface was implemented in Firefox 2 prematurely as the specification was still evolving. Due to security concerns, <code class="highlighter-rouge">globalStorage</code> was removed from the spec and replaced with the origin-specific <code class="highlighter-rouge">localStorage</code>.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The basic technique of using an iframe to access another domain’s <code class="highlighter-rouge">localStorage</code> object is quite brilliant and applicable far beyond just the XAuth use case. By allowing any domain to access data stored on another domain, complete with whitelisting based on origin, web developers now have a way to share data amongst many different sites. All browsers that support <code class="highlighter-rouge">localStorage</code> also support native JSON parsing and cross-document messaging, making cross-browser compatibility much easier. XAuth and the code in this post work with Internet Explorer 8+, Firefox 3.5+, Safari 4+, Chrome 4+, and Opera 10.5+.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2010/09/07/learning-from-xauth-cross-domain-localstorage/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

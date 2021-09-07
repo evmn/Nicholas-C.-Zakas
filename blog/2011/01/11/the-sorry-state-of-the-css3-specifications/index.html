@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>The sorry state of the CSS3 specifications - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2011/01/11/the-sorry-state-of-the-css3-specifications/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="The sorry state of the CSS3 specifications">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2011/01/11/the-sorry-state-of-the-css3-specifications/" />
+<meta name="og:title" content="The sorry state of the CSS3 specifications">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="With the recent support of CSS3 in browsers approaching an impressive level of consistency, you might be inclined to believe that CSS3 is a well-defined specification suitable for public consumption. You would be...">
+<meta name="keywords" content="CSS,CSS3,W3C,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">The sorry state of the CSS3 specifications</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2011-01-11T00:00:00+00:00" itemprop="datePublished">January 11, 2011</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/css" rel="tag">CSS</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/css3" rel="tag">CSS3</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/w3c" rel="tag">W3C</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>With the recent support of CSS3 in browsers approaching an impressive level of consistency, you might be inclined to believe that CSS3 is a well-defined specification suitable for public consumption. You would be wrong on several counts. First and foremost, CSS3 is not a single specification but a collection of module specifications<sup>1</sup>. The logic behind separating out various parts into individual specs is that it’s easier to move forward on a small group of functionality than to move along one giant specification (see HTML5). The idea certainly has merit but the actual implementation of the idea is beyond poor and many of the module specifications are in a serious state of disarray. I’ve tried bringing some of these concerns up on the public mailing list (www-style<sup>2</sup>) but have received little feedback or response, so I’m laying out my complaints and concerns here.</p>
+
+<h2 id="organization">Organization</h2>
+
+<p>The first problem with the specs is that they are organized in very different ways. This might seem like an obvious problem when a large spec is separated into multiple smaller ones, but considering that many of the specs share editors, it seems like there shouldn’t be great difficulty in keeping cross-spec consistency. Yet there are vast differences between how the specs are setup. For instance, if you would like to find grammars for various parts of CSS3, here are the sections in which you would look:</p>
+
+<ul>
+  <li>CSS3 Syntax -Appendix: Second grammar<sup>3</sup></li>
+  <li>CSS3 Media Queries – Syntax<sup>4</sup></li>
+  <li>CSS3 Selectors – The grammar of Selectors<sup>5</sup></li>
+  <li>CSS3 Namespaces – Declaring Namespaces: the @namespace rule<sup>6</sup></li>
+  <li>CSS3 Style Attributes – Syntax and Parsing<sup>7</sup></li>
+  <li>CSS3 Paged Media – Page Selectors and Page Context<sup>8</sup></li>
+</ul>
+
+<p>Additionally, there are some CSS specifications that don’t have their associated grammar rules within the spec. All of this makes trying to implement a CSS3 parser incredibly difficult. You must search for the relevant pieces of information in places that aren’t immediately apparent from the table of contents for the spec. The rest of the outlines are also frequently out-of-sync, so related information may be in completely separate sections from spec to spec.</p>
+
+<p>What I would like to see is a general outline followed by all of the CSS specs so you know exactly where to go to find the same information in each spec. Here’s my suggested outline template:</p>
+
+<ol>
+  <li>Introduction
+    <ol>
+      <li>Overview</li>
+      <li>Dependencies</li>
+      <li>Terminology</li>
+      <li>Background/Additional Information</li>
+    </ol>
+  </li>
+  <li>(Main Section 1)</li>
+  <li>(Main Section 2)</li>
+  <li>(Main Section n)</li>
+  <li>Syntax
+    <ol>
+      <li>Grammar</li>
+      <li>Lexical Scanner</li>
+    </ol>
+  </li>
+  <li>Tests</li>
+  <li>Acknowledgments</li>
+  <li>References</li>
+</ol>
+
+<p>Moving towards a unified format for these specifications would go a long way towards making reading the specs more rational.</p>
+
+<h2 id="grammar-inconsistencies">Grammar inconsistencies</h2>
+
+<p>Still talking about CSS3 grammar – there is, in fact, no single source of truth for the CSS3 grammar. CSS 2.1 had a well-defined grammar<sup>9</sup> included in the overall spec (this is part of the reason I started by building a CSS 2.1 parser instead of jumping right to CSS3). There is the aforementioned CSS3 Syntax specification that I assumed would contain the complete CSS3 syntax. The description says, “contains the generic (forward-compatible) grammar that all levels of CSS adhere to.” That sounds good until you realize that the spec hasn’t been updated since 2003.</p>
+
+<p>Another interesting anecdote is that none of the other CSS3 specs even reference the CSS3 Syntax spec – the ones that do have grammars always build off of the CSS 2.1 grammar. The grammar laid out in CSS3 Syntax is a fair bit more rationalized, but since no one is using it, the spec has little value.</p>
+
+<p>I thought that so long as the CSS3 modules were being built off of the same base grammar that everything would still be okay. Once again, I was sorely disappointed to find that grammars across specs were defined in inconsistent and sometimes contradictory fashion. It’s as if each CSS3 module is being defined in a vacuum without regard for any of the other modules.</p>
+
+<p>For example, CSS3 Media Queries defines the following in its grammar:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{N}{O}{T}         {return  NOT;}
+</code></pre></div></div>
+
+<p>There’s nothing obviously bad about this until you look at the grammar in CSS3 Selectors:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>":"{N}{O}{T}"("  return  NOT;
+</code></pre></div></div>
+
+<p>Two completely different tokens used for two completely different purposes share the same token name. And this isn’t the only inconsistency in the grammars of CSS3 modules.</p>
+
+<p>There are also errors to be found in the grammars. For instance, CSS3 Paged Media defines the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>page:
+    PAGE_SYM S* IDENT? pseudo_page? S*
+    '{' S* [ declaration | margin ]? [ ';' S* [ declaration | margin ]? ]* '}' S*
+    ;
+</code></pre></div></div>
+
+<p>If this grammar were true, then the following example that appears elsewhere in the spec would be invalid:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@page :first {
+    color: green;
+
+    @top-left {
+        content: "foo";
+        color: blue;
+    }
+
+    @top-right {
+        content: "bar";
+    }
+}
+</code></pre></div></div>
+
+<p>Can you spot the error? According to the grammar, there must be a comma before @top-right. However, this example works in browsers that support paged media, so it’s the grammar that’s actually incorrect.</p>
+
+<p>The entirety of CSS3 grammar really needs a good cleanup to bring the various modules into alignment and correction of any outstanding errors (apparently the one I mentioned in CSS3 Paged Media has been around for quite a while<sup>10</sup>).</p>
+
+<h2 id="what-can-be-done">What can be done?</h2>
+
+<p>There’s clearly a lot of work that needs to be done to clean up the CSS3 specs. The steps I’d like to see taken by the W3C are:</p>
+
+<ul>
+  <li>Removal of old specs that are no longer being worked on (such as CSS3 Syntax). Keeping these around and displayed at the same level as important specs like CSS3 Selectors is confusing.</li>
+  <li>Come up with a common specification format for all CSS3 specs and rewrite each to follow the common format.</li>
+  <li>Rationalize grammar rules across the specs, ensuring that there aren’t duplicate token names or productions defined for different purposes. Browsers have already implemented a lot of the questionable specs, so use their source code (at least the open source ones) to help figure out how to address these issues.</li>
+  <li>Decide if CSS3 Syntax should ever be used or if all of CSS3 is an extension of the CSS2 grammar.</li>
+</ul>
+
+<p>I realize that each of these may be a decent amount of work, but if CSS3 is to be taken seriously and continue to evolve, these specifications need to be cleaned up. If web standards are to succeed then they must be well-defined so that interpretation isn’t left to the implementers. HTML5 is doing a good job of this elsewhere in the W3C, and I’d really like to see CSS3 follow suit.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://www.w3.org/Style/CSS/specs">CSS3 Specifications</a></li>
+  <li><a href="http://lists.w3.org/Archives/Public/www-style/">Public Mailing Lists – WWW-Style</a></li>
+  <li><a href="http://www.w3.org/TR/css3-syntax/#detailed-grammar">CSS3 Syntax -Appendix: Second grammar</a></li>
+  <li><a href="http://www.w3.org/TR/css3-mediaqueries/#syntax">CSS3 Media Queries – Syntax</a></li>
+  <li><a href="http://www.w3.org/TR/css3-selectors/#w3cselgrammar">CSS3 Selectors – The grammar of Selectors</a></li>
+  <li><a href="http://www.w3.org/TR/css3-namespace/#declaration">CSS3 Namespaces – Declaring Namespaces: the @namespace rule</a></li>
+  <li><a href="http://www.w3.org/TR/css-style-attr/#syntax">CSS3 Style Attributes – Syntax and Parsing</a></li>
+  <li><a href="http://www.w3.org/TR/css3-page/#page-selector-and-context">CSS3 Paged Media – Page Selectors and Page Context</a></li>
+  <li><a href="http://www.w3.org/TR/CSS2/grammar.html">CSS2 Grammar</a></li>
+  <li><a href="http://lists.w3.org/Archives/Public/www-style/2010Dec/0196.html">Re: Inconsistencies across CSS3 specs (www-style)</a></li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2011/01/11/the-sorry-state-of-the-css3-specifications/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

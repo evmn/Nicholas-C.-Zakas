@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Securing persistent environment variables using Vercel (formerly Vercel) - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Securing persistent environment variables using Vercel (formerly Vercel)">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/" />
+<meta name="og:title" content="Securing persistent environment variables using Vercel (formerly Vercel)">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html">
+
+
+
+<meta name="description" content="I’m a big fan of Vercel1 as an application hosting provider. The way the service abstracts all of the cloud computing details and allows teams to focus on building and deploying web applications...">
+<meta name="keywords" content="Vercel,Secrets,Environment Variables,Security,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Securing persistent environment variables using Vercel (formerly Vercel)</h1>
+        <p itemprop="description" class="no-margin-top">The way to securely add environment variables to your Vercel isn't obvious. Here's how to do it.</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2019-09-03T00:00:00+00:00" itemprop="datePublished">September 3, 2019</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/vercel" rel="tag">Vercel</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/secrets" rel="tag">Secrets</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/environment-variables" rel="tag">Environment Variables</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/security" rel="tag">Security</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>I’m a big fan of Vercel<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:1" class="footnote">1</a></sup> as an application hosting provider. The way the service abstracts all of the cloud computing details and allows teams to focus on building and deploying web applications is fantastic. That said, I had a lot of trouble setting up secure environment variables for my first application to use. I was used to other services like Netlify<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:2" class="footnote">2</a></sup> and AwS Lambda<sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:3" class="footnote">3</a></sup> exposing environment variables in the web interface to allow secure transmission of important information. When Vercel didn’t provide the same option in its web interface, I had to spend some time researching how to securely set persistent environment variables on my application.</p>
+
+<p>For the purposes of this post, assume that you need to set two environment variables, <code class="highlighter-rouge">CLIENT_ID</code> and <code class="highlighter-rouge">CLIENT_SECRET</code>. These values won’t change between deployments (presumably because they are used to authenticate the application with OAuth). As such, you don’t want to manually set these environment variables during every deployment but would rather have them stored and used each time the application is deployed.</p>
+
+<h2 id="setting-environment-variables-in-vercel">Setting environment variables in Vercel</h2>
+
+<p>According to the documentation<sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:4" class="footnote">4</a></sup>, there are two ways to set environment variables for your Vercel project. The first is to use the <code class="highlighter-rouge">vercel</code> command line tool with the <code class="highlighter-rouge">-e</code> option, such as:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vercel <span class="nt">-e</span> <span class="nv">CLIENT_ID</span><span class="o">=</span><span class="s2">"abcdefg"</span> <span class="nt">-e</span> <span class="nv">CLIENT_SECRET</span><span class="o">=</span><span class="s2">"123456789abcdefg"</span>
+</code></pre></div></div>
+
+<p>This approach not only sets the environment variables but also triggers a new deploy. The environment variables set here are valid only for the triggered deploy and will not automatically be available for any future deploys. You need to include the environment variables any time you deploy, which isn’t ideal when the information doesn’t need to change between deploys.</p>
+
+<p>The second way to set environment variables is to include them in the <code class="highlighter-rouge">vercel.json</code> file. There are actually two keys that can contain environment variables in <code class="highlighter-rouge">vercel.json</code>:</p>
+
+<ol>
+  <li><code class="highlighter-rouge">env</code> is used for environment variables needed only during application runtime.</li>
+  <li><code class="highlighter-rouge">build.env</code> is used for environment variables needed only during the build process.</li>
+</ol>
+
+<p>Whether you need the environment variables in one or both modes is up to how your application is built.</p>
+
+<aside class="warn">
+  <p>Be particularly careful if your build process uses the same JavaScript configuration file as your runtime, as you may find both the build and runtime will require the same environment variables even if it’s not immediately obvious (this happened to me). This is common with universal frameworks such as Next.js and Nuxt.js.</p>
+</aside>
+
+<p>Both the <code class="highlighter-rouge">env</code> and <code class="highlighter-rouge">build.env</code> keys are objects where the property names are the environment variables to set and the property values are the environment variable values. For example, the following sets <code class="highlighter-rouge">CLIENT_ID</code> and <code class="highlighter-rouge">CLIENT_SECRET</code> in both the build and runtime environments:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"env"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"CLIENT_ID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"abcdefg"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"CLIENT_SECRET"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123456789abcdefg"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"build"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"env"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"CLIENT_ID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"abcdefg"</span><span class="p">,</span><span class="w">
+          </span><span class="nl">"CLIENT_SECRET"</span><span class="p">:</span><span class="w"> </span><span class="s2">"123456789abcdefg"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>The environment variables in <code class="highlighter-rouge">vercel.json</code> are set for each deploy automatically, so this is the easiest way to persist important information for your application. Of course, if your environment variables contain sensitive information then you wouldn’t want to check <code class="highlighter-rouge">vercel.json</code> into your source code repository. That’s not a great solution because <code class="highlighter-rouge">vercel.json</code> contains more than just environment variables. The solution is to use <code class="highlighter-rouge">vercel.json</code> with project secrets.</p>
+
+<h2 id="using-vercel-secrets">Using Vercel secrets</h2>
+
+<p>Vercel has the ability to store secrets associated with each project. You can set a secret using the <code class="highlighter-rouge">vercel</code> CLI. You can name these secrets whatever you want, but the documentation<sup id="fnref:4:1"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:4" class="footnote">4</a></sup> suggests using lower dash case, Here’s an example:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vercel secrets add client-id abcdefg
+vercel secrets add client-secret 123456890abcdefg
+</code></pre></div></div>
+
+<p>These commands create two secrets: <code class="highlighter-rouge">client-id</code> and <code class="highlighter-rouge">client-secret</code>. These are automatically synced to my Vercel project and only available within that one project.</p>
+
+<aside class="warn">
+  <p>By default, secrets will be added to your personal account. To assign to a team account, be sure to use <code class="highlighter-rouge">--scope team-name</code> as part of the command.</p>
+</aside>
+
+<p>The next step is to reference these secrets inside of the <code class="highlighter-rouge">vercel.json</code> file. To specify that the value is a secret, prefix it with the <code class="highlighter-rouge">@</code> symbol. For example, the following sets <code class="highlighter-rouge">CLIENT_ID</code> and <code class="highlighter-rouge">CLIENT_SECRET</code> in both the build and runtime environments:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"env"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"CLIENT_ID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"@client-id"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"CLIENT_SECRET"</span><span class="p">:</span><span class="w"> </span><span class="s2">"@client-secret"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"build"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"env"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"CLIENT_ID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"@client-id"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"CLIENT_SECRET"</span><span class="p">:</span><span class="w"> </span><span class="s2">"@client-secret"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This <code class="highlighter-rouge">vercel.json</code> configuration specifies that the environment variables should be filled with secret values. Each time your application is deployed, Vercel will read the <code class="highlighter-rouge">client-id</code> and <code class="highlighter-rouge">client-secret</code> secrets and expose them as the environment variables <code class="highlighter-rouge">CLIENT_ID</code> and <code class="highlighter-rouge">CLIENT_SECRET</code>. It’s now safe to check <code class="highlighter-rouge">vercel.json</code> into your source code repository because it’s not exposing any secure information. You can just use the <code class="highlighter-rouge">vercel</code> command to deploy your application knowing that all of the important environment variables will be added automatically.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>The way Vercel handles environment variables takes a little getting used to. Whereas other services allow you to specify secret environment variables directly in their web interface, Vercel requires using the <code class="highlighter-rouge">vercel</code> command line tool to do so.</p>
+
+<p>The easiest way to securely persist environment variables in your Vercel project is to store the information in secrets and then specify the environment variables in your <code class="highlighter-rouge">vercel.json</code> file. Doing so allows you to check <code class="highlighter-rouge">vercel.json</code> into your source code repository without exposing sensitive information. Given the many configuration options available in <code class="highlighter-rouge">vercel.json</code>, it’s helpful to have that file in source control so you can make changes when necessary.</p>
+
+<h2 id="updates">Updates</h2>
+
+<p><strong>2020-August-04</strong> - Updated to rename from ZEIT Now to Vercel.</p>
+
+<h2 id="references">References</h2>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://vercel.com">Vercel</a> <a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p><a href="https://netlify.com">Netlify</a> <a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p><a href="https://aws.amazon.com/lambda">AWS Lambda</a> <a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:4">
+      <p><a href="https://vercel.com/docs/v2/build-step#environment-variables">Vercel - Build Step - Environment Variables</a> <a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:4" class="reversefootnote">&#8617;</a> <a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:4:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
+    </li>
+  </ol>
+</div>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="../../../../../geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="../../../../../amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='../../index.html'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

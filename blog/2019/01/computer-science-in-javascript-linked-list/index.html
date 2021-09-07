@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Computer science in JavaScript: Linked list - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2019/01/computer-science-in-javascript-linked-list/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Computer science in JavaScript: Linked list">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2019/01/computer-science-in-javascript-linked-list/" />
+<meta name="og:title" content="Computer science in JavaScript: Linked list">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="https://humanwhocodes.com/blog/2019/01/computer-science-in-javascript-linked-list/index.html">
+
+
+
+<meta name="description" content="Back in 2009, I challenged myself to write one blog post per week for the entire year. I had read that the best way to gain more traffic to a blog was to...">
+<meta name="keywords" content="Computer Science,JavaScript,Linked List,Programming,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2019/01/computer-science-in-javascript-linked-list/index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Computer science in JavaScript: Linked list</h1>
+        <p itemprop="description" class="no-margin-top">Building the classic computer science data structure in JavaScript.</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2019-01-08T00:00:00+00:00" itemprop="datePublished">January 8, 2019</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/computer-science" rel="tag">Computer Science</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/linked-list" rel="tag">Linked List</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/programming" rel="tag">Programming</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Back in 2009, I challenged myself to write one blog post per week for the entire year. I had read that the best way to gain more traffic to a blog was to post consistently. One post per week seemed like a realistic goal due to all the article ideas I had but it turned out I was well short of 52 ideas. I dug through some half-written chapters what would eventually become <cite>Professional JavaScript</cite> and found a lot of material on classic computer science topics, including data structures and algorithms. I took that material and turned it into <a href="https://humanwhocodes.com/blog/tag/computer-science/">several posts</a> in 2009 and (and a few in 2012), and got a lot of positive feedback on them.</p>
+
+<p>Now, at the ten year anniversary of those posts, I’ve decided to update, republish, and expand on them using JavaScript in 2019. It’s been interesting to see what has changed and what hasn’t, and I hope you enjoy them.</p>
+
+<h2 id="what-is-a-linked-list">What is a linked list?</h2>
+
+<p>A <em>linked list</em> is a data structure that stores multiple values in a linear fashion. Each value in a linked list is contained in its own <em>node</em>, an object that contains the data along with a link to the next node in the list. The link is a pointer to another node object or <code class="highlighter-rouge">null</code> if there is no next node. If each node has just one pointer to another node (most frequently called <code class="highlighter-rouge">next</code>) then the list is considered a <em>singly linked list</em> (or just linked list) whereas if each node has two links (usually <code class="highlighter-rouge">previous</code> and <code class="highlighter-rouge">next</code>) then it is considered a <em>doubly linked list</em>. In this post, I am focusing on singly linked lists.</p>
+
+<h2 id="why-use-a-linked-list">Why use a linked list?</h2>
+
+<p>The primary benefit of linked lists is that they can contain an arbitrary number of values while using only the amount of memory necessary for those values. Preserving memory was very important on older computers where memory was scarce. At that time, a built-in array in C required you to specify how many items the array could contain and the program would reserve that amount of memory. Reserving that memory meant it could not be used for the rest of the program or any other programs running at the same time, even if the memory was never filled. One memory-scarce machines, you could easily run out of available memory using arrays. Linked lists were created to work around this problem.</p>
+
+<p>Though originally intended for better memory management, linked lists also became popular when developers didn’t know how many items an array would ultimately contain. It was much easier to use a linked list and add values as necessary than it was to accurately guess the maximum number of values an array might contain. As such, linked lists are often used as the foundation for built-in data structures in various programming languages.</p>
+
+<p>The built-in JavaScript <code class="highlighter-rouge">Array</code> type is not implemented as a linked list, though its size is dynamic and is always the best option to start with. You might go your entire career without needing to use a linked list in JavaScript but linked lists are still a good way to learn about creating your own data structures.</p>
+
+<h2 id="the-design-of-a-linked-list">The design of a linked list</h2>
+
+<p>The most important part of a linked list is its node structure. Each node must contain some data and a pointer to the next node in the list. Here is a simple representation in JavaScript:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">LinkedListNode</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">data</span> <span class="o">=</span> <span class="nx">data</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">next</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In the <code class="highlighter-rouge">LinkedListNode</code> class, the <code class="highlighter-rouge">data</code> property contains the value the linked list item should store and the <code class="highlighter-rouge">next</code> property is a pointer to the next item in the list. The <code class="highlighter-rouge">next</code> property starts out as <code class="highlighter-rouge">null</code> because you don’t yet know the next node. You can then create a linked list using the <code class="highlighter-rouge">LinkedListNode</code> class like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// create the first node</span>
+<span class="kd">const</span> <span class="nx">head</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">LinkedListNode</span><span class="p">(</span><span class="mi">12</span><span class="p">);</span>
+
+<span class="c1">// add a second node</span>
+<span class="nx">head</span><span class="p">.</span><span class="nx">next</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">LinkedListNode</span><span class="p">(</span><span class="mi">99</span><span class="p">);</span>
+
+<span class="c1">// add a third node</span>
+<span class="nx">head</span><span class="p">.</span><span class="nx">next</span><span class="p">.</span><span class="nx">next</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">LinkedListNode</span><span class="p">(</span><span class="mi">37</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>The first node in a linked list is typically called the <em>head</em>, so the <code class="highlighter-rouge">head</code> identifier in this example represents the first node. The second node is created an assigned to <code class="highlighter-rouge">head.next</code> to create a list with two items. A third node is added by assigning it to <code class="highlighter-rouge">head.next.next</code>, which is the <code class="highlighter-rouge">next</code> pointer of the second node in the list. The <code class="highlighter-rouge">next</code> pointer of the third node in the list remains <code class="highlighter-rouge">null</code>. The following image shows the resulting data structure.</p>
+
+<p><a href="https://commons.wikimedia.org/w/index.php?curid=2245162"><img src="../../../../images/posts/2019/singly-linked-list.svg" alt="Diagram of a Linked List by Lasindi - Own work, Public Domain" /></a></p>
+
+<p>The structure of a linked list allows you to traverse all of the data by following the <code class="highlighter-rouge">next</code> pointer on each node. Here is a simple example of how to traverse a linked list and print each value out to the console:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">current</span> <span class="o">=</span> <span class="nx">head</span><span class="p">;</span>
+
+<span class="k">while</span> <span class="p">(</span><span class="nx">current</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">current</span><span class="p">.</span><span class="nx">data</span><span class="p">);</span>
+    <span class="nx">current</span> <span class="o">=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">next</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This code uses the variable <code class="highlighter-rouge">current</code> as the pointer that moves through the linked list. The <code class="highlighter-rouge">current</code> variable is initialized to the head of the list and the <code class="highlighter-rouge">while</code> loop continues until <code class="highlighter-rouge">current</code> is <code class="highlighter-rouge">null</code>. Inside of the loop, the value stored on the <code class="highlighter-rouge">current</code> node is printed and then the <code class="highlighter-rouge">next</code> pointer is followed to the next node.</p>
+
+<p>Most linked list operations use this traversal algorithm or something similar, so understanding this algorithm is important to understanding linked lists in general.</p>
+
+<h2 id="the-linkedlist-class">The <code class="highlighter-rouge">LinkedList</code> class</h2>
+
+<p>If you were writing a linked list in C, you might stop at this point and consider your task complete (although you would use a struct instead of a class to represent each node). However, in object-oriented languages like JavaScript, it’s more customary to create a class to encapsulate this functionality. Here is a simple example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">head</span> <span class="o">=</span> <span class="nb">Symbol</span><span class="p">(</span><span class="dl">"</span><span class="s2">head</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">class</span> <span class="nx">LinkedList</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">]</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">LinkedList</code> class represents a linked list and will contain methods for interacting with the data it contains. The only property is a symbol property called <code class="highlighter-rouge">head</code> that will contain a pointer to the first node in the list. A symbol property is used instead of a string property to make it clear that this property is not intended to be modified outside of the class.</p>
+
+<h3 id="adding-new-data-to-the-list">Adding new data to the list</h3>
+
+<p>Adding an item into a linked list requires walking the structure to find the correct location, creating a new node, and inserting it in place. The one special case is when the list is empty, in which case you simply create a new node and assign it to <code class="highlighter-rouge">head</code>:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">head</span> <span class="o">=</span> <span class="nb">Symbol</span><span class="p">(</span><span class="dl">"</span><span class="s2">head</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">class</span> <span class="nx">LinkedList</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">]</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">add</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="c1">// create a new node</span>
+        <span class="kd">const</span> <span class="nx">newNode</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">LinkedListNode</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+                
+        <span class="c1">//special case: no items in the list yet</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">]</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="c1">// just set the head to the new node</span>
+            <span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">]</span> <span class="o">=</span> <span class="nx">newNode</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+            <span class="c1">// start out by looking at the first node</span>
+            <span class="kd">let</span> <span class="nx">current</span> <span class="o">=</span> <span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">];</span>
+
+            <span class="c1">// follow `next` links until you reach the end</span>
+            <span class="k">while</span> <span class="p">(</span><span class="nx">current</span><span class="p">.</span><span class="nx">next</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">current</span> <span class="o">=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">next</span><span class="p">;</span>
+            <span class="p">}</span>
+           
+            <span class="c1">// assign the node into the `next` pointer</span>
+            <span class="nx">current</span><span class="p">.</span><span class="nx">next</span> <span class="o">=</span> <span class="nx">newNode</span><span class="p">;</span>            
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">add()</code> method accepts a single argument, any piece of data, and adds it to the end of the list. If the list is empty (<code class="highlighter-rouge">this[head]</code> is <code class="highlighter-rouge">null</code>) then you assign <code class="highlighter-rouge">this[head]</code> equal to the new node. If the list is not empty, then you need to traverse the already-existing list to find the last node. The traversal happens in a <code class="highlighter-rouge">while</code> loop that start at <code class="highlighter-rouge">this[head]</code> and follows the <code class="highlighter-rouge">next</code> links of each node until the last node is found. The last node has a <code class="highlighter-rouge">next</code> property equal to <code class="highlighter-rouge">null</code>, so it’s important to stop traversal at that point rather than when <code class="highlighter-rouge">current</code> is <code class="highlighter-rouge">null</code> (as in the previous section). You can then assign the new node to that <code class="highlighter-rouge">next</code> property to add the data into the list.</p>
+
+<aside class="note">
+  <p>Traditional algorithms use two pointers, a <code class="highlighter-rouge">current</code> that points to the item being inspected and a <code class="highlighter-rouge">previous</code> that points to the node before <code class="highlighter-rouge">current</code>. When <code class="highlighter-rouge">current</code> is <code class="highlighter-rouge">null</code>, that means <code class="highlighter-rouge">previous</code> is pointing to the last item in the list. I don’t find that approach very logical when you can just check the value of <code class="highlighter-rouge">current.next</code> and exit the loop at that point.</p>
+</aside>
+
+<p>The complexity of the <code class="highlighter-rouge">add()</code> method is O(n) because you must traverse the entire list to find the location to insert a new node. You can reduce this complexity to O(1) by tracking the end of the list (usually called the <em>tail</em>) in addition to the head, allowing you to immediately insert a new node in the correct position.</p>
+
+<h3 id="retrieving-data-from-the-list">Retrieving data from the list</h3>
+
+<p>Linked lists don’t allow random access to its contents, but you can still retrieve data in any given position by traversing the list and returning the data. To do so, you’ll add a <code class="highlighter-rouge">get()</code> method that accepts a zero-based index of the data to retrieve, like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">LinkedList</span> <span class="p">{</span>
+
+    <span class="c1">// other methods hidden for clarity</span>
+
+    <span class="kd">get</span><span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+    
+        <span class="c1">// ensure `index` is a positive value</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="c1">// the pointer to use for traversal</span>
+            <span class="kd">let</span> <span class="nx">current</span> <span class="o">=</span> <span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">];</span>
+
+            <span class="c1">// used to keep track of where in the list you are</span>
+            <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+            <span class="c1">// traverse the list until you reach either the end or the index</span>
+            <span class="k">while</span> <span class="p">((</span><span class="nx">current</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">index</span><span class="p">))</span> <span class="p">{</span>
+                <span class="nx">current</span> <span class="o">=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">next</span><span class="p">;</span>
+                <span class="nx">i</span><span class="o">++</span><span class="p">;</span>          
+            <span class="p">}</span>
+        
+            <span class="c1">// return the data if `current` isn't null</span>
+            <span class="k">return</span> <span class="nx">current</span> <span class="o">!==</span> <span class="kc">null</span> <span class="p">?</span> <span class="nx">current</span><span class="p">.</span><span class="nx">data</span> <span class="p">:</span> <span class="kc">undefined</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">undefined</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">get()</code> method first checks to make sure that <code class="highlighter-rouge">index</code> is a positive value, otherwise it returns <code class="highlighter-rouge">undefined</code>. The <code class="highlighter-rouge">i</code> variable is used to keep track of how deep the traversal has gone into the list. The loop itself is the same basic traversal you saw earlier with the added condition that the loop should exit when <code class="highlighter-rouge">i</code> is equal to <code class="highlighter-rouge">index</code>. That means there are two conditions under which the loop can exit:</p>
+
+<ol>
+  <li><code class="highlighter-rouge">current</code> is <code class="highlighter-rouge">null</code>, which means the list is shorter than <code class="highlighter-rouge">index</code>.</li>
+  <li><code class="highlighter-rouge">i</code> is equal to <code class="highlighter-rouge">index</code>, which means <code class="highlighter-rouge">current</code> is the node in the <code class="highlighter-rouge">index</code> position.</li>
+</ol>
+
+<p>If <code class="highlighter-rouge">current</code> is <code class="highlighter-rouge">null</code> then <code class="highlighter-rouge">undefined</code> is returned and otherwise <code class="highlighter-rouge">current.data</code> is returned. This check ensures that <code class="highlighter-rouge">get()</code> will never throw an error for an <code class="highlighter-rouge">index</code> that isn’t found in the list (although you could decide to throw an error instead of returning <code class="highlighter-rouge">undefined</code>).</p>
+
+<p>The complexity of the <code class="highlighter-rouge">get()</code> method ranges from O(1) when removing the first node (no traversal is needed) to O(n) when removing the last node (traversing the entire list is required). It’s difficult to reduce complexity because a search is always required to identify the correct value to return.</p>
+
+<h3 id="removing-data-from-a-linked-list">Removing data from a linked list</h3>
+
+<p>Removing data from a linked list is a little bit tricky because you need to ensure that all <code class="highlighter-rouge">next</code> pointers remain valid after a node is removed. For instance, if you want to remove the second node in a three-node list, you’ll need to ensure that the first node’s <code class="highlighter-rouge">next</code> property now points to the third node instead of the second. Skipping over the second node in this way effectively removes it from the list.</p>
+
+<p><a href="http://en.wikipedia.org/wiki/File:Singly_linked_list_delete_after.png"><img src="../../../../images/wp-content/uploads/2009/04/Singly_linked_list_delete_after.png" alt="Linked list removal diagram" /></a></p>
+
+<p>The remove operation is actually two operations:</p>
+
+<ol>
+  <li>Find the specified index (the same algorithm as in <code class="highlighter-rouge">get()</code>)</li>
+  <li>Remove the node at that index</li>
+</ol>
+
+<p>Finding the specified index is the same as in the <code class="highlighter-rouge">get()</code> method, but in this loop you also need to track the node that comes before <code class="highlighter-rouge">current</code> because you’ll need to modify the <code class="highlighter-rouge">next</code> pointer of the previous node.</p>
+
+<p>There are also four special cases to consider:</p>
+
+<ol>
+  <li>The list is empty (no traversal is possible)</li>
+  <li>The index is less than zero</li>
+  <li>The index is greater than the number of items in the list</li>
+  <li>The index is zero (removing the head)</li>
+</ol>
+
+<p>In the first three cases, the removal operation cannot be completed, and so it makes sense to throw an error; the fourth special case requires rewriting the <code class="highlighter-rouge">this[head]</code> property. Here is what the implementation of a <code class="highlighter-rouge">remove()</code> method looks like:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">LinkedList</span> <span class="p">{</span>
+
+    <span class="c1">// other methods hidden for clarity</span>
+
+    <span class="nx">remove</span><span class="p">(</span><span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+    
+        <span class="c1">// special cases: empty list or invalid `index`</span>
+        <span class="k">if</span> <span class="p">((</span><span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">]</span> <span class="o">===</span> <span class="kc">null</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="nx">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">RangeError</span><span class="p">(</span><span class="s2">`Index </span><span class="p">${</span><span class="nx">index</span><span class="p">}</span><span class="s2"> does not exist in the list.`</span><span class="p">);</span>
+        <span class="p">}</span>
+ 
+        <span class="c1">// special case: removing the first node</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="c1">// temporary store the data from the node</span>
+            <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">].</span><span class="nx">data</span><span class="p">;</span>
+
+            <span class="c1">// just replace the head with the next node in the list</span>
+            <span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">]</span> <span class="o">=</span> <span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">].</span><span class="nx">next</span><span class="p">;</span>
+
+            <span class="c1">// return the data at the previous head of the list</span>
+            <span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="c1">// pointer use to traverse the list</span>
+        <span class="kd">let</span> <span class="nx">current</span> <span class="o">=</span> <span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">];</span>
+
+        <span class="c1">// keeps track of the node before current in the loop</span>
+        <span class="kd">let</span> <span class="nx">previous</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+
+        <span class="c1">// used to track how deep into the list you are</span>
+        <span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="c1">// same loops as in `get()`</span>
+        <span class="k">while</span> <span class="p">((</span><span class="nx">current</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">index</span><span class="p">))</span> <span class="p">{</span>
+
+            <span class="c1">// save the value of current</span>
+            <span class="nx">previous</span> <span class="o">=</span> <span class="nx">current</span><span class="p">;</span>
+
+            <span class="c1">// traverse to the next node</span>
+            <span class="nx">current</span> <span class="o">=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">next</span><span class="p">;</span>
+
+            <span class="c1">// increment the count</span>
+            <span class="nx">i</span><span class="o">++</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="c1">// if node was found, remove it</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">current</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="c1">// skip over the node to remove</span>
+            <span class="nx">previous</span><span class="p">.</span><span class="nx">next</span> <span class="o">=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">next</span><span class="p">;</span>
+
+            <span class="c1">// return the value that was just removed from the list</span>
+            <span class="k">return</span> <span class="nx">current</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="c1">// if node wasn't found, throw an error</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nx">RangeError</span><span class="p">(</span><span class="s2">`Index </span><span class="p">${</span><span class="nx">index</span><span class="p">}</span><span class="s2"> does not exist in the list.`</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">remove()</code> method first checks for two special cases, an empty list (<code class="highlighter-rouge">this[head]</code> is <code class="highlighter-rouge">null</code>) and an <code class="highlighter-rouge">index</code> that is less than zero. An error is thrown in both cases.</p>
+
+<p>The next special case is when <code class="highlighter-rouge">index</code> is <code class="highlighter-rouge">0</code>, meaning that you are removing the list head. The new list head should be the second node in the list, so you can set <code class="highlighter-rouge">this[head]</code> equal to <code class="highlighter-rouge">this[head].next</code>. It doesn’t matter if there’s only one node in the list because <code class="highlighter-rouge">this[head]</code> would end up equal to <code class="highlighter-rouge">null</code>, which means the list is empty after the removal. The only catch is to store the data from the original head in a local variable, <code class="highlighter-rouge">data</code>, so that it can be returned.</p>
+
+<p>With three of the four special cases taken care of, you can now proceed with a traversal similar to that found in the <code class="highlighter-rouge">get()</code> method. As mentioned earlier, this loop is slightly different in that the <code class="highlighter-rouge">previous</code> variable is used to keep track of the node that appears just before <code class="highlighter-rouge">current</code>, as that information is necessary to propely remove a node. Similar to <code class="highlighter-rouge">get()</code>, when the loop exits <code class="highlighter-rouge">current</code> may be <code class="highlighter-rouge">null</code>, indicating that the index wasn’t found. If that happens then an error is thrown, otherwise, <code class="highlighter-rouge">previous.next</code> is set to <code class="highlighter-rouge">current.next</code>, effectively removing <code class="highlighter-rouge">current</code> from the list. The data stored on <code class="highlighter-rouge">current</code> is returned as the last step.</p>
+
+<p>The complexity of the <code class="highlighter-rouge">remove()</code> method is the same as <code class="highlighter-rouge">get()</code> and ranges from O(1) when removing the first node to O(n) when removing the last node.</p>
+
+<h3 id="making-the-list-iterable">Making the list iterable</h3>
+
+<p>In order to be used with the JavaScript <code class="highlighter-rouge">for-of</code> loop and array destructuring, collections of data must be iterables. The built-in JavaScript collections such as <code class="highlighter-rouge">Array</code> and <code class="highlighter-rouge">Set</code> are iterable by default, and you can make your own classes iterable by specifying a <code class="highlighter-rouge">Symbol.iterator</code> generator method on the class. I prefer to first implement a <code class="highlighter-rouge">values()</code> generator method (to match the method found on built-in collection classes) and then have <code class="highlighter-rouge">Symbol.iterator</code> call <code class="highlighter-rouge">values()</code> directly.</p>
+
+<p>The <code class="highlighter-rouge">values()</code> method need only do a basic traversal of the list and <code class="highlighter-rouge">yield</code> the data that each node contains:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">LinkedList</span> <span class="p">{</span>
+
+    <span class="c1">// other methods hidden for clarity</span>
+
+    <span class="o">*</span><span class="nx">values</span><span class="p">(){</span>
+        
+        <span class="kd">let</span> <span class="nx">current</span> <span class="o">=</span> <span class="k">this</span><span class="p">[</span><span class="nx">head</span><span class="p">];</span>
+
+        <span class="k">while</span> <span class="p">(</span><span class="nx">current</span> <span class="o">!==</span> <span class="kc">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">yield</span> <span class="nx">current</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+            <span class="nx">current</span> <span class="o">=</span> <span class="nx">current</span><span class="p">.</span><span class="nx">next</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">iterator</span><span class="p">]()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">values</span><span class="p">();</span>
+    <span class="p">}</span>    
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">values()</code> method is marked with an asterisk (<code class="highlighter-rouge">*</code>) to indicate that it’s a generator method. The method traverses the list, using <code class="highlighter-rouge">yield</code> to return each piece of data it encounters. (Note that the <code class="highlighter-rouge">Symbol.iterator</code> method isn’t marked as a generator because it is returning an iterator from the <code class="highlighter-rouge">values()</code> generator method.)</p>
+
+<h3 id="using-the-class">Using the class</h3>
+
+<p>Once complete, you can use the linked list implementation like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">LinkedList</span><span class="p">();</span>
+<span class="nx">list</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="dl">"</span><span class="s2">red</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">list</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="dl">"</span><span class="s2">orange</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">list</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="dl">"</span><span class="s2">yellow</span><span class="dl">"</span><span class="p">);</span>
+    
+<span class="c1">// get the second item in the list</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>       <span class="c1">// "orange"</span>
+
+<span class="c1">// print out all items</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">color</span> <span class="k">of</span> <span class="nx">list</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">color</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// remove the second item in the list    </span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>    <span class="c1">// "orange"</span>
+    
+<span class="c1">// get the new first item in the list</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>       <span class="c1">// "yellow"</span>
+
+<span class="c1">// convert to an array</span>
+<span class="kd">const</span> <span class="nx">array1</span> <span class="o">=</span> <span class="p">[...</span><span class="nx">list</span><span class="p">.</span><span class="nx">values</span><span class="p">()];</span>
+<span class="kd">const</span> <span class="nx">array2</span> <span class="o">=</span> <span class="p">[...</span><span class="nx">list</span><span class="p">];</span>
+</code></pre></div></div>
+
+<p>This basic implementation of a linked list can be rounded out with a <code class="highlighter-rouge">size</code> property to count the number of nodes in the list, and other familiar methods such as <code class="highlighter-rouge">indexOf()</code>. The full source code is available on GitHub at my <a href="https://github.com/humanwhocodes/computer-science-in-javascript">Computer Science in JavaScript</a> project.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Linked lists aren’t something you’re likely to use every day, but they are a foundational data structure in computer science. The concept of using nodes that point to one another is used in many other data structures are built into many higher-level programming languages. A good understanding of how linked lists work is important for a good overall understanding of how to create and use other data structures.</p>
+
+<p>For JavaScript programming, you are almost always better off using the built-in collection classes such as <code class="highlighter-rouge">Array</code> rather than creating your own. The built-in collection classes have already been optimized for production use and are well-supported across execution environments.</p>
+
+
+<!--
+<div class="center-text">
+
+<a href="https://github.com/humanwhocodes/computer-science-in-javascript" target="_blank" class="link-btn margin-bottom">View Source on GitHub</a>
+
+
+<a href="https://npmjs.com/package/@humanwhocodes/linked-list" target="_blank" class="link-btn margin-bottom">View Package on npm</a>
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="../../../../../geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="../../../../../amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='../../index.html'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Working with files in JavaScript, Part 1: The Basics - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/05/08/working-with-files-in-javascript-part-1/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Working with files in JavaScript, Part 1: The Basics">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/05/08/working-with-files-in-javascript-part-1/" />
+<meta name="og:title" content="Working with files in JavaScript, Part 1: The Basics">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Many years ago, I was asked during a job interview at Google what changes I would make to the web in order to provide better experiences. At the top of my list was...">
+<meta name="keywords" content="File API,JavaScript,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Working with files in JavaScript, Part 1: The Basics</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-05-08T00:00:00+00:00" itemprop="datePublished">May 8, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/file-api" rel="tag">File API</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Many years ago, I was asked during a job interview at Google what changes I would make to the web in order to provide better experiences. At the top of my list was having some way to work with files other than the <code class="highlighter-rouge">&lt;input type="file"&gt;</code> control. Even as the rest of the web was evolving, the way we dealt with files never changed since it was first introduced. Thankfully, with HTML5 and related APIs, we now have far more options for working with files than ever before in the latest versions of desktop browsers (iOS still has no support for the File API).</p>
+
+<h2 id="the-file-type">The File type</h2>
+
+<p>The <code class="highlighter-rouge">File</code> type is defined in the <cite>File API</cite><sup><a href="http://dev.w3.org/2006/webapi/FileAPI/">1</a></sup> specification and is an abstract representation of a file. Each instance of <code class="highlighter-rouge">File</code> has several properties:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">name</code> – the filename</li>
+  <li><code class="highlighter-rouge">size</code> – the size of the file in bytes</li>
+  <li><code class="highlighter-rouge">type</code> – the MIME type for the file</li>
+</ul>
+
+<p>A <code class="highlighter-rouge">File</code> object basically gives you essential information about the file without providing direct access to the file contents. That’s important because reading from files requires disk access, and depending on the size of the file, that process has the potential to take a significant amount of time. A <code class="highlighter-rouge">File</code> object is just a reference to a file, and getting data from that file is a separate process altogether.</p>
+
+<h2 id="getting-file-references">Getting File references</h2>
+
+<p>Of course, access to user files is strictly forbidden on the web because it’s a very obvious security issue. You wouldn’t want to load up a web page and then have it scan your hard drive and figure out what’s there. You need permission from the user in order to access files from their computer. There’s no need for messy permission windows, however, because users grant permission for web pages to read files all the time when they decide to upload something.</p>
+
+<p>When you use a <code class="highlighter-rouge">&lt;input type="file"&gt;</code> control, you’re giving the web page (and the server) permission to access that file. So it makes sense that the first place you can retrieve <code class="highlighter-rouge">File</code> objects is through a <code class="highlighter-rouge">&lt;input type="file"&gt;</code> control.</p>
+
+<p>HTML5 defines a <code class="highlighter-rouge">files</code> property for all <code class="highlighter-rouge">&lt;input type="file"&gt;</code> controls. This collection is a <code class="highlighter-rouge">FileList</code>, which is an array-like structure called <code class="highlighter-rouge">FileList</code> containing <code class="highlighter-rouge">File</code> objects for each selected file in the control (remember, HTML5 allows multiple file selection in these controls). So at any point in time, you can get access to the files a user has selected using code similar to this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;input type="file" id="your-files" multiple&gt;
+&lt;script&gt;
+var control = document.getElementById("your-files");
+control.addEventListener("change", function(event) {
+
+    // When the control has changed, there are new files
+
+    var i = 0,
+        files = control.files,
+        len = files.length;
+
+    for (; i &lt; len; i++) {
+        console.log("Filename: " + files[i].name);
+        console.log("Type: " + files[i].type);
+        console.log("Size: " + files[i].size + " bytes");
+    }
+
+}, false);
+&lt;/script&gt;&lt;/code&gt;
+</code></pre></div></div>
+
+<p>This relatively simple code listens for the <code class="highlighter-rouge">change</code> event on the file control. When the event fires, it signifies that the file selection has changed, and the code iterates through each <code class="highlighter-rouge">File</code> object and outputs its information. Keep in mind that the <code class="highlighter-rouge">files</code> property is always accessible from JavaScript, so you don’t have to wait for <code class="highlighter-rouge">change</code> to try to read it.</p>
+
+<h2 id="drag-and-drop-files">Drag and drop files</h2>
+
+<p>Accessing files from form controls still requires the form control and the associated user action of browsing to find the files of interest. Fortunately, <cite>HTML5 Drag and Drop</cite><sup><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#dnd">2</a></sup> provides another way for users to grant access to their files: by simply dragging a file from the desktop into the web browser. All you have to do to take advantage is listen for two events.</p>
+
+<p>In order to read files that are dropped onto an area of the page, you must listen for the <code class="highlighter-rouge">dragover</code> and <code class="highlighter-rouge">drop</code> events and cancel the default action of both. Doing so tells the browser that you are handling the action directly and it shouldn’t, for example, open an image file.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div id="your-files"&gt;&lt;/div&gt;
+&lt;script&gt;
+var target = document.getElementById("your-files");
+
+target.addEventListener("dragover", function(event) {
+    event.preventDefault();
+}, false);
+
+target.addEventListener("drop", function(event) {
+
+    // cancel default actions
+    event.preventDefault();
+
+    var i = 0,
+        files = event.dataTransfer.files,
+        len = files.length;
+
+    for (; i &lt; len; i++) {
+        console.log("Filename: " + files[i].name);
+        console.log("Type: " + files[i].type);
+        console.log("Size: " + files[i].size + " bytes");
+    }
+
+}, false);
+&lt;/script&gt;&lt;/code&gt;
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">event.dataTransfer.files</code> is another <code class="highlighter-rouge">FileList</code> object that you can access to get file information. The code is almost exactly the same as using the file form control and the <code class="highlighter-rouge">File</code> objects can be accessed in the same way.</p>
+
+<h2 id="ajax-file-upload">Ajax file upload</h2>
+
+<p>Once you have a reference to the file, you’re able to do something that’s pretty cool: upload a file via Ajax. This is all possible due to the <code class="highlighter-rouge">FormData</code> object, which is defined in <cite>XMLHttpRequest Level 2</cite><sup><a href="http://www.w3.org/TR/XMLHttpRequest/">3</a></sup>. This object represents an HTML form and allows you to add key-value pairs to be submitted to the server via the <code class="highlighter-rouge">append()</code> method:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var form = new FormData();
+form.append("name", "Nicholas");
+</code></pre></div></div>
+
+<p>The great thing about the <code class="highlighter-rouge">FormData</code> object is that you can add a file directly to it, effectively mimicking a file upload by HTML form. All you have to do is add the <code class="highlighter-rouge">File</code> reference with a specific name, and the browser does the rest. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// create a form with a couple of values
+var form = new FormData();
+form.append("name", "Nicholas");
+form.append("photo", control.files[0]);
+
+// send via XHR - look ma, no headers being set!
+var xhr = new XMLHttpRequest();
+xhr.onload = function() {
+    console.log("Upload complete.");
+};
+xhr.open("post", "/entrypoint", true);
+xhr.send(form);
+</code></pre></div></div>
+
+<p>Once the <code class="highlighter-rouge">FormData</code> object is passed into <code class="highlighter-rouge">send()</code>, the proper HTTP headers are automatically set for you. You don’t have to worry about setting the correct form encoding when using files, so the server gets to act as if a regular HTML form has been submitted, reading file data from the “photo” key and text data from the “name” key. This gives you the freedom to write processing code on the backend that can easily work with both traditional HTML forms and Ajax forms of this nature.</p>
+
+<p>And all of this works in the most recent version of every browser, including Internet Explorer 10.</p>
+
+<h2 id="up-next">Up next</h2>
+
+<p>You now know the two methods of accessing <code class="highlighter-rouge">File</code> information in the browser: through a file upload control and through native drag and drop. There will likely be other ways to access files in the future, but for now, these are the two you need to know. Of course, reading information about files is just part of the problem. The next step is read data from those files, and that’s where part 2 will pick up.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://dev.w3.org/2006/webapi/FileAPI/">File API specification (editor’s draft)</a></li>
+  <li><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/dnd.html#dnd">HTML5 Drag and Drop</a></li>
+  <li><a href="http://www.w3.org/TR/XMLHttpRequest/">XMLHttpRequest Level 2</a></li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/05/08/working-with-files-in-javascript-part-1/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

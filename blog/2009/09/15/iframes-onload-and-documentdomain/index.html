@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Iframes, onload, and document.domain - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/09/15/iframes-onload-and-documentdomain/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Iframes, onload, and document.domain">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/09/15/iframes-onload-and-documentdomain/" />
+<meta name="og:title" content="Iframes, onload, and document.domain">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="In this new Web 2.0, mashup world that the Internet has become, a lot of focus has been placed on the use of iframes for embedding third-party content onto a page. Iframes provide...">
+<meta name="keywords" content="iframe,JavaScript,onload,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Iframes, onload, and document.domain</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-09-15T00:00:00+00:00" itemprop="datePublished">September 15, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/iframe" rel="tag">iframe</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/onload" rel="tag">onload</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>In this new Web 2.0, mashup world that the Internet has become, a lot of focus has been placed on the use of iframes for embedding third-party content onto a page. Iframes provide a level of security since JavaScript access it limited by domain name, so an iframe containing content from another site cannot access JavaScript on the containing page. This cross-domain restriction goes both ways as the containing page also has no programmatic access to the iframe. In all ways, the containing page and the iframed page are cut off from communication (which has led to the <a href="http://www.w3.org/TR/2009/WD-html5-20090212/comms.html#crossDocumentMessages">cross-document messaging API in HTML5</a>). The missing piece of intrigue in most discussions surrounding iframes is JavaScript object ownership.</p>
+
+<h2 id="iframes-and-ownership">Iframes and ownership</h2>
+
+<p>The iframe element itself, <code class="highlighter-rouge">&lt;iframe&gt;</code>, is owned by the containing page, and so you may work on it as an element (getting/setting attributes, manipulating its style, moving it around in the DOM, etc.). The <code class="highlighter-rouge">window</code> object representing the iframe content is the property of the page that was loaded into the iframe. In order for the containing page to access the iframe’s window object in any meaningful way, the domain of the containing page and the iframe page need to be the same (<a href="http://msdn.microsoft.com/en-us/library/ms533028(VS.85).aspx">details</a>).</p>
+
+<p>When the domains match, the containing page can access the <code class="highlighter-rouge">window</code> object for the iframe. The iframe element object has a property called <code class="highlighter-rouge">contentDocument</code> that contains the iframe’s <code class="highlighter-rouge">document</code> object, so you can use the <code class="highlighter-rouge">parentWindow</code> property to retrieve the <code class="highlighter-rouge">window</code> object. This is the standard way to retrieve the iframe’s <code class="highlighter-rouge">window</code> object and is supported by most browsers. Internet Explorer prior to version 8 didn’t support this property and so you had to use the proprietary <code class="highlighter-rouge">contentWindow</code> property. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function getIframeWindow(iframeElement){
+    return iframeElement.contentWindow || iframeElement.contentDocument.parentWindow;
+}
+</code></pre></div></div>
+
+<p>Additionally, the containing page’s window object can be retrieved from the iframe using the <code class="highlighter-rouge">window.parent</code> property. The iframe page can also retrieve a reference to the iframe element in which it resides by using the <code class="highlighter-rouge">window.frameElement</code> property. This crosses the ownership boundary since the iframe is owned by the containing page but is directly accessible off the iframe’s <code class="highlighter-rouge">window</code> object.</p>
+
+<h2 id="using-the-iframe-elements-onload">Using the iframe element’s onload</h2>
+
+<p>Trying to determine when an iframe is loaded is an <a href="http://twitter.com/slicknet/status/3900535188">interesting task</a> due the ownership issues surrounding iframes. Browsers that aren’t Internet Explorer do something very useful: they expose a <code class="highlighter-rouge">load</code> event for the <em>iframe element</em> so that it’s possible for you to be aware when an iframe has loaded, regardless of the content. Since the iframe element is owned by the containing page, you never need to worry about cross-domain restrictions. An iframe loading local content can be monitored just as well as an iframe loading foreign content (<a href="https://humanwhocodes.com/experiments/javascript/iframes/onload1.htm">experiment</a>). Example code:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var iframe = document.createElement("iframe");
+iframe.src = "simpleinner.htm";
+iframe.onload = function(){
+    alert("Iframe is now loaded.");
+};
+document.body.appendChild(iframe);
+</code></pre></div></div>
+
+<p>This works in all browsers except Internet Explorer (even version 8!). <del>I had hoped that perhaps using the <code>attachEvent()</code> method would work, but alas, Internet Explorer just doesn’t support the <code>load</code> event on an iframe element.</del> Pretty disappointing.</p>
+
+<h2 id="using-the-iframe-windows-onload">Using the iframe window’s onload</h2>
+
+<p>It seemed that Internet Explorer was going to foil my day…again. Then, I remembered that I’m not worried about foreign content in an iframe. In my specific case, I was dealing with content from the same domain. Since the cross-domain restriction didn’t apply, I could access the iframe’s <code class="highlighter-rouge">window</code> object directly and assign an <code class="highlighter-rouge">onload</code> event handler. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var iframe = document.createElement("iframe"),
+    iframeWindow;
+iframe.src = "simpleinner.htm";
+document.body.appendChild(iframe);
+iframeWindow = iframe.contentWindow || iframe.contentDocument.parentWindow;
+iframeWindow.onload = function(){
+    alert("Local iframe is now loaded.");
+};
+</code></pre></div></div>
+
+<p>The interesting part of this approach is that you have to assign the event handler <em>after</em> the iframe element has been added to the page. Prior to that, the iframe’s <code class="highlighter-rouge">window</code> object doesn’t exist and so you can’t assign the event handler. This approach works in Internet Explorer and Firefox for same-domain pages only. Other browsers haven’t yet created the <code class="highlighter-rouge">window</code> object and so throw an error (<a href="https://humanwhocodes.com/experiments/javascript/iframes/onload2.htm">experiment</a>).</p>
+
+<h2 id="enter-documentdomain">Enter document.domain</h2>
+
+<p>I had resigned myself to using one method of detecting an iframe loading for Internet Explorer and another for every other browser, so I continued on my task. Next, I had to set <code class="highlighter-rouge">document.domain</code> on the containing page because I had a couple of different subdomains from which I needed to load iframes. When using different subdomains, setting <code class="highlighter-rouge">document.domain</code> to the root of the hostname allows iframes to communicate with their parent and each other. For example, if I had to load an iframe page from <code class="highlighter-rouge">www2.nczonline.net</code>, that is technically considered a different domain and would not be allowed. However, if I set <code class="highlighter-rouge">document.domain</code> to “nczonline.net” in both the containing page and the iframe page, the two are allowed to communicate. A single line of code, ideally placed at the top of the page, is all it takes:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>document.domain = "nczonline.net";
+</code></pre></div></div>
+
+<p>This equalizes the domain difference and allows everything to work as if both pages were from the same domain. Or so I thought.</p>
+
+<p>The problem with this approach is that prior to the iframe being loaded, it’s still considered to be owned by the domain as specific in its <code class="highlighter-rouge">src</code> attribute. A relative path automatically prepends the domain on which the containing page was loaded from (<code class="highlighter-rouge">www.nczonline.net</code>) versus the one assigned to <code class="highlighter-rouge">document.domain</code>. That means a comparison of <code class="highlighter-rouge">wnczonline.net</code> to <code class="highlighter-rouge">www.nczonline.net</code> fails the same-domain check and causes a JavaScript error when you try to access the iframe’s <code class="highlighter-rouge">window </code>object (<a href="https://humanwhocodes.com/experiments/javascript/iframes/onload3.htm">experiment</a>). The iframe page won’t have its associated domain changed until it’s loaded and the JavaScript command to change the domain has been executed. Once the iframe page has been loaded, however, everything works fine. But how do you know once the iframe page has been loaded?</p>
+
+<h2 id="reversing-the-process">Reversing the process</h2>
+
+<p>Having still not come across a cross-browser solution to determining when an iframe has loaded, I decided to reverse my thinking. Instead of the containing page asking when the iframe is loaded, what if the iframe told the containing page that it was loaded? If the iframe page listened for its own <code class="highlighter-rouge">load</code> event and then told the containing page when that occurred, that should solve the problem. I wanted this to be as simple as assigning an event handler, so I came up with the following idea: I’d assign a method onto the iframe element. Then, the iframe page will call that method when it has loaded. The method has to be assigned to the element rather than the iframe’s <code class="highlighter-rouge">window</code> object because the latter doesn’t exist in all browsers at an early enough moment in time. The result looked like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var iframe = document.createElement("iframe");
+iframe.src = "simpleinner.htm";
+iframe._myMethod = function(){
+    alert("Local iframe is now loaded.");
+};
+document.body.appendChild(iframe);
+</code></pre></div></div>
+
+<p>This code assigned a method called <code class="highlighter-rouge">_myMethod()</code> onto the iframe element. The page being loaded in the iframe then adds this code:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>window.onload = function(){
+    window.frameElement._myMethod();
+}
+</code></pre></div></div>
+
+<p>Since this code is executed after the assignment to <code class="highlighter-rouge">document.domain</code>, there are no security restrictions to worry about. This works great for any resources that share the same root hostname (<a href="https://humanwhocodes.com/experiments/javascript/iframes/onload4.htm">experiment</a>). It works across all browsers, which is exactly what I was looking for,Â  but the problem of detecting when a foreign resource was loaded in an iframe was still annoying me.</p>
+
+<h2 id="using-the-iframes-onreadystatechange">Using the iframe’s onreadystatechange</h2>
+
+<p>I decided to look into Internet Explorer’s iframe implementation a little bit more. It was clear that assigning something to the <code class="highlighter-rouge">onload</code> property didn’t produce the desired effect, but I figured there must be something else similar. I tried to attach the event handler using <code class="highlighter-rouge">attachEvent()</code>, which also didn’t work. Okay, clearly there was no support for the load event on the iframe. What about something else?</p>
+
+<p>That’s when I recalled IE’s bizarre <code class="highlighter-rouge">readystatechange</code> event that it has on documents. This is, of course, completely different than the <code class="highlighter-rouge">readystatechange</code> event fired on <code class="highlighter-rouge">XMLHttpRequest</code> objects. I wondered if the iframe element might support this event as well, and as it turns out, <a href="http://msdn.microsoft.com/en-us/library/ms536957(VS.85).aspx">it does</a>. The iframe element supports the <code class="highlighter-rouge">readyState</code> property, which is changed to “interactive” and then “complete” when the contents of the iframe have been loaded. And because this is on the iframe element and not on the iframe <code class="highlighter-rouge">window</code> object, there is no concern about cross-domain restrictions (<a href="https://humanwhocodes.com/experiments/javascript/iframes/onload5.htm">experiment</a>). The final code I ended up with is along these lines:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var iframe = document.createElement("iframe");
+iframe.src = "simpleinner.htm";
+
+if (navigator.userAgent.indexOf("MSIE") &gt; -1 &amp;&amp; !window.opera){
+    iframe.onreadystatechange = function(){
+        if (iframe.readyState == "complete"){
+            alert("Local iframe is now loaded.");
+        }
+    };
+} else {
+    iframe.onload = function(){
+        alert("Local iframe is now loaded.");
+    };
+}
+
+document.body.appendChild(iframe);
+</code></pre></div></div>
+
+<p>The check to determine if the browser is IE or not is a bit messy. I would have preferred to check for the existence of <code class="highlighter-rouge">iframe.readyState</code>, however, this throws an error when you try to access the property prior to adding the iframe into the document. I considered using the existence of <code class="highlighter-rouge">document.readyState</code> to determine whether to use <code class="highlighter-rouge">readystatechange</code>, however, most other browsers now support this property, so that’s not a good enough determinant. With YUI, I’d just use <code class="highlighter-rouge">Y.UA.ie</code> to determine this (you can use whichever method suits you best).</p>
+
+<h2 id="ies-hidden-onload-support">IE’s hidden onload support</h2>
+
+<p>Shortly after posting this blog, <a href="http://www.twitter.com/ChristopherBlum">Christopher</a> commented that using <code class="highlighter-rouge">attachEvent</code>() on the iframe element works in IE. I could have sworn I tried this before but, due to his prompting, I whipped up another <a href="https://humanwhocodes.com/experiments/javascript/iframes/onload6.htm">experiment</a>. As it turns out, he’s completely correct. I had to dig through the MSDN documentation to eventually find a roundabout reference, but sure enough, <a href="http://msdn.microsoft.com/en-us/library/cc197055(VS.85).aspx">it’s there</a>. This led to a final code snippet of:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var iframe = document.createElement("iframe");
+iframe.src = "simpleinner.htm";
+
+if (iframe.attachEvent){
+    iframe.attachEvent("onload", function(){
+        alert("Local iframe is now loaded.");
+    });
+} else {
+    iframe.onload = function(){
+        alert("Local iframe is now loaded.");
+    };
+}
+
+document.body.appendChild(iframe);
+</code></pre></div></div>
+
+<p>This code also works in all browsers and avoids any potential issues surrounding the timing of the <code class="highlighter-rouge">readystatechange </code>event versus the <code class="highlighter-rouge">load</code> event.</p>
+
+<h2 id="wrap-up">Wrap-up</h2>
+
+<p>After quite a bit of investigation, it appears that it is possible to determine when an iframe has loaded across all browsers regardless of the iframe page’s origin. This makes monitoring and error handling of iframed content a lot easier to manage. <a href="http://twitter.com/slicknet/status/3901078817">I’m thankful</a> that all browser vendors saw the benefit of adding these events to the iframe element itself rather than relying on the iframe <code class="highlighter-rouge">window</code> object or expecting that we usually don’t care whether an iframe has been loaded or not.</p>
+
+<p>**Update (15 Sep 2009): **Added section about <code class="highlighter-rouge">attachEvent()</code> based on Christopher’s comment.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/09/15/iframes-onload-and-documentdomain/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

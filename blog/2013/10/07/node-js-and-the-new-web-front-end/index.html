@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Node.js and the new web front-end - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2013/10/07/node-js-and-the-new-web-front-end/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Node.js and the new web front-end">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2013/10/07/node-js-and-the-new-web-front-end/" />
+<meta name="og:title" content="Node.js and the new web front-end">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Front-end engineers have a rather long and complicated history in software engineering. For the longest time, that stuff you sent to the browser was “easy enough” that anyone could do it and there...">
+<meta name="keywords" content="Architecture,JavaScript,Node.js,Web Server,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Node.js and the new web front-end</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2013-10-07T00:00:00+00:00" itemprop="datePublished">October 7, 2013</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/architecture" rel="tag">Architecture</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/node-js" rel="tag">Node.js</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/web-server" rel="tag">Web Server</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Front-end engineers have a rather long and complicated history in software engineering. For the longest time, that stuff you sent to the browser was “easy enough” that anyone could do it and there was no real need for specialization. Many claimed that so-called web developers were nothing more than graphic designers using a different medium. The thought that one day you would be able to specialize in web technologies like HTML, CSS, and JavaScript was laughable at best – the UI was, after all, something anyone could just hack together and have work.</p>
+
+<p>JavaScript was the technology that really started to change the perception of web developers, changing them into front-end engineers. This quirky little toy language that many software engineers turned their noses up at became the driving force of the Internet. CSS and HTML then came along for the ride as more browsers were introduced, creating cross-browser incompatibilities that very clearly defined the need for front-end engineers. Today, front-end specialists are one of the most sought after candidates in the world.</p>
+
+<h2 id="the-two-ui-layers">The two UI layers</h2>
+
+<p>Even after the Ajax boom, the front-end engineer was seen as primarily working with technologies inside of a browser window. HTML, CSS, and JavaScript were the main priorities and we would only touch the back-end (web server) in order to ensure it was properly outputting the front-end. In a sense, there were two UI layers: the one in the browser itself and the one on the server that generated the payload for the browser. We had very little control over the back-end UI layer and were often beholden to back-end engineers’ opinions on how frameworks should be put together – a world view that rarely took into consideration the needs of the front-end.</p>
+
+<p><a href="../../../../../images/wp-content/uploads/2013/10/nodejs1.png"><img src="../../../../../images/wp-content/uploads/2013/10/nodejs1.png" alt="" width="600" height="503" class="alignleft size-full wp-image-3492" align="center" /></a></p>
+
+<p>In this web application architecture, the UI layer on the browser was the sole domain of front-end engineers. The back-end UI layer was where front-end and back-end engineers met, and then the rest of the server architecture was where the guts of the application lived. That’s where you’d find data processing, caching, authentication, and all other pieces of functionality that were critical to the application. In a sense, the back-end UI layer (often in the form of templates) was a thin layer inside of the application server that only served a front-end as incidental to the business logic it was performing.</p>
+
+<p>So the front-end was the browser and everything else was the back-end despite the common meeting ground on the back-end UI layer. That’s pretty much how it was until very recently.</p>
+
+<h2 id="enter-nodejs">Enter Node.js</h2>
+
+<p>When Node.js was first released, it ignited a level of enthusiasm amongst front-end engineers the likes of which hadn’t been seen since the term “Ajax” was first coined. The idea of writing JavaScript on the server – that place where we go only when forced – was incredibly freeing. No longer would we be forced to muddle through PHP, Ruby, Java, Scala, or any other language in addition to what we were doing on the front-end. If the server could be written in JavaScript, then our complete language knowledge was limited to HTML, CSS, and JavaScript to deliver a complete web application. That promise was, and is, very exciting.</p>
+
+<p>I was never a fan of PHP, but had to use it for my job at Yahoo. I bemoaned the horrible time we had debugging and all of the stupid language quirks that made it easier to shoot yourself in the foot than it should be. Coming from six years of Java on the server, I found the switch to PHP jarring. I believed, and still do believe, that statically typed languages are exactly what you want in the guts of your business logic. As much as I love JavaScript, there are just some things I don’t want written in JavaScript – my shopping cart, for example.</p>
+
+<p>To me, Node.js was never about replacing everything on the server with JavaScript. The fact that you can do such a thing is amazing and empowering, but that doesn’t make it the right choice in every situation. No, to me, I had a very different use in mind: liberating the back-end UI layer from the rest of the back-end.</p>
+
+<p><a href="../../../../../images/wp-content/uploads/2013/10/nodejs2.png"><img src="../../../../../images/wp-content/uploads/2013/10/nodejs2.png" alt="" width="600" height="614" class="alignleft size-full wp-image-3494" /></a></p>
+
+<p>With a lot of companies moving towards service-oriented architectures and RESTful interfaces, it now becomes feasible to split the back-end UI layer out into its own server. If all of an application’s key business logic is encapsulated in REST calls, then all you really need is the ability to make REST calls to build that application. Do back-end engineers care about how users travel from page to page? Do they care whether or not navigation is done using Ajax or with full page refreshes? Do they care whether you’re using jQuery or YUI? Generally, not at all. What they do care about is that data is stored, retrieved, and manipulated in a safe, consistent way.</p>
+
+<p>And this is where Node.js allows front-end engineers a lot of power. The back-end engineers can write their REST services in whatever language they want. We, as front-end engineers, can use Node.js to create the back-end UI layer using pure JavaScript. We can get the actual functionality by making REST calls. The front-end and back-end now have a perfect split of concerns amongst the engineers who are working on those parts. The front-end has expanded back onto the server where the Node.js UI layer now exists, and the rest of the stack remains the realm of back-end engineers.</p>
+
+<h2 id="no-scary">No! Scary!</h2>
+
+<p>This encroachment of the front-end into what was traditionally the back-end is scary for back-end engineers, many of whom might still harbor resentment against JavaScript as a “toy” language. In my experience, it is exactly this that causes the organizational disagreement related to the adoption (or not) of Node.js. The back-end UI layer is disputed land between the front-end and back-end engineers. I can see no reason for this occurring other than it’s the way things always have been. Once you get onto the server, that is the back-end engineer’s responsibility. It’s a turf war plain and simple.</p>
+
+<p>Yet it doesn’t have to be that way. Separating the back-end UI layer out from the back-end business logic just makes sense in a larger web architecture. Why should the front-end engineers care what server-side language is necessary to perform business-critical functions? Why should that decision leak into the back-end UI layer? The needs of the front-end are fundamentally different than the needs of the back-end. If you believe in architectural concepts such as the single responsibility principle, separation of concerns, and modularity, then it seems almost silly that we didn’t have this separation before</p>
+
+<p>Except that before, Node.js didn’t exist. There wasn’t a good option for front-end engineers to build the back-end UI layer on their own. If you were building the back-end in PHP, then why not also use PHP templating to build your UI? If you were using Java on the back-end, then why not use JSP? There was no better choice and front-end developers begrudgingly went along with whatever they had to use because there were no real alternatives. Now there is.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I love Node.js, I love the possibilities that it opens up. I definitely don’t believe that an entire back-end should be written in Node.js just because it can. I do, however, strongly believe that Node.js gives front-end engineers the ability to wholly control the UI layer (front-end and back-end), which is something that allows us to do our jobs more effectively. We know best how to output a quality front-end experience and care very little about how the back-end goes about processing its data. Tell us how to get the data we need and how to tell the business logic what to do with the data, and we are able to craft beautiful, performant, accessible interfaces that customers will love.</p>
+
+<p>Using Node.js for the back-end UI layer also frees up the back-end engineers from worrying about a whole host of problems in which they have no concerns or vested interest. We can get to a web application development panacea: where front-end and back-end only speak to each other in data, allowing rapid iteration of both without affecting the other so long as the RESTful interfaces remain intact. Jump on in, the water’s fine.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2013/10/07/node-js-and-the-new-web-front-end/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

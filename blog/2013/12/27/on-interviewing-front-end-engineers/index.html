@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>On interviewing front-end engineers - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2013/12/27/on-interviewing-front-end-engineers/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="On interviewing front-end engineers">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2013/12/27/on-interviewing-front-end-engineers/" />
+<meta name="og:title" content="On interviewing front-end engineers">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="There was a really nice article written by Philip Walton last week1 regarding his experience interviewing for front-end engineering roles at various companies in San Francisco. To summarize, he was surprised by the...">
+<meta name="keywords" content="Front End Engineers,Interviews,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">On interviewing front-end engineers</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2013-12-27T00:00:00+00:00" itemprop="datePublished">December 27, 2013</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/front-end-engineers" rel="tag">Front End Engineers</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/interviews" rel="tag">Interviews</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>There was a really nice article written by Philip Walton last week<sup><a href="http://css-tricks.com/interviewing-front-end-engineer-san-francisco/">1</a></sup> regarding his experience interviewing for front-end engineering roles at various companies in San Francisco. To summarize, he was surprised by the types of questions he was asked (mostly having to do with computer science concepts) and the types of questions he wasn’t asked (what about the DOM?). I wish I could be surprised, but having lived in Silicon Valley for the past seven years, I have heard these stories over and over again. I don’t believe these problems are specific to the San Francisco Bay Area by any stretch of the imagination – I think it’s more specific to our industry the continuing misunderstanding about what front-end engineers do and the value we add.</p>
+
+<h2 id="we-hire-smart-people">We hire smart people</h2>
+
+<p>When Google was an up-and-coming company, they had a very regimented way of hiring. The idea was that they wanted to hire the smartest people possible and then, once hired, they would figure out where best to apply your smarts. That very necessarily meant that everyone had to come in getting more or less the same interview in an attempt to standardize the bar for “smart” as an engineer. That meant regardless of your area of expertise or focus, you would more or less be getting the same interview as every one else. Once deemed “smart”, you were in but had no idea what you’d be working on until you showed up on campus as a fully-credentialed employee.</p>
+
+<p>I blame the Google approach for a lot of the bad hiring practices related to front-end engineers in the industry today. When I was interviewing with Google, I was taken aback by the questions being asked of me that had nothing to do with my expertise. I remember in a couple of instances pondering if I should just leave, because I had no idea how to use a heap sort to accurately track search query times for billions of requests. That wasn’t what I wanted to be doing with my career, I had no interest in this realm of computer science; what value could this question possibly provide?</p>
+
+<p>(Note: I have no idea if Google still follows this same procedure for hiring. For the purposes of this post I’ll refer to this as “the Google approach” but I in no way mean to insinuate that things work exactly the same now. Also, Google has, and has had, some of the best and brightest front-end engineers in the world working for them. I by no means intend to say that they have done poorly in their front-end hiring.)</p>
+
+<h2 id="human-resources">Human resources</h2>
+
+<p>From a practical point of view, and having gone through my own failed startup, I understand the Google approach. When a company is small and just starting out, you need people who are capable of doing many different things. You don’t have the luxury of having a front-end engineer and a back-end engineer and a database administrator and a site reliability engineer. You need people who can do many things, and it doesn’t even matter if they can do them at an expert level – they just need to do stuff that works and they need to be skilled enough to take on new tasks as they arise.</p>
+
+<p>The Google approach of hiring works really well for this situation. You need a common idea of what is an acceptable skillset for an engineer at your company when resources are constrained. The primary motivation is the fluid mobility of an engineer from task to task, effectively, hiring human resources that can be deployed in any number of ways as priorities and needs shift. Young companies don’t have the luxury of specialists. Everyone needs to be as full stack as possible to get work done.</p>
+
+<p>The good news is that this process produces very good results when you are looking for full stack engineers with a common core skillset. This often is the best way to go when a company is small and growing. Google kept using it even as it got larger and did start to augment it a bit for some specialists who came through (I did get a couple of JavaScript questions while interviewing with them).</p>
+
+<h2 id="growing-up">Growing up</h2>
+
+<p>The biggest problem I’ve seen with growing companies is that they fail to adapt their interview processes as the company gets larger and the complexion of the team changes. As you decide to hire specialists and more experienced engineers, the Google approach to hiring starts to fail. The one-size-fits-all interview no longer applies and you start to run into trouble. It’s a difficult position for a company to be in. If you’ve never hired a specialist before, and it’s a specialty with which you have no experience, how can you formulate an interview process that accurately detects the skillset you seek?</p>
+
+<p>So many companies use an “and” approach. That is, I want you to live up to the common core skillset that we expected of every engineer to this point <em>and</em> be able to do the specialty. This deludes the hiring company into believing that they are keeping their magic bar for engineers in tact and getting someone with the specialty they need. And sometimes that works. But most of the time it doesn’t.</p>
+
+<h2 id="understanding-front-end-engineers">Understanding front-end engineers</h2>
+
+<p>Hiring specialists is an especially difficult task for any company that doesn’t have experience with that specialty. The reason is pretty obvious: specialists, by their nature, have expertise in something that is unique. Specialists care about things that other people don’t care about and willfully ignore things that most people do care about. The brain can only handle so much data, so to get a deep understanding of a particular topic it is often necessary to jettison other information that applies more broadly. For instance, there was a point in time where I could do anything in Visual Basic 4.0. These days, I’d be hard-pressed to come up with any working code short of copying it from the Internet. That wasn’t where I decided I wanted to spend my intellectual capital and so I let it fade.</p>
+
+<p>Front-end engineers are, of course, specialists. We care about things that seem insane to others: understanding differences between dozens of browsers, pixels vs. ems, PNG vs. JPEG, compatibility of JavaScript APIs, how to construct a DOM to represent a UI, and so on. When I try to explain something cool I did to a back-end engineer, their eyes tend to glaze over very quickly. They will never understand the rush I get when I test something across Internet Explorer, Firefox, Chrome, and Safari and have it work for the first time. They will never understand why bold looks better than italic in a particular situation. They will never understand how I find bugs in browsers. They don’t have to.</p>
+
+<h2 id="what-is-important-to-know">What is important to know?</h2>
+
+<p>I’ve been getting asked more and more about whether or not front-end engineers need to understand computer science algorithms and data structures in order to be hired. My simple answer: no. I don’t see these as necessary prerequisites for people to be successful as front-end engineers. The reason is that these aren’t things most front-end engineers do on a day-to-day basis. Do I use algorithms and data structures? Sometimes, but I usually look up the things I need when I have a need for them. That information is easy to find online and there are always people around who know these topics better than me.</p>
+
+<p>The things I look for in a front-end engineer have little to do with traditional computer science concepts. I’ve written before about what makes a good front-end engineer<sup><a href="../../../../2007/08/15/what-makes-a-good-front-end-engineer/index.html">2</a></sup> and how to interview front-end engineers<sup><a href="../../../../2010/01/05/interviewing-the-front-end-engineer/index.html">3</a></sup>, and generally I still agree with everything I wrote in those articles. I want enthusiasm and passion for the web, and understanding of HTML, CSS, and JavaScript, and more importantly, how to use them together to create a solution to a problem.</p>
+
+<p>In general, I believe interviews should be designed to demonstrate skills that a candidate will be expected to use on a day-to-day basis. It’s easy to pat ourselves on the back and chat about O-notation (which I had never even heard of until about 7 years into my career) or heap sort (the first time I encountered heap sort was during my Google interview), but is that a good indicator of whether or not someone will be successful as a front-end engineer? Absolutely not.</p>
+
+<p>I’m not a big fan of trivia questions, either. Trivia questions are “name three ways to align something to the right”. Those questions remind me of high school tests, where you’re testing the ability to regurgitate information rather than seeing a demonstration of skills. What should you ask? Think about what you’re expecting someone to do on a regular basis in the role and ask something that approximates it. Not sure? You can always pull out a past problem that was experienced at the company and ask the candidate how they’d solve it. What I want to know is that if I come to you with a particular type of problem, you are willing and able to solve it.</p>
+
+<p>I want to see how you attack a problem in your domain, how you work through issues and incompatibilities, what your instincts tell you when you get stuck, and whether or not you can take feedback and incorporate it into your process. That’s what makes people successful.</p>
+
+<h2 id="the-lies-we-tell-ourselves">The lies we tell ourselves</h2>
+
+<p>The pervasiveness of questions such as finding palindromes, summing arrays, etc. are usually backed by a belief that these are providing vital pieces of data in sizing up a candidate. The various lies we tell ourselves regarding these questions usually sound like:</p>
+
+<ol>
+  <li><strong>We’re getting good insights into their thought process</strong> – Bullshit. You get good insights into a person’s thought process not with trivia or random questions that are more likely to appear on a college computer science exams, but rather through situational exposure. Giving someone a question that is so far out of their normal work tells you little about their value. Does it tell you how they deal with situations that they are ill-suited to address? Totally. And if that’s your concern, then keep on asking these questions. Most engineers will be dealing with a particular problem space. That’s where questions should focus.</li>
+  <li><strong>We hold everyone to this standard</strong> – This is the mythical measure of smarts. You believe that asking the same questions to everyone gives you a good measuring stick that is applicable everywhere. Except, no such measuring stick exists. Asking Michael Jordan to hit a 100-mph fastball would not give you any good insights into his athletic prowess. There are some people who will be pretty good at everything, but specialists, in particular, tend to let go of knowledge they don’t use every day in order to be specialists. There is no one measure of smarts.</li>
+  <li><strong>It’s worked well to this point</strong> – Usually the cry of a growing company. We hired smart people in the past with these questions, why wouldn’t we continue? The reason you don’t continue is because the shape of the team has changed. You can now hire specialists that know more about their realm than anyone at your company probably does. You can hire the same type of people you’ve been hiring using the same process, but it’s crazy to think that you can hire a very different type of person using the same approach.</li>
+</ol>
+
+<p>I’ve heard these over and over again in my career, and it frustrates me to no end. There is nothing more important than matching interview questions to what a candidate would actually do as an employee. That’s where the useful data lives in the process. Being unable to find palindromes for a word is interesting trivia, but what does it really tell you about the possibility of success if hired?</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In my nearly 14-year career I’ve been responsible for hiring a large number of front-end engineers and I can say, proudly, that I’ve never made a bad hire. Some turned out to be merely good, others turned out to be excellent, but none of them were bad. I did this not by focusing on trivia and things that they wouldn’t actually end up doing on a daily basis; I did it by creating questions that showed me they would be able to take on the tasks I had waiting for them upon arrival. Getting to know people within their problem space is important, and if it hasn’t been clear in this article, this applies to all specialists (not just front-end engineers).</p>
+
+<p>It is typically frustrating for specialists to interview with companies. What makes it better? Giving feedback. If you are the first specialist hired, give feedback about the interview process and see if it can be tweaked. Even if you don’t get hired, give feedback to your recruiter explaining that you didn’t think you were able to show your skills due to the questions you were asked.</p>
+
+<p>Unfortunately, there are still many companies who will apply the one-size-fits-all approach to hiring engineers and you won’t get an interview tailored to your specific skills. Make no mistake, interviewing is hard and growing a company is extremely hard. The best way to change things is from the inside, so give feedback, get involved with your company’s hiring practices, and help make the next experience better for someone else.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://css-tricks.com/interviewing-front-end-engineer-san-francisco/">Interviewing as a Front-end Engineer in San Francisco</a> by Philip Walton (CSS Tricks)</li>
+  <li><a href="../../../../2007/08/15/what-makes-a-good-front-end-engineer/index.html">What makes a good front-end engineer?</a> by me (NCZOnline)</li>
+  <li><a href="../../../../2010/01/05/interviewing-the-front-end-engineer/index.html">Interviewing the front-end engineer</a> by me (NCZOnline)</li>
+</ol>
+
+<h2 id="translations">Translations</h2>
+
+<ul>
+  <li><a href="http://www.zfanw.com/blog/on-interviewing-front-end-engineers.html">Chinese</a></li>
+</ul>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2013/12/27/on-interviewing-front-end-engineers/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

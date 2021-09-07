@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Empty image src can destroy your site - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/11/30/empty-image-src-can-destroy-your-site/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Empty image src can destroy your site">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/11/30/empty-image-src-can-destroy-your-site/" />
+<meta name="og:title" content="Empty image src can destroy your site">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="This is a problem I’ve come across frequently, and since it has come up again recently, I thought I’d explore this issue in the hope that it will save others some trouble. There...">
+<meta name="keywords" content="HTML,PHP,Web Development,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Empty image src can destroy your site</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-11-30T00:00:00+00:00" itemprop="datePublished">November 30, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/html" rel="tag">HTML</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/php" rel="tag">PHP</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/web-development" rel="tag">Web Development</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>This is a problem I’ve come across frequently, and since it has come up again recently, I thought I’d explore this issue in the hope that it will save others some trouble. There are so many problems that this one issue can lead to that it’s baffling browsers still behave this way. The issue? An HTML image, either via <code class="highlighter-rouge">&lt;img&gt;</code> tag or JavaScript <code class="highlighter-rouge">Image</code> object, that has its <code class="highlighter-rouge">src</code> set to “” (an empty string).</p>
+
+<h2 id="the-offending-code">The offending code</h2>
+
+<p>There are basically two patterns to identify. The first pattern is just straight HTML:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;img src="" &gt;
+</code></pre></div></div>
+
+<p>The second pattern is JavaScript and involves the dynamic setting of the <code class="highlighter-rouge">src</code> property on either a newly created image or an existing one:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var img = new Image();
+img.src = "";
+</code></pre></div></div>
+
+<p>Both patterns cause the same effect: another request is made to your server. There are two different ways that browsers do this.</p>
+
+<ul>
+  <li>Internet Explorer makes a request to the directory in which the page is located. For example, if you have a page running at <code class="highlighter-rouge">http://www.example.com/dir/mypage.htm</code> that has one of these patterns, IE makes a request to <code class="highlighter-rouge">http://www.example.com/dir/</code> to fill in the image.</li>
+  <li>Safari and Chrome make a request to the actual page itself. So the page running at <code class="highlighter-rouge">http://www.example.com/dir/mypage.htm</code> results in a second request to <code class="highlighter-rouge">http://www.example.com/dir/mypage.htm</code> to fill in the image.</li>
+</ul>
+
+<p>You’ll note that Opera and Firefox aren’t mentioned at all. Opera behaves as you might expect: it doesn’t do anything when an empty image <code class="highlighter-rouge">src</code> is encountered; the attribute is ignored. Firefox 3 and earlier behave the same as Safari and Chrome, but Firefox 3.5 addressed this issue and no longer sends a request (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=444931">related bug</a>).</p>
+
+<p>Both cases, of course, are problematic because it’s an image making a request for a document. You can easily see this behavior using an HTTP debugging proxy (I highly recommend <a href="http://www.fiddlertool.com/">Fiddler</a>).</p>
+
+<h2 id="the-problems">The problems</h2>
+
+<p>There are two basic problems that this browser behavior causes. The first is a traffic spike.Â  Imagine that have <code class="highlighter-rouge">&lt;img src=""&gt;</code> on the page at <code class="highlighter-rouge">http://www.example.com/</code>. The big problem is that each instance of <code class="highlighter-rouge">&lt;img src=""&gt;</code> makes a request to <code class="highlighter-rouge">/</code> in all browsers, which is the homepage of the domain. Congratulations, you’ve effectively doubled your traffic to the homepage.</p>
+
+<p>For small sites, this may not be that big of a deal; jumping from 10,000 to 20,000 page views probably isn’t going to raise any flags for you or your host. If you’re a page that gets millions of page views per day, and probably have a lot of machines to handle that load, doubling or tripling traffic can be crippling. You can very easily run out of capacity.</p>
+
+<p>Another issue with the traffic increase is the computing power needed to generate that homepage. If the page is personalizable or is updated with some regular frequency, you could be wasting computing cycles creating a page that will never be viewed by anyone.</p>
+
+<p>The second problem is user state corruption. If you’re tracking state in the request, either by cookies or in another way, you have the possibility of destroying data. Even though the image request doesn’t return an image, all of the headers are read and accepted by the browser, including all cookies. While the rest of the response is thrown away, the damage may already be done.</p>
+
+<h2 id="how-does-this-code-happen">How does this code happen?</h2>
+
+<p>The first time I encountered this problem, I naively thought that it was a bad developer writing crappy code. Had this been 2000 or earlier, I probably would have been right. In today’s web development world, however, I’m mostly wrong. Today, there are so many templating engines and content management systems responsible for constructing pages on-the-fly that it’s quite possible for good developers to end up producing pages with this code. All it takes is something as simple as this PHP:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;img src="$imageUrl" &gt;
+</code></pre></div></div>
+
+<p>If some other part of the code is responsible for filling in <code class="highlighter-rouge">$imageUrl</code>, and that code fails, then the offending code gets output to the browser.</p>
+
+<p>In today’s web development world, we’re all doing something along these lines, whether we know it or not. Download a new WordPress theme? Make sure you’ll filled in all default arguments. Using a CMS at work? Make sure all your image URL fields are validated. It’s frightening easy to end up with this bad code on your page.</p>
+
+<h2 id="other-tags-with-problems">Other tags with problems</h2>
+
+<p>Before getting too angry at browser vendors, I think it’s fair to take a look at the <a href="http://www.w3.org/TR/html4/">HTML 4 specification</a>, specifically the part <a href="http://www.w3.org/TR/html4/struct/objects.html#h-13.2">defining images</a>. Even though the specification indicates that the <code class="highlighter-rouge">src</code> attribute should contain a URI, it fails to define the behavior when <code class="highlighter-rouge">src</code> doesn’t contain a URI. Of course, images aren’t the only tags that reference an external resource, and so it should come as no surprise that there are other tags with the same problem.</p>
+
+<p>As it turns out, Internet Explorer is the most sane browser out there. It’s problems are thankfully limited to images with an empty <code class="highlighter-rouge">src</code> attribute. It does make for this by making it a pain to detect, but that will be discussed later.</p>
+
+<p>For other browsers, there are two additional problem scenarios: <code class="highlighter-rouge">&lt;script src=""&gt;</code> and <code class="highlighter-rouge">&lt;link href=""&gt;</code>. Chrome, Safari, and Firefox all initiate another request.</p>
+
+<p>Thankfully, no browser has a problem with <code class="highlighter-rouge">&lt;iframe src=""&gt;</code>, as all correctly do not make another request.</p>
+
+<h2 id="what-can-be-done">What can be done?</h2>
+
+<p>Of course, the best thing to do is eliminate the offending code from your pages whenever possible. That’s fixing the problem at the source. If you can’t do that, though, your next best option is to attempt to detect it on the server and abort any further execution.</p>
+
+<p>For browsers other than IE, it’s not too difficult to detect what’s going on from the server side. Since the request comes back to the exact same location that contains the offending code, there are two things you can do. First, you can check the request’s referrer. A request resulting from this issue coming from <code class="highlighter-rouge">http://www.example.com/dir/mypage.htm</code> will have a referrer of <code class="highlighter-rouge">http://www.example.com/dir/mypage.htm</code>. Assuming that there are <em>no valid situations under which your page links to itself</em>, this is a fairly safe way to detect these requests on the server-side.</p>
+
+<p>Internet Explorer throws a wrench into the works by sending the request to the directory of the page instead of the page itself. If you’re only using path URLs (i.e., nothing with a file extension), then the effect is the same and you can use the same referrer detect. Some sample code for use with PHP:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+    <span class="c1">//Works for IE only when using path URLs and not file URLs</span>
+
+    <span class="c1">//get the referrer</span>
+    <span class="nv">$referrer</span> <span class="o">=</span> <span class="k">isset</span><span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">'HTTP_REFERER'</span><span class="p">])</span> <span class="o">?</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">'HTTP_REFERER'</span><span class="p">]</span> <span class="o">:</span> <span class="s1">''</span><span class="p">;</span>
+
+    <span class="c1">//current URL (assuming HTTP and default port)</span>
+    <span class="nv">$url</span> <span class="o">=</span> <span class="s2">"http://"</span> <span class="mf">.</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">'HTTP_HOST'</span><span class="p">]</span><span class="nc">Â</span><span class="err"> </span> <span class="mf">.</span> <span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">'REQUEST_URI'</span><span class="p">];</span>
+
+    <span class="c1">//make sure they're not the same</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$referrer</span> <span class="o">==</span> <span class="nv">$url</span><span class="p">){</span>
+        <span class="k">exit</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<p>The goal here is to detect that the page refers to itself and then <code class="highlighter-rouge">exit</code> immediately to prevent the server from doing anything additional. Another option, and probably a good idea, is to log that this has happened so it shows up on a dashboard for evaluation.</p>
+
+<p>Another way to attempt to detect this type of request on the server is by looking at the HTTP <code class="highlighter-rouge">Accept</code> header. All browsers except IE send different HTTP <code class="highlighter-rouge">Accept</code> headers for image requests than they do for HTML requests. As an example, Chrome sends the following <code class="highlighter-rouge">Accept</code> header for an HTML request:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Accept: application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5
+</code></pre></div></div>
+
+<p>Compare this to the <code class="highlighter-rouge">Accept</code> header that is sent for an image, script, or style sheet request:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Accept: */*
+</code></pre></div></div>
+
+<p>Firefox, Safari, and Opera all send roughly the same <code class="highlighter-rouge">Accept</code> header for HTML requests, meaning that you can check for an individual part, such as “text/html”, to determine if the request is an HTML request or something else. Unfortunately, IE only sends the latter <code class="highlighter-rouge">Accept</code> header for all requests, so there is no way to differentiate this on the server. For browsers other than IE, you can use something like the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?php</span>
+    <span class="c1">//Warning: Doesn't work for IE!</span>
+
+    <span class="c1">//make sure the Accept header has 'text/htmnl' in it</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">strpos</span><span class="p">(</span><span class="nv">$_SERVER</span><span class="p">[</span><span class="s1">'HTTP_ACCEPT'</span><span class="p">],</span> <span class="s1">'text/html'</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span><span class="p">){</span>
+        <span class="k">exit</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="cp">?&gt;</span>
+</code></pre></div></div>
+
+<p>This check is a little safer than the previous, but its big downside is that it doesn’t work in IE.</p>
+
+<h2 id="why-does-this-happen">Why does this happen?</h2>
+
+<p>The real problem is the way that URI resolution is performed in browsers. This behavior is defined in <a href="http://tools.ietf.org/html/rfc3986">RFC 3986 – Uniform Resource Identifiers</a>. When an empty string is encountered as a URI, it’s considered a relative URI and is resolved according to the algorithm defined in <a href="http://tools.ietf.org/html/rfc3986#section-5.2">section 5.2</a>. This specific example, an empty string, is listed in <a href="http://tools.ietf.org/html/rfc3986#section-5.4">section 5.4</a>. Firefox, Safari, and Chrome are all resolving an empty string correctly per the specification, while Internet Explorer is resolving it incorrectly, apparently in line with an earlier version of the specification, <a href="http://tools.ietf.org/html/rfc2396">RFC 2396 – Uniform Resource Identifiers</a> (this was obsoleted by RFC 3986). So technically, the browsers are doing what they’re supposed to do to resolve relative URIs. The problem is that in this context, the empty string is clearly unintentional.</p>
+
+<h2 id="its-time-to-fix-this">It’s time to fix this</h2>
+
+<p>This is a serious flaw in browsers, and I’m not sure you can look at it in any way where it’s not considered a bug. The inconsistent behavior, from Opera completely ignoring all invalid external references, to IE falling victim only for <code class="highlighter-rouge">&lt;img&gt;</code> tags while others do the same for <code class="highlighter-rouge">&lt;script&gt;</code> and <code class="highlighter-rouge">&lt;link&gt;</code> as well, seem to indicate a bug in browsers. Though browsers seem to be following correct URI resolution (except IE), I think this is a case where common sense must win over the letter of the specification. There is no way that an image can possibly render an HTML page, and the same goes for <code class="highlighter-rouge">&lt;script&gt;</code> and <code class="highlighter-rouge">&lt;link&gt;</code>. This bug has cost web developers hundreds of lost hours and has potentially brought down sites, pushing servers over capacity. Enough is enough. It’s time for the browser vendors to fix this bug. I’ve taken the liberty of filing or locating bugs:</p>
+
+<ul>
+  <li>Firefox: <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=531327">Bug 531327</a></li>
+  <li>WebKit (Safari/Chrome): <a href="https://bugs.webkit.org/show_bug.cgi?id=30303">Bug 30303</a></li>
+</ul>
+
+<p>Please show support for fixing these bugs, as I don’t see any reason why we should still be dealing with this browser behavior. And if anyone can get the note to Microsoft so they can address IE, we’d all greatly appreciate it.</p>
+
+<h2 id="html5-to-the-rescue">HTML5 to the rescue</h2>
+
+<p>HTML5 adds to the description of the <code class="highlighter-rouge">&lt;img&gt;</code> tag’s <code class="highlighter-rouge">src</code> attribute to instruct browsers not to make an additional request in <a href="http://www.w3.org/TR/html5/text-level-semantics.html#attr-img-src">section 4.8.2</a>:</p>
+
+<blockquote>
+  <p>The <code class="highlighter-rouge">src</code> attribute must be present, and must contain a valid URL referencing a non-interactive, optionally animated, image resource that is neither paged nor scripted. If the base URI of the element is the same as the document’s address, then the src attribute’s value must not be the empty string.</p>
+</blockquote>
+
+<p>Hopefully, browsers won’t have this problem in the future. Unfortunately, there is no such clause for <code class="highlighter-rouge">&lt;script src=""&gt;</code> and <code class="highlighter-rouge">&lt;link href=""&gt;</code>. Maybe there’s still time to make that adjustment to ensure browsers don’t accidentally implement this behavior.</p>
+
+<p><strong>Update (2 Dec 2009):</strong> It appears that <code class="highlighter-rouge">&lt;img src=""&gt;</code> has been patched in Firefox 3.5 (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=444931">bug 444931</a>). Problems with <code class="highlighter-rouge">&lt;script src=""&gt;</code> and <code class="highlighter-rouge">&lt;link href=""&gt;</code> still remain. Also, added a reference to the HTML5 section that aims to help this issue.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/11/30/empty-image-src-can-destroy-your-site/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

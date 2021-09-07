@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>How to setup and deploy a web application on Dokku - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="How to setup and deploy a web application on Dokku">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/" />
+<meta name="og:title" content="How to setup and deploy a web application on Dokku">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Dokku is a lightweight, Heroku-like utility for deploying web applications. While there is a quickstart, web-based UI for getting started, there are a bunch of steps you’ll need to go through in order...">
+<meta name="keywords" content="Dokku,Docker,Web Applications,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="../../../../index.html"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="../../../../books/index.html" class="dark-text no-underline">Books</a></li>
+                <li><a href="../../../../reading/index.html" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="../../../../donate/index.html" class="dark-text no-underline">Donate</a></li>
+                <li><a href="../../../../contact/index.html" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">How to setup and deploy a web application on Dokku</h1>
+        <p itemprop="description" class="no-margin-top">The path to set up a web application on Dokku is straightforward if you know the correct steps.</p>
+        <div class="post-meta smaller-font dark-border-top dark-border-bottom">
+            <p class="byline">Posted at <time datetime="2021-02-25T00:00:00+00:00" itemprop="datePublished">February 25, 2021</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+<p><a href="https://dokku.com">Dokku</a> is a lightweight, Heroku-like utility for deploying web applications. While there is a quickstart, web-based UI for getting started, there are a bunch of steps you’ll need to go through in order to get your application deployed.</p>
+
+<h2 id="create-the-app">Create the app</h2>
+
+<p>The first step is to SSH into the droplet and create the application. I’ll use the name <code class="highlighter-rouge">appname</code> for this post:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dokku apps:create appname
+</code></pre></div></div>
+
+<h2 id="add-a-domain-for-the-app">Add a domain for the app</h2>
+
+<p>Dokku can use virtual hosts to identify which application to route a request to. You can <a href="https://dokku.com/docs/configuration/domains/">add a hostname</a> to your application like this:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dokku domains:add appname app.example.com
+</code></pre></div></div>
+
+<p>Here, the hostname is set to <code class="highlighter-rouge">app.example.com</code>, so all requests coming in to that host will route to <code class="highlighter-rouge">appname</code>.</p>
+
+<p><strong>Important:</strong> Don’t forget to setup the DNS settings for your hostname.</p>
+
+<h2 id="add-a-deploy-key">Add a deploy key</h2>
+
+<p>If you are using your Dokku application in production, you probably want to <a href="https://dokku.com/docs/deployment/user-management/#adding-ssh-keys">add a separate key</a> for a deployment account.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dokku ssh-keys:add KEY_NAME /path/to/key.pub
+</code></pre></div></div>
+
+<p><code class="highlighter-rouge">KEY_NAME</code> is just the name of the key so you can refer to it later.</p>
+
+<h2 id="setup-ssl">Setup SSL</h2>
+
+<p>By default, your Dokku application will be running over plain HTTP without any SSL certificates. To enable SSL, you’ll need to install the <a href="https://github.com/dokku/dokku-letsencrypt">Let’s Encrypt Dokku plugin</a>. To enable Let’s Encrypt on your Dokku application, follow these steps (credit: <a href="https://www.robertcooper.me/setup-dokku-digital-ocean">Setup Dokku on Digital Ocean</a>):</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Install the plugin</span>
+<span class="nb">sudo </span>dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
+
+<span class="c"># Set an email address for Let's Encrypt to use</span>
+dokku config:set <span class="nt">--no-restart</span> appname <span class="nv">DOKKU_LETSENCRYPT_EMAIL</span><span class="o">=</span>name@example.com
+
+<span class="c"># Install Let's Encrypt for the given app</span>
+dokku letsencrypt appname
+
+<span class="c"># Set a cron job to automatically renew Let's Encrypt certificates</span>
+dokku letsencrypt:cron-job <span class="nt">--add</span>
+</code></pre></div></div>
+
+<h2 id="deploy-your-application">Deploy your application</h2>
+
+<p>With all of that setup, you’re now ready to deploy your application. To do so, add a Git remote that points to the Dokku location:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git remote add dokku dokku@app.example.com:appname
+</code></pre></div></div>
+
+<p>Then, you can deploy by pushing the code to Dokku:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git push dokku master
+</code></pre></div></div>
+
+<p>Dokku expects the primary branch to be <code class="highlighter-rouge">master</code>, so if your primary branch is <code class="highlighter-rouge">main</code>, then use this command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git push dokku main:master
+</code></pre></div></div>
+
+<p>Enjoy your newly deployed Dokku app!</p>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://patreon.com/nzakas" class="link-btn cta-btn">Donate with Patreon</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Recent Posts</h2>
+        <ul class="block-list">
+        
+        <li><a href="https://humanwhocodes.com/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+        
+        <li><a href="https://humanwhocodes.com/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+        
+        <li><a href="https://humanwhocodes.com/blog/2015/09/my-favorite-interview-question/">My favorite interview question</a></li>
+        
+        <li><a href="https://humanwhocodes.com/blog/2009/07/28/the-best-way-to-load-external-javascript/">The best way to load external JavaScript</a></li>
+        
+        <li><a href="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/">HTTP cookies explained</a></li>
+        
+        </ul>
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://humanwhocodes.com/emails/success.html" onsubmit="return submitEmailForm(this)">
+            <div id="mc_embed_signup_scroll">
+                <label>Enter your email address:
+                    <input type="email" value="" style="width:100%" name="email" required>
+                </label>
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://humanwhocodes.com/github.com/scoutapm-sponsorships"><img src="https://humanwhocodes.com/avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&amp;v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://humanwhocodes.com/geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://humanwhocodes.com/geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://humanwhocodes.com/amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="../../03/create-user-linux-ssh-key/index.html">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="index.html">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="../how-to-regain-jenkins-web-access-after-lockout/index.html">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="../../../2020/10/create-typescript-declarations-from-javascript-jsdoc/index.html">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="../../../2020/10/read-environment-variables-deno/index.html">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="../../../2020/08/validate-github-webhook-signature-nodejs/index.html">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="../../../2020/07/eleventy-heading-ids/index.html">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="../../../2020/02/optionally-await-function-result/index.html">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="../../../2019/05/jest-globals-intellisense-visual-studio-code/index.html">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="../../../2019/05/nodejs-read-stream-promise/index.html">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='../../../../blog/2021/index.html'>2021</a></li>
+
+                <li><a href='../../../../blog/2020/index.html'>2020</a></li>
+
+                <li><a href='../../../../blog/2019/index.html'>2019</a></li>
+
+                <li><a href='../../../../blog/2018/index.html'>2018</a></li>
+
+
+                <li><a href='../../../../blog/2016/index.html'>2016</a></li>
+
+                <li><a href='../../../../blog/2015/index.html'>2015</a></li>
+
+                <li><a href='../../../../blog/2014/index.html'>2014</a></li>
+
+                <li><a href='../../../../blog/2013/index.html'>2013</a></li>
+
+                <li><a href='../../../../blog/2012/index.html'>2012</a></li>
+
+                <li><a href='../../../../blog/2011/index.html'>2011</a></li>
+
+                <li><a href='../../../../blog/2010/index.html'>2010</a></li>
+
+                <li><a href='../../../../blog/2009/index.html'>2009</a></li>
+
+                <li><a href='../../../../blog/2008/index.html'>2008</a></li>
+
+                <li><a href='../../../../blog/2007/index.html'>2007</a></li>
+
+                <li><a href='../../../../blog/2006/index.html'>2006</a></li>
+
+                <li><a href='../../../../blog/2005/index.html'>2005</a></li>
+
+                <li><a href='../../../../blog/2004/index.html'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://humanwhocodes.com/eslint.org/index.html">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://humanwhocodes.com/medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://humanwhocodes.com/www.twitter.com/slicknet/index.html">Twitter</a></li>
+                    <li><a href="https://humanwhocodes.com/www.github.com/nzakas/index.html">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://humanwhocodes.com/www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://humanwhocodes.com/www.slideshare.net/nzakas/presentations/index.html">Slideshare</a></li>
+                    <li><a href="https://humanwhocodes.com/amazon.com/author/nzakas/index.html">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="https://humanwhocodes.com/creativecommons.org/licenses/by-nc-nd/3.0/index.html" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

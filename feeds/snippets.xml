@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+  xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+  >
+  <channel>
+    <title xml:lang="en">Human Who Codes</title>
+    <atom:link href="https://humanwhocodes.com/feeds/snippets.xml" rel="self" type="application/rss+xml"/>
+    <link>https://humanwhocodes.com/</link>
+    <pubDate>Thu, 02 Sep 2021 15:09:11 +0000</pubDate>
+    <lastBuildDate>Thu, 02 Sep 2021 15:09:11 +0000</lastBuildDate>
+    <language>en-US</language>
+    <generator>Jekyll v3.8.7</generator>
+    <description>The Official Web Site of Nicholas C. Zakas</description>
+
+    
+    
+    <item>
+      <title>Creating a new user with an SSH key on Linux</title>
+      <link>https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/</link>
+      <pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate>
+      <dc:creator>Nicholas C. Zakas</dc:creator>
+      
+      <category>Linux</category>
+      
+      <category>Users</category>
+      
+      
+      <category>Tutorial</category>
+      
+      <guid isPermaLink="true">https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/</guid>
+      <description>First, create a new user with useradd: sudo useradd -m -d /home/username -s /bin/bash username Next, set the user’s password: passwd username Then, copy the contents of the user’s public key into /home/username/.ssh/authorized_keys. This is a plain text file where you can paste one public key per line. After that, set up the correct permissions...</description>
+      <content:encoded>&lt;p&gt;First, create a new user with &lt;code class=&quot;highlighter-rouge&quot;&gt;useradd&lt;/code&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;useradd &lt;span class=&quot;nt&quot;&gt;-m&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; /home/username &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; /bin/bash username
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Next, set the user’s password:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;passwd username
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then, copy the contents of the user’s public key into &lt;code class=&quot;highlighter-rouge&quot;&gt;/home/username/.ssh/authorized_keys&lt;/code&gt;. This is a plain text file where you can paste one public key per line.&lt;/p&gt;
+
+&lt;p&gt;After that, set up the correct permissions for both the &lt;code class=&quot;highlighter-rouge&quot;&gt;.ssh&lt;/code&gt; directory and the &lt;code class=&quot;highlighter-rouge&quot;&gt;authorized_keys&lt;/code&gt; file:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# ensure the directory ir owned by the new user&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;chown&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-R&lt;/span&gt; username:username /home/username/.ssh
+
+&lt;span class=&quot;c&quot;&gt;# make sure only the new user has permissions&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;chmod &lt;/span&gt;700 /home/username/.ssh
+&lt;span class=&quot;nb&quot;&gt;chmod &lt;/span&gt;600 /home/username/.ssh/authorized_keys
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Last, if you want the new user to have sudo access, be sure to add them to the &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo&lt;/code&gt; group:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;usermod &lt;span class=&quot;nt&quot;&gt;-a&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-G&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;username
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If you don’t have a &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo&lt;/code&gt; group,  you can manually edit the &lt;code class=&quot;highlighter-rouge&quot;&gt;/etc/sudoers&lt;/code&gt; file.&lt;/p&gt;
+</content:encoded>
+    </item>
+    
+    <item>
+      <title>How to setup and deploy a web application on Dokku</title>
+      <link>https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/</link>
+      <pubDate>Thu, 25 Feb 2021 00:00:00 +0000</pubDate>
+      <dc:creator>Nicholas C. Zakas</dc:creator>
+      
+      <category>Dokku</category>
+      
+      <category>Docker</category>
+      
+      <category>Web Applications</category>
+      
+      
+      <category>Programming</category>
+      
+      <guid isPermaLink="true">https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/</guid>
+      <description>Dokku is a lightweight, Heroku-like utility for deploying web applications. While there is a quickstart, web-based UI for getting started, there are a bunch of steps you’ll need to go through in order to get your application deployed. Create the app The first step is to SSH into the droplet and create the application. I’ll...</description>
+      <content:encoded>&lt;p&gt;&lt;a href=&quot;https://dokku.com&quot;&gt;Dokku&lt;/a&gt; is a lightweight, Heroku-like utility for deploying web applications. While there is a quickstart, web-based UI for getting started, there are a bunch of steps you’ll need to go through in order to get your application deployed.&lt;/p&gt;
+
+&lt;h2 id=&quot;create-the-app&quot;&gt;Create the app&lt;/h2&gt;
+
+&lt;p&gt;The first step is to SSH into the droplet and create the application. I’ll use the name &lt;code class=&quot;highlighter-rouge&quot;&gt;appname&lt;/code&gt; for this post:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;dokku apps:create appname
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;add-a-domain-for-the-app&quot;&gt;Add a domain for the app&lt;/h2&gt;
+
+&lt;p&gt;Dokku can use virtual hosts to identify which application to route a request to. You can &lt;a href=&quot;https://dokku.com/docs/configuration/domains/&quot;&gt;add a hostname&lt;/a&gt; to your application like this:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;dokku domains:add appname app.example.com
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Here, the hostname is set to &lt;code class=&quot;highlighter-rouge&quot;&gt;app.example.com&lt;/code&gt;, so all requests coming in to that host will route to &lt;code class=&quot;highlighter-rouge&quot;&gt;appname&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Important:&lt;/strong&gt; Don’t forget to setup the DNS settings for your hostname.&lt;/p&gt;
+
+&lt;h2 id=&quot;add-a-deploy-key&quot;&gt;Add a deploy key&lt;/h2&gt;
+
+&lt;p&gt;If you are using your Dokku application in production, you probably want to &lt;a href=&quot;https://dokku.com/docs/deployment/user-management/#adding-ssh-keys&quot;&gt;add a separate key&lt;/a&gt; for a deployment account.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;dokku ssh-keys:add KEY_NAME /path/to/key.pub
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;KEY_NAME&lt;/code&gt; is just the name of the key so you can refer to it later.&lt;/p&gt;
+
+&lt;h2 id=&quot;setup-ssl&quot;&gt;Setup SSL&lt;/h2&gt;
+
+&lt;p&gt;By default, your Dokku application will be running over plain HTTP without any SSL certificates. To enable SSL, you’ll need to install the &lt;a href=&quot;https://github.com/dokku/dokku-letsencrypt&quot;&gt;Let’s Encrypt Dokku plugin&lt;/a&gt;. To enable Let’s Encrypt on your Dokku application, follow these steps (credit: &lt;a href=&quot;https://www.robertcooper.me/setup-dokku-digital-ocean&quot;&gt;Setup Dokku on Digital Ocean&lt;/a&gt;):&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Install the plugin&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git
+
+&lt;span class=&quot;c&quot;&gt;# Set an email address for Let's Encrypt to use&lt;/span&gt;
+dokku config:set &lt;span class=&quot;nt&quot;&gt;--no-restart&lt;/span&gt; appname &lt;span class=&quot;nv&quot;&gt;DOKKU_LETSENCRYPT_EMAIL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;name@example.com
+
+&lt;span class=&quot;c&quot;&gt;# Install Let's Encrypt for the given app&lt;/span&gt;
+dokku letsencrypt appname
+
+&lt;span class=&quot;c&quot;&gt;# Set a cron job to automatically renew Let's Encrypt certificates&lt;/span&gt;
+dokku letsencrypt:cron-job &lt;span class=&quot;nt&quot;&gt;--add&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;deploy-your-application&quot;&gt;Deploy your application&lt;/h2&gt;
+
+&lt;p&gt;With all of that setup, you’re now ready to deploy your application. To do so, add a Git remote that points to the Dokku location:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git remote add dokku dokku@app.example.com:appname
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then, you can deploy by pushing the code to Dokku:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git push dokku master
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Dokku expects the primary branch to be &lt;code class=&quot;highlighter-rouge&quot;&gt;master&lt;/code&gt;, so if your primary branch is &lt;code class=&quot;highlighter-rouge&quot;&gt;main&lt;/code&gt;, then use this command:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;git push dokku main:master
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Enjoy your newly deployed Dokku app!&lt;/p&gt;
+</content:encoded>
+    </item>
+    
+    <item>
+      <title>How to regain Jenkins web access after being locked out</title>
+      <link>https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/</link>
+      <pubDate>Thu, 18 Feb 2021 00:00:00 +0000</pubDate>
+      <dc:creator>Nicholas C. Zakas</dc:creator>
+      
+      <category>Jenkins</category>
+      
+      <category>Continuous Integration</category>
+      
+      <category>Automation</category>
+      
+      
+      <category>Programming</category>
+      
+      <guid isPermaLink="true">https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/</guid>
+      <description>Jenkins is a fantastic continuous integration tool that I’ve used on a variety of projects. One of its problems, however, is that sometimes authentication can get messed up (frequently via an authentication plugin) and you can end up locked out of the web interface. As long as you have access the Jenkins host, though, it’s...</description>
+      <content:encoded>&lt;p&gt;&lt;a href=&quot;http://jenkins.io&quot;&gt;Jenkins&lt;/a&gt; is a fantastic continuous integration tool that I’ve used on a variety of projects. One of its problems, however, is that sometimes authentication can get messed up (frequently via an authentication plugin) and you can end up locked out of the web interface. As long as you have access the Jenkins host, though, it’s easy to regain access.&lt;/p&gt;
+
+&lt;p&gt;First, SSH into your host with an account that has &lt;code class=&quot;highlighter-rouge&quot;&gt;sudo&lt;/code&gt; access.&lt;/p&gt;
+
+&lt;p&gt;Then, you need to open the &lt;code class=&quot;highlighter-rouge&quot;&gt;config.xml&lt;/code&gt; file in your editor of choice:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ sudo vi $JENKINS_HOME/config.xml
+
+# or
+
+$ sudo vi /var/lib/jenkins/config.xml
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Look for this code in the &lt;code class=&quot;highlighter-rouge&quot;&gt;config.xml&lt;/code&gt; file:&lt;/p&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;useSecurity&amp;gt;&lt;/span&gt;true&lt;span class=&quot;nt&quot;&gt;&amp;lt;/useSecurity&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;And change it to this:&lt;/p&gt;
+
+&lt;div class=&quot;language-xml highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nt&quot;&gt;&amp;lt;useSecurity&amp;gt;&lt;/span&gt;false&lt;span class=&quot;nt&quot;&gt;&amp;lt;/useSecurity&amp;gt;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Exit and save &lt;code class=&quot;highlighter-rouge&quot;&gt;config.xml&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Keep in mind that this disable all authentication for Jenkins, which means anyone who can access the URL will have complete access. Only proceed to the next step when you are certain it is safe to do so.&lt;/p&gt;
+
+&lt;p&gt;The last step is to restart Jenkins:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$  sudo service jenkins restart
+
+# or
+
+$  sudo systemctl restart jenkins
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;At this point, your Jenkins instance is up and accessible through the web interface without any security. Go to &lt;code class=&quot;highlighter-rouge&quot;&gt;/configureSecurity&lt;/code&gt; immediately to set up your security settings.&lt;/p&gt;
+</content:encoded>
+    </item>
+    
+    <item>
+      <title>Create TypeScript declarations from JavaScript and JSDoc</title>
+      <link>https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/</link>
+      <pubDate>Thu, 15 Oct 2020 00:00:00 +0000</pubDate>
+      <dc:creator>Nicholas C. Zakas</dc:creator>
+      
+      <category>JavaScript</category>
+      
+      <category>TypeScript</category>
+      
+      <category>JSDoc</category>
+      
+      
+      <category>Programming</category>
+      
+      <guid isPermaLink="true">https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/</guid>
+      <description>For a variety of reasons, I prefer to write my code in vanilla JavaScript with JSDoc comments rather than writing in TypeScript. Today’s smart code editors, like Visual Studio Code, are able to read type information from JSDoc and provide Intellisense options as you code. However, those consuming your code may not get the same...</description>
+      <content:encoded>&lt;p&gt;For a variety of reasons, I prefer to write my code in vanilla JavaScript with &lt;a href=&quot;https://jsdoc.app/&quot;&gt;JSDoc&lt;/a&gt; comments rather than writing in TypeScript. Today’s smart code editors, like Visual Studio Code, are able to read type information from JSDoc and provide Intellisense options as you code. However, those consuming your code may not get the same benefit unless you include a TypeScript declaration file along with the source files. Fortunately, TypeScript allows you to generate type declaration files directly from JavaScript files and will use information in JSDoc comments to assign the appropriate types.&lt;/p&gt;
+
+&lt;p&gt;First, make sure you have &lt;a href=&quot;https://typescriptlang.org&quot;&gt;TypeScript&lt;/a&gt; installed:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ npm install typescript --save-dev
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then, create a &lt;code class=&quot;highlighter-rouge&quot;&gt;tsconfig.json&lt;/code&gt; file with the following options:&lt;/p&gt;
+
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;include&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;**/*.js&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;compilerOptions&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;declaration&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;emitDeclarationOnly&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;allowJs&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Make sure that &lt;code class=&quot;highlighter-rouge&quot;&gt;include&lt;/code&gt; specifies the files you want to generate declaration files for. The &lt;code class=&quot;highlighter-rouge&quot;&gt;compilerOptions&lt;/code&gt; are:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;declaration&lt;/code&gt; - generate the declarations for the files specified&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;emitDeclarationOnly&lt;/code&gt; - only output &lt;code class=&quot;highlighter-rouge&quot;&gt;.d.ts&lt;/code&gt; files and not source files&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;allowJs&lt;/code&gt; - expect the source files to be JavaScript&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now you can run &lt;code class=&quot;highlighter-rouge&quot;&gt;tsc&lt;/code&gt; to generate your &lt;code class=&quot;highlighter-rouge&quot;&gt;.d.ts&lt;/code&gt; files:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ tsc
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Or you can omit the &lt;code class=&quot;highlighter-rouge&quot;&gt;tsconfig.json&lt;/code&gt; file and just pass the corresponding flags on the command line, like this:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ tsc --allowJs -d --emitDeclarationOnly src/foo.js
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In this example, &lt;code class=&quot;highlighter-rouge&quot;&gt;tsc&lt;/code&gt; will output &lt;code class=&quot;highlighter-rouge&quot;&gt;src/foo.d.ts&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;Just make sure the declaration file(s) are part of the package that you are publishing by using the &lt;a href=&quot;https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html#including-declarations-in-your-npm-package&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;types&lt;/code&gt;&lt;/a&gt; field in your &lt;code class=&quot;highlighter-rouge&quot;&gt;package.json&lt;/code&gt; file.&lt;/p&gt;
+</content:encoded>
+    </item>
+    
+    <item>
+      <title>How to read environment variables in Deno using JavaScript</title>
+      <link>https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/</link>
+      <pubDate>Fri, 09 Oct 2020 00:00:00 +0000</pubDate>
+      <dc:creator>Nicholas C. Zakas</dc:creator>
+      
+      <category>Deno</category>
+      
+      <category>Environment Variables</category>
+      
+      <category>JavaScript</category>
+      
+      
+      <category>Programming</category>
+      
+      <guid isPermaLink="true">https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/</guid>
+      <description>The way to read environment variables in Deno has changed from its early incarnation. Originally, there was a Deno.env() function that returned an object containing all of the defined environment variables. For v1.0.0, Deno switched to a Deno.env object with a get() method. First, in order to read environment variables, you must run your code...</description>
+      <content:encoded>&lt;p&gt;The way to read environment variables in &lt;a href=&quot;https://deno.land&quot;&gt;Deno&lt;/a&gt; has changed from its early incarnation. Originally, there was a &lt;code class=&quot;highlighter-rouge&quot;&gt;Deno.env()&lt;/code&gt; function that returned an object containing all of the defined environment variables. For v1.0.0, Deno switched to a &lt;code class=&quot;highlighter-rouge&quot;&gt;Deno.env&lt;/code&gt; object with a &lt;code class=&quot;highlighter-rouge&quot;&gt;get()&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;p&gt;First, in order to read environment variables, you must run your code with the &lt;code class=&quot;highlighter-rouge&quot;&gt;--allow-env&lt;/code&gt; flag, such as:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;$ deno run --allow-env index.js
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Then, inside your JavaScript, you can read an environment variable by passing a string to &lt;code class=&quot;highlighter-rouge&quot;&gt;Deno.env.get()&lt;/code&gt;, such as:&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;PORT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Deno&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kd&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;PORT&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;You can also retrieve an object whose properties are all of the environment variables, similar to &lt;code class=&quot;highlighter-rouge&quot;&gt;process.env&lt;/code&gt; in &lt;a href=&quot;https://nodejs.org&quot;&gt;Node.js&lt;/a&gt;:&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;env&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;Deno&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;toObject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;PORT&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;PORT&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The &lt;code class=&quot;highlighter-rouge&quot;&gt;Deno.env&lt;/code&gt; object also has &lt;code class=&quot;highlighter-rouge&quot;&gt;set()&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;delete()&lt;/code&gt; methods that let you change the contents of the &lt;code class=&quot;highlighter-rouge&quot;&gt;Deno.env&lt;/code&gt; object. You probably don’t want to use those methods regularly, however, they can be helpful for debugging purposes.&lt;/p&gt;
+</content:encoded>
+    </item>
+    
+    <item>
+      <title>How to validate the signature of a GitHub webhook using Node.js</title>
+      <link>https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/</link>
+      <pubDate>Wed, 05 Aug 2020 00:00:00 +0000</pubDate>
+      <dc:creator>Nicholas C. Zakas</dc:creator>
+      
+      <category>Node.js</category>
+      
+      <category>GitHub</category>
+      
+      <category>Security</category>
+      
+      <category>Webhooks</category>
+      
+      <category>Crypto</category>
+      
+      
+      <category>Web Development</category>
+      
+      <guid isPermaLink="true">https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/</guid>
+      <description>When you have GitHub send a webhook to your server, you can optionally specify a secret that is used to generate a signature for the webhook request. It’s highly recommend to use the secret to check the signature of the payload to ensure it’s actually coming from GitHub. You’ll need to generate a signature based...</description>
+      <content:encoded>&lt;p&gt;When you have GitHub send a &lt;a href=&quot;https://docs.github.com/en/developers/webhooks-and-events/about-webhooks&quot;&gt;webhook&lt;/a&gt; to your server, you can optionally specify a &lt;a href=&quot;https://docs.github.com/en/developers/webhooks-and-events/securing-your-webhooks&quot;&gt;secret&lt;/a&gt; that is used to generate a signature for the webhook request. It’s highly recommend to use the secret to check the signature of the payload to ensure it’s actually coming from GitHub.&lt;/p&gt;
+
+&lt;p&gt;You’ll need to generate a signature based on the request body and the secret you gave to GitHub when configuring the webhook. For JSON-based payloads, you can can calculate and verify the signature using this JavaScript:&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;crypto&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;WEBHOOK_SECRET&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;env&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;validateJsonWebhook&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// calculate the signature&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;expectedSignature&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;sha1=&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;crypto&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;createHmac&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;sha1&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;WEBHOOK_SECRET&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;update&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;JSON&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;stringify&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;body&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;digest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;hex&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// compare the signature against the one in the request&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;signature&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;request&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;headers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;x-hub-signature&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;signature&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!==&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;expectedSignature&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;Invalid signature.&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;As long as &lt;code class=&quot;highlighter-rouge&quot;&gt;request.body&lt;/code&gt; is an object (which most Node.js server frameworks will provide JSON requests), then the &lt;code class=&quot;highlighter-rouge&quot;&gt;validateJsonWebhook()&lt;/code&gt; function will work.&lt;/p&gt;
+</content:encoded>
+    </item>
+    
+    <item>
+      <title>How to generate ID attributes in headings using Eleventy</title>
+      <link>https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/</link>
+      <pubDate>Tue, 28 Jul 2020 00:00:00 +0000</pubDate>
+      <dc:creator>Nicholas C. Zakas</dc:creator>
+      
+      <category>Eleventy</category>
+      
+      <category>Static Site Generators</category>
+      
+      <category>HTML</category>
+      
+      
+      <category>Web Development</category>
+      
+      <guid isPermaLink="true">https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/</guid>
+      <description>When switching from Jekyll to Eleventy, I discovered that my headings no longer had id attributes in the rendered HTML. This meant that I couldn’t link directly to headings in my (sometimes very long) pages. After searching through the Eleventy documentation, I discovered that this wasn’t supported in Eleventy and I’d need to use a...</description>
+      <content:encoded>&lt;p&gt;When switching from &lt;a href=&quot;jekyllrb.com/&quot;&gt;Jekyll&lt;/a&gt; to &lt;a href=&quot;https://www.11ty.dev/&quot;&gt;Eleventy&lt;/a&gt;, I discovered that my headings no longer had &lt;code class=&quot;highlighter-rouge&quot;&gt;id&lt;/code&gt; attributes in the rendered HTML. This meant that I couldn’t link directly to headings in my (sometimes very long) pages. After searching through the Eleventy documentation, I discovered that this wasn’t supported in Eleventy and I’d need to use a plugin.&lt;/p&gt;
+
+&lt;p&gt;Eleventy uses &lt;a href=&quot;https://npmjs.com/package/markdown-it&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;markdown-it&lt;/code&gt;&lt;/a&gt; as its default Markdown engine, and you can install plugins to &lt;code class=&quot;highlighter-rouge&quot;&gt;markdown-it&lt;/code&gt;. The one of interest for this case is &lt;a href=&quot;https://npmjs.com/package/markdown-it-anchor&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;markdown-it-anchor&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;So to start, you’ll need to install the plugin:&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;npm install markdown-it-anchor --save-dev
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In your Eleventy config file (&lt;code class=&quot;highlighter-rouge&quot;&gt;.eleventy.js&lt;/code&gt;), add this inside of your default config function:&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nx&quot;&gt;module&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;exports&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;eleventyConfig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// other configuration goes here&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// this works because Eleventy also installs markdown-it &lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;markdownIt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;markdown-it&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    
+    &lt;span class=&quot;c1&quot;&gt;// create a new markdown-it instance with the plugin&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;markdownItAnchor&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;require&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;markdown-it-anchor&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;markdownLib&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;markdownIt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;({&lt;/span&gt; &lt;span class=&quot;na&quot;&gt;html&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}).&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;use&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;markdownItAnchor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// replace the default markdown-it instance&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;eleventyConfig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;setLibrary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;md&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;markdownLib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;c1&quot;&gt;// optionally return config object here&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now regenerate your website and you should see that all headings will now have an auto-generated &lt;code class=&quot;highlighter-rouge&quot;&gt;id&lt;/code&gt; attribute.&lt;/p&gt;
+</content:encoded>
+    </item>
+    
+    <item>
+      <title>How to optionally await a JavaScript function call</title>
+      <link>https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/</link>
+      <pubDate>Sat, 22 Feb 2020 00:00:00 +0000</pubDate>
+      <dc:creator>Nicholas C. Zakas</dc:creator>
+      
+      <category>JavaScript</category>
+      
+      <category>Promises</category>
+      
+      <category>Async Functions</category>
+      
+      
+      <category>Web Development</category>
+      
+      <guid isPermaLink="true">https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/</guid>
+      <description>Even though async functions and the await operator quickly became popular in JavaScript, many use await solely with function calls, such as: const result = await readSomeFile(); That works fine when you know the function you’re calling returns a promise. Actually, it works fine even without the function returning a promise as await will wrap...</description>
+      <content:encoded>&lt;p&gt;Even though async functions and the &lt;code class=&quot;highlighter-rouge&quot;&gt;await&lt;/code&gt; operator quickly became popular in JavaScript, many use &lt;code class=&quot;highlighter-rouge&quot;&gt;await&lt;/code&gt; solely with function calls, such as:&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;readSomeFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;That works fine when you know the function you’re calling returns a promise. Actually, it works fine even without the function returning a promise as &lt;code class=&quot;highlighter-rouge&quot;&gt;await&lt;/code&gt; will wrap the return value in a promise if it isn’t already one. But why go through the overhead of creating and returning a promise if it’s not needed?&lt;/p&gt;
+
+&lt;p&gt;The key here is that &lt;code class=&quot;highlighter-rouge&quot;&gt;await&lt;/code&gt; operates on promises, and those are hidden when using &lt;code class=&quot;highlighter-rouge&quot;&gt;await&lt;/code&gt; in front of a function call. Therefore, if you’re unsure that a function returns a promise, you can always check using the &lt;code class=&quot;highlighter-rouge&quot;&gt;instanceof&lt;/code&gt; operator and only &lt;code class=&quot;highlighter-rouge&quot;&gt;await&lt;/code&gt; if a promise is returned:&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;someFunction&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;instanceof&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;result&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The value of &lt;code class=&quot;highlighter-rouge&quot;&gt;result&lt;/code&gt; is usable directly at the end of this code regardless if &lt;code class=&quot;highlighter-rouge&quot;&gt;someFunction()&lt;/code&gt; returns a promise or not.&lt;/p&gt;
+</content:encoded>
+    </item>
+    
+    <item>
+      <title>Setting up Visual Studio Code intellisense for Jest globals</title>
+      <link>https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/</link>
+      <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
+      <dc:creator>Nicholas C. Zakas</dc:creator>
+      
+      <category>JavaScript</category>
+      
+      <category>Testing</category>
+      
+      <category>Jest</category>
+      
+      <category>Visual Studio Code</category>
+      
+      
+      <category>Web Development</category>
+      
+      <guid isPermaLink="true">https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/</guid>
+      <description>One of the benefits of Visual Studio Code is it’s ability to automatically detect the type of JavaScript value you’re working with and provide autocomplete (aka intellisense) for properties and methods. This works really well whenever you’re using a module system and explicitly importing values from modules. If a framework happens to add random global...</description>
+      <content:encoded>&lt;p&gt;One of the benefits of &lt;a href=&quot;https://code.visualstudio.com&quot;&gt;Visual Studio Code&lt;/a&gt; is it’s ability to automatically detect the type of JavaScript value you’re working with and provide autocomplete (aka intellisense) for properties and methods. This works really well whenever you’re using a module system and explicitly importing values from modules. If a framework happens to add random global variables, however, Visual Studio Code has no way to determine that on its own.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://jestjs.io&quot;&gt;Jest&lt;/a&gt;, the JavaScript testing framework, works by injecting several variables (such as &lt;code class=&quot;highlighter-rouge&quot;&gt;describe()&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;test()&lt;/code&gt;, and &lt;code class=&quot;highlighter-rouge&quot;&gt;inspect()&lt;/code&gt;) that Visual Studio Code doesn’t know anything about by default. Fortunately, you can tell Visual Studio Code about these globals by creating a &lt;code class=&quot;highlighter-rouge&quot;&gt;jsconfig.json&lt;/code&gt; file in the root directory of your project and adding the following into the file:&lt;/p&gt;
+
+&lt;div class=&quot;language-json highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;typeAcquisition&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;&quot;include&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+            &lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;jest&quot;&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+        &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+    &lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This instructs to look at the &lt;code class=&quot;highlighter-rouge&quot;&gt;jest&lt;/code&gt; module for type definitions. With this configuration setup in &lt;code class=&quot;highlighter-rouge&quot;&gt;jsconfig.json&lt;/code&gt;, Visual Studio Code will now have intellisense for all of the Jest globals. (Note: You must have the &lt;code class=&quot;highlighter-rouge&quot;&gt;jest&lt;/code&gt; npm package installed for this to work.)&lt;/p&gt;
+</content:encoded>
+    </item>
+    
+    <item>
+      <title>Reading streams with promises in Node.js</title>
+      <link>https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/</link>
+      <pubDate>Mon, 13 May 2019 00:00:00 +0000</pubDate>
+      <dc:creator>Nicholas C. Zakas</dc:creator>
+      
+      <category>JavaScript</category>
+      
+      <category>Node.js</category>
+      
+      <category>Promises</category>
+      
+      <category>Streams</category>
+      
+      
+      <category>Web Development</category>
+      
+      <guid isPermaLink="true">https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/</guid>
+      <description>If you’ve tried to use the Node.js fs.promises API, you might have noticed that there doesn’t appear to be a cross-platform way of using fs.readFile() to read from process.stdin (such as process.stdin). Using the old, callback-based API, you could pass in a numeric file descriptor, such as: import fs from "fs"; const text = fs.readFileSync(0,...</description>
+      <content:encoded>&lt;p&gt;If you’ve tried to use the Node.js &lt;a href=&quot;https://nodejs.org/api/fs.html#fs_fs_promises_api&quot;&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;fs.promises&lt;/code&gt; API&lt;/a&gt;, you might have noticed that there doesn’t appear to be a cross-platform way of using &lt;code class=&quot;highlighter-rouge&quot;&gt;fs.readFile()&lt;/code&gt; to read from &lt;code class=&quot;highlighter-rouge&quot;&gt;process.stdin&lt;/code&gt; (such as &lt;code class=&quot;highlighter-rouge&quot;&gt;process.stdin&lt;/code&gt;). Using the old, callback-based API, you could pass in a numeric file descriptor, such as:&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fs&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;fs&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;fs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;readFileSync&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;utf8&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;However, when using the &lt;code class=&quot;highlighter-rouge&quot;&gt;fs.promises&lt;/code&gt; version of &lt;code class=&quot;highlighter-rouge&quot;&gt;readFile()&lt;/code&gt;, you can no longer use numeric file descriptors (an error is thrown). While you can use the string &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;/dev/stdin&quot;&lt;/code&gt; on Linux machines, but that doesn’t work on Windows machines.&lt;/p&gt;
+
+&lt;p&gt;The easiest way to read stream using promises is to write your own function do so. Here’s what mine looks like:&lt;/p&gt;
+
+&lt;div class=&quot;language-js highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;readStream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;encoding&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;utf8&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    
+    &lt;span class=&quot;nx&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;setEncoding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;encoding&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;dl&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        
+        &lt;span class=&quot;nx&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;chunk&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+=&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;chunk&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;end&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+        &lt;span class=&quot;nx&quot;&gt;stream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;on&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;dl&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;error&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;reject&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;});&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;text&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;await&lt;/span&gt; &lt;span class=&quot;nx&quot;&gt;readStream&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;process&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nx&quot;&gt;stdin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The key is to listen to three events:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;data&lt;/code&gt; for the pieces of data being read&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;end&lt;/code&gt; to resolve the promise with the accumulated data&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;error&lt;/code&gt; to reject the promise if there’s an error&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Because &lt;code class=&quot;highlighter-rouge&quot;&gt;readStream()&lt;/code&gt; returns a promise, you can use &lt;code class=&quot;highlighter-rouge&quot;&gt;await&lt;/code&gt; to call it, making it fit in with the rest of the &lt;code class=&quot;highlighter-rouge&quot;&gt;fs.promises&lt;/code&gt; API.&lt;/p&gt;
+</content:encoded>
+    </item>
+    
+  </channel>
+</rss>

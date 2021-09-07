@@ -1,0 +1,755 @@
+
+/*=============================================================================
+ * Basic Info
+ *=============================================================================*/
+
+:root {
+    /* Measurements */
+    --page-width: 870px;
+    --content-width: 650px;
+    --sidebar-width: calc(var(--page-width) - var(--content-width));
+    --gutter: 10px;
+
+    --accent-hue: 27;
+    --complementary-accent-hue: calc(var(--accent-hue) + 180);
+
+    /* Colors */
+    --dark-gray: #373736;
+    --lightest-orange: hsla(27, 91%, 54%, 0.2);
+    --light-orange: hsl(27, 91%, 54%);
+    --inverse-light-orange: hsl(var(--complementary-accent-hue), 91%, 54%);
+    --dark-orange: hsl(357, 85%, 51%);
+    --inverse-dark-orange: hsl(177, 85%, 51%);
+    --light-gray:  #efefef;
+    --highlight-color: #fff;
+    --content-color: #f9f9f9;
+    --content-border-color: #ddd;
+    --sidebar-color: var(--light-gray);
+    --inverted-link-color: var(--light-orange);
+    --medium-blue: hsl(209deg, 100%, 45%);
+    --light-blue: hsl(209deg, 100%, 55%);
+    --lightest-blue: hsl(209deg, 100%, 92%);
+    --link-color: var(--medium-blue);
+
+    /* Decorations */
+    --content-item-border: 1px solid var(--content-border-color);
+
+    /* Fonts */
+    --sans-serif: Arial, Helvetica, sans-serif;
+    --serif: Georgia, "Times New Roman", serif;
+    --content-font: var(--serif);
+}
+
+/*=============================================================================
+ * Default HTML tag styles
+ *=============================================================================*/
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--dark-gray);
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Links */
+a, a:active {
+    /* color: rgb(15, 117, 202); */
+    color: var(--link-color);
+}
+
+/* Line Separator */
+hr {
+    -webkit-margin-before: 0;
+    -webkit-margin-after: 0;
+    border: 0;
+    height: 3px;
+    background-color: var(--light-orange);
+    background-image: linear-gradient(to right, var(--light-orange), var(--dark-orange));
+    margin: 0;
+}
+
+/* Quotes */
+aside,
+blockquote {
+    color: #000;
+    background-color: #fff;
+    padding: 1em;
+    margin-bottom: 1em;
+    margin-left: 2em;
+    margin-right: 2em;
+    border-left: 10px solid hsl(0, 0%, 70%);
+}
+
+aside > :first-child,
+blockquote > :first-child {
+    margin-top: 0;
+}
+
+aside > :last-child,
+blockquote > :last-child {
+    margin-bottom: 0;
+}
+
+blockquote {
+    font-style: italic;
+}
+
+blockquote {
+    border-color: var(--light-orange);
+}
+
+blockquote.twitter-tweet {
+    border-color: rgb(74, 179, 244);
+}
+
+aside.warn,
+aside.tip,
+aside.note {
+    background-color: hsl(60, 100%, 90%);;
+    border-color: hsl(53, 100%, 50%);
+}
+
+aside.warn,
+aside.updated-post {
+    border-color: hsl(5, 100%, 50%);
+    background: hsl(5, 90%, 90%);
+}
+
+aside.note::before {
+    content: "Note";
+    font-weight: bold;
+    display: block;
+}
+
+aside.tip::before {
+    content: "Tip";
+    font-weight: bold;
+    display: block;
+}
+
+/* Footnotes */
+sup > a {
+    color: black;
+    text-decoration: none;
+}
+
+/* Images in blog posts */
+p + img,
+p + a > img {
+}
+
+p > img,
+p > a > img {
+    background: white;
+    border: var(--content-item-border);
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+}
+
+/* SVG needs some padding */
+p > img[src$=".svg"],
+p > a > img[src$=".svg"] {
+    padding: 20px;
+}
+
+/* Forms */
+input[type=text], input[type=email], input[type=number],
+input[type=url], input[type=month], input[type=password] {
+    font-size: larger;
+}
+
+input[type=submit], input[type=button], button {
+    background-image: linear-gradient(135deg, var(--highlight-color), var(--light-gray));
+    border: 1px solid var(--dark-gray);
+    border-radius: 5px;
+    color: #000;
+    display: inline-block;
+    font: inherit;
+    padding: var(--gutter);
+    text-decoration: none;
+}
+
+input[type=submit]:disabled, input[type=button]:disabled, button:disabled {
+    background-image: none;
+    background-color: #bbb;
+}
+
+/* Inline Code*/
+code, tt, kbd {
+    font-family: Consolas, "Lucida Console", Monospace;
+}
+
+code {
+    background: hsl(0, 0%, 94%);
+    border: var(--content-item-border);
+}
+
+/* Make sure inline code doesn't wrap */
+p > code,
+li > code {
+    white-space: nowrap;
+}
+
+/* Code Blocks */
+pre {
+    background: #333;
+    border: var(--content-item-border);
+    color: #f8f8f2;
+    overflow: auto;
+    overflow-y: hidden;
+    padding: 1em 1.5em;
+}
+
+pre code .k,
+pre code .kd {
+    color: #66d9ef;
+}
+
+pre code .c1 {
+    color: #aaa;
+}
+
+pre code .s2 {
+    color: #e6db74;
+}
+
+pre code {
+    background: inherit;
+    border: none;
+    line-height: 120%;
+}
+
+table {
+    border: var(--content-item-border);
+    border-collapse: collapse;
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+thead {
+    background: var(--content-border-color);
+}
+
+th, td {
+    padding: var(--gutter);
+    text-align: left;
+    white-space: nowrap;
+}
+
+tbody tr:nth-child(odd) {
+    background: var(--highlight-color);
+}
+
+/*=============================================================================
+ * Fonts
+ *============================================================================*/
+
+.headline-text {
+    font-size: 56px;
+}
+
+@media only screen and (max-width:414px) {
+    .headline-text {
+        font-size: 24px;
+    }
+}
+
+
+.content-font {
+    font-family: var(--content-font);
+    line-height: 1.3;
+}
+
+.smaller-font {
+    font-size: 80%;
+}
+
+.bigger-font {
+    font-size: 116%;
+}
+
+.all-caps {
+    text-transform: uppercase;
+}
+
+.no-underline {
+    text-decoration: none;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+/*=============================================================================
+ * Dimensions
+ *=============================================================================*/
+
+/* Width of the whole page */
+.page-width {
+     max-width: var(--page-width);
+}
+ 
+.content-width {
+    /* TODO: Small content creates very narrow content column - email confirm */
+    max-width: var(--content-width);
+}
+
+.sidebar-width {
+    width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
+}
+
+/*=============================================================================
+ * Alignments
+ *=============================================================================*/
+
+/* Remove margins */
+.no-margin {
+    margin: 0;
+}
+
+.no-margin-bottom {
+    margin-bottom: 0;
+}
+
+.no-margin-top {
+    margin-top: 0;
+}
+
+.margin-top {
+    margin-top: var(--gutter);
+}
+
+.margin-bottom {
+    margin-bottom: var(--gutter);
+}
+
+/* Apply standard padding to block */
+.gutters {
+    padding: var(--gutter);
+}
+
+.gutter-top {
+    padding-top: var(--gutter);
+}
+
+.gutter-bottom {
+    padding-bottom: var(--gutter);
+}
+
+/* Allow horizontal scrolling when content doesn't fit */
+.overflow-x-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Allow horizontal scrolling when content doesn't fit only on mobile */
+.overflow-x-scroll-on-mobile {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+    justify-content: left;
+    text-align: left;
+}
+
+@media only screen and (min-width:414px) {
+    .overflow-x-scroll-on-mobile {
+        overflow-x: hidden;
+        justify-content: unset;
+        text-align: unset;
+    }
+}
+
+/*=============================================================================
+ * Hiding
+ *=============================================================================*/
+
+/* Elements that are removed on small screens */
+.hide-on-small-screens {
+    display: none;
+}
+
+@media only screen and (min-width:890px) {
+    .hide-on-small-screens {
+        display: initial;
+    }
+}
+
+/* Elements that are removed on mobile */
+.hide-on-mobile {
+    display: none;
+}
+
+@media only screen and (min-width:414px) {
+    .hide-on-mobile {
+        display: initial;
+    }
+}
+
+/* Accessibly Hide Offscreen */
+.hide-offscreen {
+    clip: rect(1px 1px 1px 1px); /* IE 6/7 */
+    clip: rect(1px, 1px, 1px, 1px);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+/*=============================================================================
+ * Centering
+ *=============================================================================*/
+
+/* Center a block in an area */
+.center {
+    margin: 0 auto;
+}
+
+/* Center an element's children */
+.center-text {
+    text-align: center;
+    justify-content: center;
+}
+
+/* Center an element's children on mobile */
+.center-text-on-mobile {
+    text-align: center;
+    justify-content: center;
+}
+
+@media only screen and (min-width:414px) {
+    .center-text-on-mobile {
+        text-align: unset;
+        justify-content: unset;
+    }
+}
+
+/* Center an element's children on small screens */
+.center-text-on-small-screens {
+    /* noop */
+}
+
+@media only screen and (min-width:414px) {
+    .center-text-on-small-screens {
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+/*=============================================================================
+ * Colors
+ *=============================================================================*/
+
+/* Background for text */
+.content-background {
+    background: var(--content-color);
+}
+
+/* Background for sidebar */
+.sidebar-background {
+    background: var(--sidebar-color);
+}
+
+/* Background for highlighted areas */
+.highlight-background {
+    background: var(--highlight-color);
+}
+
+.cta-background {
+    background-color: var(--lightest-blue);
+}
+
+.dark-text {
+    color: #000;
+}
+
+/* Invert foreground colors */
+.inverted-colors {
+    color: #fff;
+}
+
+.inverted-colors a {
+    color: var(--inverse-light-orange);
+}
+
+/*=============================================================================
+ * Borders
+ *=============================================================================*/
+
+.round-borders {
+    border-radius: 5px;
+}
+
+/* Add borders to top */
+.dark-border-top {
+    border-top: 1px solid var(--dark-gray);
+}
+
+.dark-dotted-border-top {
+    border-top: 1px dotted var(--dark-gray);
+}
+
+/* Add borders to top */
+.dark-border-bottom {
+    border-bottom: 1px solid var(--dark-gray);
+}
+
+.dark-dotted-border-bottom {
+    border-bottom: 1px dotted var(--dark-gray);
+}
+
+/* Add borders to top */
+.content-border-bottom {
+    border-bottom: var(--content-item-border);
+}
+
+/* Generic content item border */
+.content-item-border {
+    border: var(--content-item-border);
+}
+
+.orange-border-bottom {
+    border-image: linear-gradient(to right, var(--light-orange), var(--dark-orange)) 1;
+    border-bottom-style: solid;
+    border-width: 0 0 1px 0;
+}
+
+/*=============================================================================
+ * Components
+ *=============================================================================*/
+
+/* Link that looks like a button */
+.link-btn {
+    background-image: linear-gradient(135deg, var(--highlight-color), var(--light-gray));
+    border: 1px solid var(--dark-gray);
+    border-radius: 5px;
+    color: #000;
+    display: inline-block;
+    font: inherit;
+    padding: var(--gutter);
+    text-decoration: none;
+}
+
+/* Link button that is a call-to-action */
+.cta-btn {
+    background-image: linear-gradient(135deg, var(--light-blue), var(--medium-blue));
+    border: 1px solid var(--medium-blue);
+    color: var(--highlight-color);
+}
+
+.circle-image {
+    border-radius: 50%;
+}
+
+.catalog-image {
+    display: block;
+    background-color: #fff;
+    padding: var(--gutter);
+}
+
+/* Footnotes list area */
+.footnotes > ol {
+    margin-left: 0;
+}
+
+.footnotes p {
+    margin: 0;
+}
+
+.footnotes .reversefootnote {
+    text-decoration: none;
+}
+
+/* Box with an image/button/etc. on the left */
+.media-box {
+    display: flex;
+}
+
+.media-box .media-box-media {
+    margin-right: var(--gutter);
+}
+
+/* Box with an image/button/etc. on the left that collapses on mobile */
+.collapsible-media-box {
+    display: block;
+}
+
+.collapsible-media-box .media-box-media {
+    margin-right: var(--gutter);
+}
+
+@media only screen and (min-width:660px) {
+    .collapsible-media-box {
+        display: flex;
+    }
+}
+
+/* Hide bullets and margins for a list */
+.hide-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* List with items inline */
+.inline-list {
+    list-style: none;
+    display: flex;
+    padding: 0;
+    margin: 0;
+}
+
+.inline-list li {
+    display: inline-block;
+}
+
+/* List with images inline */
+.inline-image-list {
+    flex-wrap: wrap;
+    line-height: 0;
+}
+
+/* Inline list with spacing in between items */
+.inline-spaced-list li {
+    margin-right: calc(var(--gutter) * 3);
+}
+
+.inline-spaced-list li:last-of-type {
+    margin-right: 0;
+}
+
+/* Block list without bullet points */
+.block-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.block-list > li {
+    margin-bottom: var(--gutter);
+}
+
+.block-list > li:last-of-type {
+    margin-bottom: 0;
+}
+
+/* Left-right block that collapses to centered */
+.collapsible-corners {
+    display: block;
+}
+
+@media only screen and (min-width:660px) {
+
+    .collapsible-corners {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+    }
+
+}
+
+/* Page grid */
+.page-grid {
+    display: block;
+}
+
+@media only screen and (min-width:660px) {
+    .page-grid {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
+}
+
+/* Grid with only columns of equal width in desktop mode */
+.grid-columns {
+    display: block;
+}
+
+@media only screen and (min-width:660px) {
+    .grid-columns {
+        display: grid;
+        /*TODO: Figure out unlimited columns*/
+        grid-template-columns: repeat(2, 1fr);
+        grid-column-gap: var(--gutter);
+    }
+}
+
+/* Grid with images on the left and descriptions on the right but stacked on mobile */
+.catalog-grid {
+    display: grid;
+    grid-template-columns: auto;
+    grid-row-gap: calc(var(--gutter) * 2);
+}
+
+@media only screen and (min-width:450px) {
+    .catalog-grid {
+        display: grid;
+        grid-template-columns: 200px auto;
+        grid-column-gap: var(--gutter);
+    }
+}
+
+/*=============================================================================
+ * Specific elements
+ *=============================================================================*/
+
+/* Carbon Ads */
+#carbonads {
+    display: block;
+    overflow: hidden;
+    margin: 10px 0;
+    padding: 1em;
+    background: repeating-linear-gradient(-45deg, transparent, transparent 5px, hsla(0, 0%, 0%, .025) 5px, hsla(0, 0%, 0%, .025) 10px) hsla(220, 23%, 97%, .8);
+    text-align: center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+}
+
+#carbonads a {
+    color: inherit;
+    text-decoration: none;
+}
+
+#carbonads a:hover {
+    color: inherit;
+}
+
+#carbonads span {
+    display: block;
+    overflow: hidden;
+}
+
+.carbon-img {
+    display: block;
+    margin: 0 auto 8px;
+    line-height: 1;
+}
+
+.carbon-text {
+    display: block;
+    margin-bottom: 8px;
+}
+
+.carbon-poweredby {
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 10px;
+    line-height: 1;
+}

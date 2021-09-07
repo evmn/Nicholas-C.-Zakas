@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>From Wordpress to Jekyll: My new blog setup - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2015/08/wordpress-jekyll-my-new-blog-setup/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="From Wordpress to Jekyll: My new blog setup">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2015/08/wordpress-jekyll-my-new-blog-setup/" />
+<meta name="og:title" content="From Wordpress to Jekyll: My new blog setup">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="I had been thinking about moving my blog from Wordpress to Jekyll for a while. I was hesitant because I didn’t know a lot about how Jekyll worked and wasn’t sure if I’d...">
+<meta name="keywords" content="Blog,Jekyll,Nginx,AWS,S3,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">From Wordpress to Jekyll: My new blog setup</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2015-08-26T00:00:00+00:00" itemprop="datePublished">August 26, 2015</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/blog" rel="tag">Blog</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/jekyll" rel="tag">Jekyll</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/nginx" rel="tag">Nginx</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/aws" rel="tag">AWS</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/s3" rel="tag">S3</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>I had been thinking about moving my blog from Wordpress to Jekyll for a while. I was hesitant because I didn’t know a lot about how Jekyll worked and wasn’t sure if I’d ultimately want to have my site hosted on GitHub or not. I also was concern about not having the ability to schedule posts in the future. I used this feature quite frequently in Wordpress, especially as my energy goes up and down while battling Lyme disease. To me, not being able to schedule a post for later publishing was a deal-breaker, as I didn’t want to manually push posts live all the time.</p>
+
+<p>Looking over my hosting bill, however, made me realize I was severely overpaying for hosting my mostly-static-already site using Wordpress. I was paying $50 per quarter, or about $17 per month. In this day and age, that’s an insane amount of money to pay for hosting a site that barely ever changes. I had been with this webhost for over a decade and the price had remained the same the entire time. Plus, the numerous Wordpress upgrades and countless security flaws were making me feel it was time to abandon Wordpress for a static site generator. So, I set about creating a plan to move my Wordpress-driven site to Jekyll.</p>
+
+<h2 id="migrating-comments">Migrating comments</h2>
+
+<p>The first step in this process was to migrate my comments to <a href="https://disqus.com/">Disqus</a>. While I’m not a huge fan of Disqus, it was the simplest choice due to its ability to quickly integrate with Wordpress and then continue to function on a static site.</p>
+
+<p>I started by installing the <a href="https://wordpress.org/plugins/disqus-comment-system/">Wordpress Disqus Plugin</a>, and it seamlessly integrated into my site. I then kicked off importing the comments into Disqus, only to find that this didn’t quite work. I ended up needing to <a href="https://help.disqus.com/customer/portal/articles/466255-importing-comments-from-wordpress#manual">manually import</a> comments, as the Disqus plugin only seemed to import a small number of comments each time I initiated it.</p>
+
+<h2 id="exporting-posts">Exporting posts</h2>
+
+<p>Once I was certain the comments were safely migrated to Disqus, I looked for the best way to export the rest of my content. I eventually ended up using the <a href="https://wordpress.org/plugins/jekyll-exporter/">Jekyll Exporter Plugin</a> for Wordpress. After installation, you need only click “Export to Jekyll” to download a zip file of all content. I was impressed by this plugin’s completeness as it included all tags, categories, permalinks, posts, and pages. Basically, you can unzip the result and serve that as a starting point for your converted site. It even copies files from your <code class="highlighter-rouge">wp-content</code> directory so you can keep track of images, stylesheets, and more.</p>
+
+<p>The only thing the Jekyll exporter didn’t do was provide any sort of layout from Wordpress. That makes sense, since all the layout information in Wordpress is in PHP. So, I had to manually grab the HTML from my Wordpress theme and migrate it over to Jekyll templates. I then put the Disqus JavaScript into the pages and was amazed to find that the comments all appeared.</p>
+
+<h2 id="choosing-a-host">Choosing a host</h2>
+
+<p>Initially I thought I would take advantage of GitHub Pages to host my site, as I know many others do. However, there were a few things I didn’t like:</p>
+
+<ol>
+  <li>The aforementioned inability to schedule posts to be published in the future. Since GitHub doesn’t give you a way to force-regenerate a site, that would mean either holding out posts until the day they are supposed to be published or else creating a dummy commit to force the site to regenerate. Neither of those appealed to me.</li>
+  <li>You can only use Jekyll plugin gems that GitHub has installed, so any additional functionality you want either needs to be hacked together or omitted. In my case, I wanted to generate yearly and monthly archives automatically. There’s a <a href="https://github.com/jekyll/jekyll-archives"><code class="highlighter-rouge">jekyll-archives</code></a> gem for that but it’s not available on GitHub.</li>
+  <li>I wanted a test area where I could preview changes before pushing live. I could do that locally but since I’m on Windows, setting up Jekyll is pretty difficult (I’ve tried and given up three times). I could also have a separate GitHub repo for that purpose, but I really didn’t want to have to manage two repos.</li>
+</ol>
+
+<p>After doing some research, I realized I could host my static site on Amazon S3 for almost nothing the next year using the free tier. After that, the cost looks to be less than a dollar a month. So far, a significant savings from the $17 per month that I was paying for Wordpress hosting. Plus, S3 would serve as a solid backup for all of my content.</p>
+
+<h2 id="the-deployment-pipeline">The deployment pipeline</h2>
+
+<p><img src="https://www.nczonline.net/images/posts/blog-deployment-pipeline.png" alt="Deployment pipeline - GitHub to Jenkins to S3" /></p>
+
+<p>Once I decided on S3 hosting, it became a matter of figuring out how to get the posts from the GitHub repository onto S3 and also how to schedule posts. It turned out the solution to both problems was the same: setup a <a href="https://jenkins-ci.org/">Jenkins</a> server.</p>
+
+<p>In my mind I devised a simple strategy:</p>
+
+<ol>
+  <li>Check in files to git repo locally</li>
+  <li>Trigger a build when changes are pushed to master</li>
+  <li>The build checks out the remote git repo and runs Jekyll to generate the files</li>
+  <li>The build syncs the generated files with the files already on S3</li>
+</ol>
+
+<p>If I could get that working, I reasoned, then I could set the same build to run automatically at midnight every night. That meant I could schedule posts for any point in the future and they would get generated only when appropriate.</p>
+
+<p>I leaned heavily on the article, <a href="http://fourword.fourkitchens.com/article/trigger-jenkins-builds-pushing-github">Trigger Jenkins builds by pushing to GitHub</a>, to get my setup working. I used a micro instance on AWS because it’s free for the first year, though I’ll likely switch to DigitalOcean after the first year ($5 per month vs. roughly $10 per month for an on-demand micro AWS instance).</p>
+
+<p>I ended up using <a href="http://s3tools.org/s3cmd">S3Cmd</a> for syncing with S3. I tried using the <a href="https://aws.amazon.com/cli/">AWS CLI</a> first, but its syncing capability is limited to file size and last modified date. Since each build is regenerating the entire site, the last modified date was always different and so the files were always being synced even though they were no different. S3Cmd, on the other hand, also checks the content of the file to see if there’s a difference before syncing. That one change meant I went from 2,000 PUT requests each build to roughly three PUT requests on average.</p>
+
+<p>Ultimately, the Jenkins setup has worked well. The same build is triggered by a push to the GitHub repo’s master branch and automatically at midnight each night. By setting <code class="highlighter-rouge">future: false</code> in my <code class="highlighter-rouge">_config.yml</code> file, any future posts I write will not be generated until the correct date. I’m using tha latest GitHub Pages gem, so the configuration is compatible with what’s being used on GitHub itself.</p>
+
+<h2 id="serving-traffic">Serving traffic</h2>
+
+<p><img src="https://www.nczonline.net/images/posts/blog-serving-traffic.png" alt="Serving Traffic - CloudFlare to Nginx to S3" /></p>
+
+<p>Initially, I thought I’d be able to serve all traffic directly from S3. While possible, S3 does not compress files automatically, so all of my HTML, CSS, and JavaScript would be sent in its original form (thus using more bandwidth and costing me more). I first looked at using Cloudfront, the AWS CDN service, to front S3. However, Cloudfront also does not do any compression of requests (which shocked me).</p>
+
+<p>Several people on Twitter recommended using <a href="https://cloudflare.com">CloudFlare</a> instead. CloudFlare does compression of assets, along with other optimizations, DDoS protection, and free SSL, and they have a free tier. Even better, CloudFlare caches requests on their CDN for a specified amount of time, meaning that I’ll be avoiding more requests to S3 than necessary (another cost savings).</p>
+
+<p>Unfortunately, being new to S3 hosting, I made a rookie mistake: I named my buckets wrong. I was unaware that the bucket name must be the domain name you want to serve the content (a restriction I find strangely arbitrary). My initial bucket was named “nczonline”, so I created a new one named “nczonline.net”. The big mistake is that I did not create a bucket named “www.nczonline.net”, and that was apparent to anyone who visited my site during the transition thanks to some misconfiguration. During that time, someone created a bucket named “www.nczonline.net”, and since bucket names are universal, that meant I no longer could. That also meant I couldn’t serve traffic directly from <code class="highlighter-rouge">www.nczonline.net</code> to S3 due to the AWS naming restrictions. I could serve from <code class="highlighter-rouge">nczonline.net</code>, but I had that setup to redirect to <code class="highlighter-rouge">www.nczonline.net</code> in order to make use of free email forwarding (that apparently couldn’t work with the apex domain set as a CNAME).</p>
+
+<p>I didn’t want to abandon the idea of serving from S3, so I realized I needed something in between CloudFlare and S3 to make the S3 requests in such a way that would allow serving from <code class="highlighter-rouge">www.nczonline.net</code>. I ended up setting up Nginx on the same AWS micro instance and used that as a proxy to S3. After some trial and error, I realized that S3 was simply looking at the <code class="highlighter-rouge">Host</code> header to determine whether it should serve traffic or not, so I was able to work around that pretty easily with the following configuration:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server {
+
+    # Listen for traffic - old school and new
+    listen 80 default_server;
+    listen [::]:80 default_server ipv6only=on;
+
+    # Setup the hostnames that are allowed for this server
+    server_name nczonline.net www.nczonline.net;
+
+    # Proxy all requests to AWS
+    location / {
+        proxy_set_header Host nczonline.net;
+        proxy_pass http://nczonline.net.s3-website-us-west-1.amazonaws.com/;
+    }
+}
+</code></pre></div></div>
+
+<p>With Nginx set up to point to S3, I pointed CloudFlare at Nginx, and my site was finally working correctly. As a bonus, Nginx compresses HTML, CSS, JavaScript, etc. automatically, so I got some additional cost savings.</p>
+
+<p>At this point, I could have simply pointed my domain name to Nginx and used that without CloudFlare. However, CloudFlare’s edge caching, DDoS protection, and free SSL features (plus the cost: free) led me to believe that it was still advantageous to use.</p>
+
+<h2 id="worth-it">Worth it?</h2>
+
+<p>Setting up this system was a bit more work than I expected, but I definitely think the effort was worthwhile. I learned a lot about AWS, GitHub, and Jenkins. I now have a much better understanding of the tradeoffs you make when serving content from S3, as well as the various restrictions. Mostly, though, I’m happy that I’m in complete control of the stack for my blog. Using Wordpress always made me a bit scared - performance issues, database corruption, and security holes were always on my mind. Plus, I hated the idea of my content being stuck in a database somewhere. I do most of my writing in Markdown these days, so having my site content in that format and versioned in a git repository was the idea that most appealed to me. No matter what happens, I’ll always have easy access to that content.</p>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2015/08/wordpress-jekyll-my-new-blog-setup/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally() - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally()">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/" />
+<meta name="og:title" content="Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally()">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">
+
+
+
+<meta name="description" content="In my first post of this series, I explained how the Promise constructor works by recreating it as the Pledge constructor. In the second post in this series, I explained how asynchronous operations...">
+<meta name="keywords" content="JavaScript,Promises,ECMAScript 6,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally()</h1>
+        <p itemprop="description" class="no-margin-top">Promise handlers are where all of the asynchronous actions happens and it helps to look at the internals to understand how they work.</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2020-10-06T00:00:00+00:00" itemprop="datePublished">October 6, 2020</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/promises" rel="tag">Promises</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ecmascript-6" rel="tag">ECMAScript 6</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>In my <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">first post</a> of this series, I explained how the <code class="highlighter-rouge">Promise</code> constructor works by recreating it as the <code class="highlighter-rouge">Pledge</code> constructor. In the <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">second post</a> in this series, I explained how asynchronous operations work in promises through jobs. If you haven’t already read those two posts, I’d suggest doing so before continuing on with this one.</p>
+
+<p>This post focuses on implementing <code class="highlighter-rouge">then()</code>, <code class="highlighter-rouge">catch()</code>, and <code class="highlighter-rouge">finally()</code> according to ECMA-262. This functionality is surprisingly involved and relies on a lot of helper classes and utilities to get things working correctly. However, once you master a few basic concepts, the implementations are relatively straightforward.</p>
+
+<p>As a reminder, this series is based on my promise library, <a href="https://github.com/humanwhocodes/pledge">Pledge</a>. You can view and download all of the source code from GitHub.</p>
+
+<h2 id="the-then-method">The <code class="highlighter-rouge">then()</code> method</h2>
+
+<p>The <code class="highlighter-rouge">then()</code> method on promises accepts two arguments: a fulfillment handler and a rejection handler. The term <em>handler</em> is used to describe a function that is called in reaction to a change in the internal state of a promise, so a fulfillment handler is called when a promise is fulfilled and a rejection handler is called when a promise is rejected. Each of the two arguments may be set as <code class="highlighter-rouge">undefined</code> to allow you to set one or the other without requiring both.</p>
+
+<p>The steps taken when <code class="highlighter-rouge">then()</code> is called depends on the state of the promise:</p>
+
+<ul>
+  <li>If the promise’s state is pending (the promise is unsettled), <code class="highlighter-rouge">then()</code> simply stores the handlers to be called later.</li>
+  <li>If the promise’s state is fulfilled, <code class="highlighter-rouge">then()</code> immediately queues a job to execute the fulfillment handler.</li>
+  <li>If the promise’s state is rejected, <code class="highlighter-rouge">then()</code> immediately queues a job to execute the rejection handler.</li>
+</ul>
+
+<p>Additionally, regardless of the promise state, <code class="highlighter-rouge">then()</code> always returns another promise, which is why you can chain promises together like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value1</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value1</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">value1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">value2</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value2</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>In this example, <code class="highlighter-rouge">promise.then()</code> adds a fulfillment handler that outputs the resolution value and then returns another number based on that value. The second <code class="highlighter-rouge">then()</code> call is actually on a second promise that is resolved using the return value from the preceding fulfillment handler. It’s this behavior that makes implementing <code class="highlighter-rouge">then()</code> one of the more complicated aspects of promises, and that’s why there are a small group of helper classes necessary to implement the functionality properly.</p>
+
+<h3 id="the-promisecapability-record">The <code class="highlighter-rouge">PromiseCapability</code> record</h3>
+
+<p>The specification defines a <code class="highlighter-rouge">PromiseCapability</code> record<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:1" class="footnote">1</a></sup> as having the following internal-only properties:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Field Name</strong></th>
+      <th><strong>Value</strong></th>
+      <th><strong>Meaning</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="highlighter-rouge">[[Promise]]</code></td>
+      <td>An object</td>
+      <td>An object that is usable as a promise.</td>
+    </tr>
+    <tr>
+      <td><code class="highlighter-rouge">[[Resolve]]</code></td>
+      <td>A function object</td>
+      <td>The function that is used to resolve the given promise object.</td>
+    </tr>
+    <tr>
+      <td><code class="highlighter-rouge">[[Reject]]</code></td>
+      <td>A function object</td>
+      <td>The function that is used to reject the given promise object.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Effectively, a <code class="highlighter-rouge">PromiseCapability</code> record consists of a promise object and the <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions that change its internal state. You can think of this as a helper object that allows easier access to changing a promise’s state.</p>
+
+<p>Along with the definition of the <code class="highlighter-rouge">PromiseCapability</code> record, there is also the definition of a <code class="highlighter-rouge">NewPromiseCapability()</code> function<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:2" class="footnote">2</a></sup> that outlines the steps you must take in order to create a new <code class="highlighter-rouge">PromiseCapability</code> record. The <code class="highlighter-rouge">NewPromiseCapability()</code> function is passed a single argument, <code class="highlighter-rouge">C</code>, that is a function assumed to be a constructor that accepts an executor function. Here’s a simplified list of steps:</p>
+
+<ol>
+  <li>If <code class="highlighter-rouge">C</code> isn’t a constructor, throw an error.</li>
+  <li>Create a new <code class="highlighter-rouge">PromiseCapability</code> record with all internal properties set to <code class="highlighter-rouge">undefined</code>.</li>
+  <li>Create an executor function to pass to <code class="highlighter-rouge">C</code>.</li>
+  <li>Store a reference to the <code class="highlighter-rouge">PromiseCapability</code> on the executor.</li>
+  <li>Create a new promise using the executor and extract it <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions.</li>
+  <li>Store the <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions on the <code class="highlighter-rouge">PromiseCapability</code>.</li>
+  <li>If <code class="highlighter-rouge">resolve</code> isn’t a function, throw an error.</li>
+  <li>If <code class="highlighter-rouge">reject</code> isn’t a function, throw an error.</li>
+  <li>Store the promise on the <code class="highlighter-rouge">PromiseCapability</code>.</li>
+  <li>Return the <code class="highlighter-rouge">PromiseCapability</code></li>
+</ol>
+
+<p>I decided to use a <code class="highlighter-rouge">PledgeCapability</code> class to implement both <code class="highlighter-rouge">PromiseCapability</code> and <code class="highlighter-rouge">NewPromiseCapability()</code>, making it more idiomatic to JavaScript. Here’s the code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">PledgeCapability</span> <span class="p">{</span>
+
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">C</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">const</span> <span class="nx">executor</span> <span class="o">=</span> <span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">resolve</span> <span class="o">=</span> <span class="nx">resolve</span><span class="p">;</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">reject</span> <span class="o">=</span> <span class="nx">reject</span><span class="p">;</span>
+        <span class="p">};</span>
+
+        <span class="c1">// not used but included for completeness with spec</span>
+        <span class="nx">executor</span><span class="p">.</span><span class="nx">capability</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">pledge</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">C</span><span class="p">(</span><span class="nx">executor</span><span class="p">);</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">resolve</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">resolve is not callable.</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">reject</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">reject is not callable.</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The most interesting part of the constructor, and the part that took me the longest to understand, is that the <code class="highlighter-rouge">executor</code> function is used simply to grab references to the <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions that are passed in. This is necessary because you don’t know what <code class="highlighter-rouge">C</code> is. If <code class="highlighter-rouge">C</code> was always <code class="highlighter-rouge">Promise</code>, then you could use <code class="highlighter-rouge">createResolvingFunctions()</code> to create <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code>. However, <code class="highlighter-rouge">C</code> could be a subclass of <code class="highlighter-rouge">Promise</code> that changes how <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> are created, so you need to grab the actual functions that are passed in.</p>
+
+<p>A note about the design of this class: I opted to use string property names instead of going through the trouble of creating symbol property names to represent that these properties are meant to be internal-only. However, because this class isn’t exposed as part of the API, there is no risk of anyone accidentally referencing those properties from outside of the library. Given that, I decided to favor the readability of string property names over the more technically correct symbol property names.</p>
+
+<p>The <code class="highlighter-rouge">PledgeCapability</code> class is used like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">capability</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeCapability</span><span class="p">(</span><span class="nx">Pledge</span><span class="p">);</span>
+
+<span class="nx">capability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+<span class="nx">capability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>In this example, the <code class="highlighter-rouge">Pledge</code> constructor is passed to <code class="highlighter-rouge">PledgeCapability</code> to create a new instance of <code class="highlighter-rouge">Pledge</code> and extract its <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions. This turns out to be important because you don’t know the class to use when creating the return value for <code class="highlighter-rouge">then()</code> until runtime.</p>
+
+<h3 id="using-symbolspecies">Using <code class="highlighter-rouge">Symbol.species</code></h3>
+
+<p>The well-known symbol <code class="highlighter-rouge">Symbol.species</code> isn’t well understood by JavaScript developers but is important to understand in the context of promises. Whenever a method on an object must return an instance of the same class, the specification defines a static <code class="highlighter-rouge">Symbol.species</code> getter on the class. This is true for many JavaScript classes including arrays, where methods like <code class="highlighter-rouge">slice()</code> and <code class="highlighter-rouge">concat()</code> return arrays, and it’s also true for promises, where methods like <code class="highlighter-rouge">then()</code> and <code class="highlighter-rouge">catch()</code> return another promise. This is important because if you subclass <code class="highlighter-rouge">Promise</code>, you probably want <code class="highlighter-rouge">then()</code> to return an instance of your subclass and not an instance of <code class="highlighter-rouge">Promise</code>.</p>
+
+<p>The specification defines the default value for <code class="highlighter-rouge">Symbol.species</code> to be <code class="highlighter-rouge">this</code> for all built-in classes, so the <code class="highlighter-rouge">Pledge</code> class implements this property as follows:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// constructor omitted for space</span>
+
+    <span class="kd">static</span> <span class="kd">get</span> <span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">]()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Keep in mind that because the <code class="highlighter-rouge">Symbol.species</code> getter is static, <code class="highlighter-rouge">this</code> is actually a reference to <code class="highlighter-rouge">Pledge</code> (you can try it for yourself accessing <code class="highlighter-rouge">Pledge[Symbol.species]</code>). However, because <code class="highlighter-rouge">this</code> is evaluated at runtime, it would have a different value for a subclass, such as this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">SuperPledge</span> <span class="kd">extends</span> <span class="nx">Pledge</span> <span class="p">{</span>
+    <span class="c1">// empty</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Using this code, <code class="highlighter-rouge">SuperPledge[Symbol.species]</code> evaluates to <code class="highlighter-rouge">SuperPledge</code>. Because <code class="highlighter-rouge">this</code> is evaluated at runtime, it automatically references the class constructor that is in use. That’s exactly why the specification defines <code class="highlighter-rouge">Symbol.species</code> this way: it’s a convenience for developers as using the same constructor for method return values is the common case.</p>
+
+<p>Now that you have a good understanding of <code class="highlighter-rouge">Symbol.species</code>, it’s time to move on implementing <code class="highlighter-rouge">then()</code>.</p>
+
+<h3 id="implementing-the-then-method">Implementing the <code class="highlighter-rouge">then()</code> method</h3>
+
+<p>The <code class="highlighter-rouge">then()</code> method itself is fairly short because it delegates most of the work to a function called <code class="highlighter-rouge">PerformPromiseThen()</code>. Here’s how the specification defines <code class="highlighter-rouge">then()</code><sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:3" class="footnote">3</a></sup>:</p>
+
+<ol>
+  <li>Let <code class="highlighter-rouge">promise</code> be the <code class="highlighter-rouge">this</code> value.</li>
+  <li>If <code class="highlighter-rouge">IsPromise(promise)</code> is <code class="highlighter-rouge">false</code>, throw a <code class="highlighter-rouge">TypeError</code> exception.</li>
+  <li>Let <code class="highlighter-rouge">C</code> be <code class="highlighter-rouge">?</code> <code class="highlighter-rouge">SpeciesConstructor(promise, %Promise%)</code>.</li>
+  <li>Let <code class="highlighter-rouge">resultCapability</code> be <code class="highlighter-rouge">?</code> <code class="highlighter-rouge">NewPromiseCapability(C)</code>.</li>
+  <li>Return <code class="highlighter-rouge">PerformPromiseThen(promise, onFulfilled, onRejected, resultCapability)</code>.</li>
+</ol>
+
+<p>And here’s how I coded up that algorithm:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// constructor omitted for space</span>
+
+    <span class="kd">static</span> <span class="kd">get</span> <span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">]()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">then</span><span class="p">(</span><span class="nx">onFulfilled</span><span class="p">,</span> <span class="nx">onRejected</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="nx">assertIsPledge</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+        <span class="kd">const</span> <span class="nx">C</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="kd">constructor</span><span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">];</span>
+        <span class="kd">const</span> <span class="nx">resultCapability</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeCapability</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">performPledgeThen</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">onFulfilled</span><span class="p">,</span> <span class="nx">onRejected</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The first thing to note is that I didn’t define a variable to store <code class="highlighter-rouge">this</code> as the algorithm specifies. That’s because it’s redundant in JavaScript when you can access <code class="highlighter-rouge">this</code> directly. After that, the rest of the method is a direct translation into JavaScript. The species constructor is stored in <code class="highlighter-rouge">C</code> and a new <code class="highlighter-rouge">PledgeCapability</code> is created from that. Then, all of the information is passed to <code class="highlighter-rouge">performPledgeThen()</code> to do the real work.</p>
+
+<p>The <code class="highlighter-rouge">performPledgeThen()</code> function is one of the longer functions in the Pledge library and implements the algorithm for <code class="highlighter-rouge">PerformPromiseThen()</code> in the specification. The algorithm is a little difficult to understand, but it begins with these steps:</p>
+
+<ol>
+  <li>Assert that the first argument is a promise.</li>
+  <li>If either <code class="highlighter-rouge">onFulfilled</code> or <code class="highlighter-rouge">onRejected</code> aren’t functions, set them to <code class="highlighter-rouge">undefined</code>.</li>
+  <li>Create <code class="highlighter-rouge">PromiseReaction</code> records for each of <code class="highlighter-rouge">onFulfilled</code> and <code class="highlighter-rouge">onRejected</code>.</li>
+</ol>
+
+<p>Here’s what that code looks like in the Pledge library:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">performPledgeThen</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">onFulfilled</span><span class="p">,</span> <span class="nx">onRejected</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">)</span> <span class="p">{</span>
+    
+    <span class="nx">assertIsPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">onFulfilled</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">onFulfilled</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">onRejected</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">onRejected</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">fulfillReaction</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeReaction</span><span class="p">(</span><span class="nx">resultCapability</span><span class="p">,</span> <span class="dl">"</span><span class="s2">fulfill</span><span class="dl">"</span><span class="p">,</span> <span class="nx">onFulfilled</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">rejectReaction</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeReaction</span><span class="p">(</span><span class="nx">resultCapability</span><span class="p">,</span> <span class="dl">"</span><span class="s2">reject</span><span class="dl">"</span><span class="p">,</span> <span class="nx">onRejected</span><span class="p">);</span>
+
+    <span class="c1">// more code to come</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">fulfillReaction</code> and <code class="highlighter-rouge">rejectReaction</code> objects are always created event when <code class="highlighter-rouge">onFulfilled</code> and <code class="highlighter-rouge">onRejected</code> are <code class="highlighter-rouge">undefined</code>. These objects store all of the information necessary to execute a handler. (Keep in mind that only one of these reactions will ever be used. Either the pledge is fulfilled so <code class="highlighter-rouge">fulfillReaction</code> is used or the pledge is rejected so <code class="highlighter-rouge">rejectReaction</code> is used. That’s why it’s safe to pass the same <code class="highlighter-rouge">resultCapability</code> to both even though it contains only one instance of <code class="highlighter-rouge">Pledge</code>.)</p>
+
+<p>The <code class="highlighter-rouge">PledgeReaction</code> class is the JavaScript equivalent of the <code class="highlighter-rouge">PromiseReaction</code> record in the specification and is declared like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">PledgeReaction</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">capability</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handler</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">capability</span> <span class="o">=</span> <span class="nx">capability</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="nx">type</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">handler</span> <span class="o">=</span> <span class="nx">handler</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The next steps in <code class="highlighter-rouge">PerformPromiseThen()</code> are all based on the state of the promise:</p>
+
+<ol>
+  <li>If the state is pending, then store the reactions for later.</li>
+  <li>If the state is fulfilled, then queue a job to execute <code class="highlighter-rouge">fulfillReaction</code>.</li>
+  <li>If the state is rejected, then queue a job to execute <code class="highlighter-rouge">rejectReaction</code>.</li>
+</ol>
+
+<p>And after that, there are two more steps:</p>
+
+<ol>
+  <li>Mark the promise as being handled (for unhandled rejection tracking, discussed in an upcoming post).</li>
+  <li>Return the promise from the <code class="highlighter-rouge">resultCapability</code>, or return <code class="highlighter-rouge">undefined</code> if <code class="highlighter-rouge">resultCapability</code> is <code class="highlighter-rouge">undefined</code>.</li>
+</ol>
+
+<p>Here’s the finished <code class="highlighter-rouge">performPledgeThen()</code> that implements these steps:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">performPledgeThen</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">onFulfilled</span><span class="p">,</span> <span class="nx">onRejected</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">assertIsPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">onFulfilled</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">onFulfilled</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">onRejected</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">onRejected</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">fulfillReaction</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeFulfillReaction</span><span class="p">(</span><span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">onFulfilled</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">rejectReaction</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeRejectReaction</span><span class="p">(</span><span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">onRejected</span><span class="p">);</span>
+
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">])</span> <span class="p">{</span>
+
+        <span class="k">case</span> <span class="dl">"</span><span class="s2">pending</span><span class="dl">"</span><span class="p">:</span>
+            <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">fulfillReactions</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">fulfillReaction</span><span class="p">);</span>
+            <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectReactions</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">rejectReaction</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="k">case</span> <span class="dl">"</span><span class="s2">fulfilled</span><span class="dl">"</span><span class="p">:</span> 
+            <span class="p">{</span>
+                <span class="kd">const</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">];</span>
+                <span class="kd">const</span> <span class="nx">fulfillJob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeReactionJob</span><span class="p">(</span><span class="nx">fulfillReaction</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+                <span class="nx">hostEnqueuePledgeJob</span><span class="p">(</span><span class="nx">fulfillJob</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="k">case</span> <span class="dl">"</span><span class="s2">rejected</span><span class="dl">"</span><span class="p">:</span>
+            <span class="p">{</span>
+                <span class="kd">const</span> <span class="nx">reason</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">];</span>
+                <span class="kd">const</span> <span class="nx">rejectJob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeReactionJob</span><span class="p">(</span><span class="nx">rejectReaction</span><span class="p">,</span> <span class="nx">reason</span><span class="p">);</span>
+
+                <span class="c1">// TODO: if [[isHandled]] if false</span>
+                
+                <span class="nx">hostEnqueuePledgeJob</span><span class="p">(</span><span class="nx">rejectJob</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="nl">default</span><span class="p">:</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s2">`Invalid pledge state: </span><span class="p">${</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]}</span><span class="s2">.`</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">isHandled</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">resultCapability</span> <span class="p">?</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span> <span class="p">:</span> <span class="kc">undefined</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this code, the <code class="highlighter-rouge">PledgeSymbol.fulfillReactions</code> and <code class="highlighter-rouge">PledgeSymbol.rejectReactions</code> are finally used for something. If the state is pending, the reactions are stored for later so they can be triggered when the state changes (this is discussed later in this post). If the state is either fulfilled or rejected then a <code class="highlighter-rouge">PledgeReactionJob</code> is created to run the reaction. The <code class="highlighter-rouge">PledgeReactionJob</code> maps to <code class="highlighter-rouge">NewPromiseReactionJob()</code><sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:4" class="footnote">4</a></sup> in the specification and is declared like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">PledgeReactionJob</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">reaction</span><span class="p">,</span> <span class="nx">argument</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="p">{</span> <span class="na">capability</span><span class="p">:</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">type</span><span class="p">,</span> <span class="nx">handler</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">reaction</span><span class="p">;</span>
+            <span class="kd">let</span> <span class="nx">handlerResult</span><span class="p">;</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">handler</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">undefined</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="nx">type</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">fulfill</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">handlerResult</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">NormalCompletion</span><span class="p">(</span><span class="nx">argument</span><span class="p">);</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="nx">handlerResult</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ThrowCompletion</span><span class="p">(</span><span class="nx">argument</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="k">try</span> <span class="p">{</span>
+                    <span class="nx">handlerResult</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">NormalCompletion</span><span class="p">(</span><span class="nx">handler</span><span class="p">(</span><span class="nx">argument</span><span class="p">));</span>
+                <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">handlerResult</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ThrowCompletion</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">pledgeCapability</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">undefined</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">handlerResult</span> <span class="k">instanceof</span> <span class="nx">ThrowCompletion</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">throw</span> <span class="nx">handlerResult</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+                <span class="p">}</span>
+
+                <span class="c1">// Return NormalCompletion(empty)</span>
+                <span class="k">return</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="nx">handlerResult</span> <span class="k">instanceof</span> <span class="nx">ThrowCompletion</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">handlerResult</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">handlerResult</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="c1">// Return NormalCompletion(status)</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This code begins by extracting all of the information from the <code class="highlighter-rouge">reaction</code> that was passed in. The function is a little bit long because both <code class="highlighter-rouge">capability</code> and <code class="highlighter-rouge">handler</code> can be <code class="highlighter-rouge">undefined</code>, so there are fallback behaviors in each of those cases.</p>
+
+<p>The <code class="highlighter-rouge">PledgeReactionJob</code> class also uses the concept of a <em>completion record</em><sup id="fnref:5"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:5" class="footnote">5</a></sup>. In most of the code, I was able to avoid needing to reference completion records directly, but in this code it was necessary to better match the algorithm in the specification. A completion record is nothing more than a record of how an operation’s control flow concluded. There are four completion types:</p>
+
+<ul>
+  <li><strong>normal</strong> - when an operation succeeds without any change in control flow (the <code class="highlighter-rouge">return</code> statement or exiting at the end of a function)</li>
+  <li><strong>break</strong> - when an operation exits completely (the <code class="highlighter-rouge">break</code> statement)</li>
+  <li><strong>continue</strong> - when an operation exits and then restarts (the <code class="highlighter-rouge">continue</code> statement)</li>
+  <li><strong>throw</strong> - when an operation results in an error (the <code class="highlighter-rouge">throw</code> statement)</li>
+</ul>
+
+<p>These completion records tell the JavaScript engine how (or whether) to continue running code. For creating <code class="highlighter-rouge">PledgeReactionJob</code>, I only needed normal and throw completions, so I declared them as follows:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Completion</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">target</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">=</span> <span class="nx">type</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">target</span> <span class="o">=</span> <span class="nx">target</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">NormalCompletion</span> <span class="kd">extends</span> <span class="nx">Completion</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">argument</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="p">(</span><span class="dl">"</span><span class="s2">normal</span><span class="dl">"</span><span class="p">,</span> <span class="nx">argument</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">ThrowCompletion</span> <span class="kd">extends</span> <span class="nx">Completion</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">argument</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="p">(</span><span class="dl">"</span><span class="s2">throw</span><span class="dl">"</span><span class="p">,</span> <span class="nx">argument</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Essentially, <code class="highlighter-rouge">NormalCompletion</code> tells the function to exit as normal (if there is no <code class="highlighter-rouge">pledgeCapability</code>) or resolve a pledge (if <code class="highlighter-rouge">pledgeCapability</code> is defined) and <code class="highlighter-rouge">ThrowCompletion</code> tells the function to either throw an error (if there is no <code class="highlighter-rouge">pledgeCapability</code>) or reject a pledge (if <code class="highlighter-rouge">pledgeCapability</code> is defined). Within the Pledge library, <code class="highlighter-rouge">pledgeCapability</code> will always be defined, but I wanted to match the original algorithm from the specification for completeness.</p>
+
+<p>Having covered <code class="highlighter-rouge">PledgeReactionJob</code> means that the <code class="highlighter-rouge">pledgePerformThen()</code> function is complete and all handlers will be properly stored (if the pledge state is pending) or executed immediately (if the pledge state is fulfilled or rejected). The last step is to execute any save reactions when the pledge state changes from pending to either fulfilled or rejected.</p>
+
+<h3 id="triggering-stored-reactions">Triggering stored reactions</h3>
+
+<p>When a promise transitions from unsettled to settled, it triggers the stored reactions to execute (fulfill reactions if the promise is fulfilled and reject reactions when the promise is rejected). The specification defines this operation as <code class="highlighter-rouge">TriggerPromiseReaction()</code><sup id="fnref:6"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:6" class="footnote">6</a></sup>, and it’s one of the easier algorithms to implement. The entire algorithm is basically iterating over a list (array in JavaScript) of reactions and then creating and queueing a new <code class="highlighter-rouge">PromiseReactionJob</code> for each one. Here’s how I implemented it as <code class="highlighter-rouge">triggerPledgeReactions()</code>:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">triggerPledgeReactions</span><span class="p">(</span><span class="nx">reactions</span><span class="p">,</span> <span class="nx">argument</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">reaction</span> <span class="k">of</span> <span class="nx">reactions</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">job</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeReactionJob</span><span class="p">(</span><span class="nx">reaction</span><span class="p">,</span> <span class="nx">argument</span><span class="p">);</span>
+        <span class="nx">hostEnqueuePledgeJob</span><span class="p">(</span><span class="nx">job</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The most important part is to pass in the correct <code class="highlighter-rouge">reactions</code> argument, which is why this is function is called in two places: <code class="highlighter-rouge">fulfillPledge()</code> and <code class="highlighter-rouge">rejectPledge()</code> (discussed in part 1 of this series). For both functions, triggering reactions is the last step. Here’s the code for that:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">fulfillPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">pending</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Pledge is already settled.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">reactions</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">fulfillReactions</span><span class="p">];</span>
+
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">fulfillReactions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectReactions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">fulfilled</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">triggerPledgeReactions</span><span class="p">(</span><span class="nx">reactions</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">rejectPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">pending</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Pledge is already settled.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">reactions</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectReactions</span><span class="p">];</span>
+
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">]</span> <span class="o">=</span> <span class="nx">reason</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">fulfillReactions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectReactions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">rejected</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="c1">// global rejection tracking</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">isHandled</span><span class="p">])</span> <span class="p">{</span>
+        <span class="c1">// TODO: perform HostPromiseRejectionTracker(promise, "reject").</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">triggerPledgeReactions</span><span class="p">(</span><span class="nx">reactions</span><span class="p">,</span> <span class="nx">reason</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>After this addition, <code class="highlighter-rouge">Pledge</code> objects will properly trigger stored fulfillment and rejection handlers whenever the handlers are added prior to the pledge resolving. Note that both <code class="highlighter-rouge">fulfillPledge()</code> and <code class="highlighter-rouge">rejectPledge()</code> remove all reactions from the <code class="highlighter-rouge">Pledge</code> object in the process of changing the object’s state and triggering the reactions.</p>
+
+<h2 id="the-catch-method">The <code class="highlighter-rouge">catch()</code> method</h2>
+
+<p>If you always wondered if the <code class="highlighter-rouge">catch()</code> method was just a shorthand for <code class="highlighter-rouge">then()</code>, then you are correct. All <code class="highlighter-rouge">catch()</code> does is call <code class="highlighter-rouge">then()</code> with an <code class="highlighter-rouge">undefined</code> first argument and the <code class="highlighter-rouge">onRejected</code> handler as the second argument:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// constructor omitted for space</span>
+
+    <span class="kd">static</span> <span class="kd">get</span> <span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">]()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">then</span><span class="p">(</span><span class="nx">onFulfilled</span><span class="p">,</span> <span class="nx">onRejected</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="nx">assertIsPledge</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+        <span class="kd">const</span> <span class="nx">C</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="kd">constructor</span><span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">];</span>
+        <span class="kd">const</span> <span class="nx">resultCapability</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeCapability</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+        <span class="k">return</span> <span class="nx">performPledgeThen</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">onFulfilled</span><span class="p">,</span> <span class="nx">onRejected</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">catch</span><span class="p">(</span><span class="nx">onRejected</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="kc">undefined</span><span class="p">,</span> <span class="nx">onRejected</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>So yes, <code class="highlighter-rouge">catch()</code> is really just a convenience method. The <code class="highlighter-rouge">finally()</code> method, however, is more involved.</p>
+
+<h2 id="the-finally-method">The <code class="highlighter-rouge">finally()</code> method</h2>
+
+<p>The <code class="highlighter-rouge">finally()</code> method was a late addition to the promises specification and works a bit differently than <code class="highlighter-rouge">then()</code> and <code class="highlighter-rouge">catch()</code>. Whereas both <code class="highlighter-rouge">then()</code> and <code class="highlighter-rouge">catch()</code> allow you to add handlers that will receive a value when the promise is settled, a handler added with <code class="highlighter-rouge">finally()</code> does not receive a value. Instead, the promise returned from the call to <code class="highlighter-rouge">finally()</code> is settled in the same as the first promise. For example, if a given promise is fulfilled, then the promise returned from <code class="highlighter-rouge">finally()</code> is fulfilled with the same value:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+
+<span class="nx">promise</span><span class="p">.</span><span class="k">finally</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Original promise is settled.</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>     <span class="c1">// 42</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>This example shows that calling <code class="highlighter-rouge">finally()</code> on a promise that is resolved to <code class="highlighter-rouge">42</code> will result in a promise that is also resolved to <code class="highlighter-rouge">42</code>. These are two different promises but they are resolved to the same value.</p>
+
+<p>Similarly, if a promise is rejected, the the promise returned from <code class="highlighter-rouge">finally()</code> will also be rejected, as in this example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="dl">"</span><span class="s2">Oops!</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="nx">promise</span><span class="p">.</span><span class="k">finally</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Original promise is settled.</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="nx">reason</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>     <span class="c1">// "Oops!"</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Here, <code class="highlighter-rouge">promise</code> is rejected with a reason of <code class="highlighter-rouge">"Oops!"</code>. The handler assigned with <code class="highlighter-rouge">finally()</code> will execute first, outputting a message to the console, and the promise returned from <code class="highlighter-rouge">finally()</code> is rejected to the same reason as <code class="highlighter-rouge">promise</code>. This ability to pass on promise rejections through <code class="highlighter-rouge">finally()</code> means that adding a <code class="highlighter-rouge">finally()</code> handler does not count as handling a promise rejection. (If a rejected promise only has a <code class="highlighter-rouge">finally()</code> handler then the JavaScript runtime will still output a message about an unhandled promise rejection. You still need to add a rejection handler with <code class="highlighter-rouge">then()</code> or <code class="highlighter-rouge">catch()</code> to avoid that message.)</p>
+
+<p>With a good understanding of <code class="highlighter-rouge">finally()</code> works, it’s time to implement it.</p>
+
+<h3 id="implementing-the-finally-method">Implementing the <code class="highlighter-rouge">finally()</code> method</h3>
+
+<p>The first few steps of <code class="highlighter-rouge">finally()</code><sup id="fnref:7"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:7" class="footnote">7</a></sup> are the same as with <code class="highlighter-rouge">then()</code>, which is to assert that <code class="highlighter-rouge">this</code> is a promise and to retrieve the species constructor:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// constructor omitted for space</span>
+
+    <span class="kd">static</span> <span class="kd">get</span> <span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">]()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">finally</span><span class="p">(</span><span class="nx">onFinally</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="nx">assertIsPledge</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+        <span class="kd">const</span> <span class="nx">C</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="kd">constructor</span><span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">];</span>
+
+        <span class="c1">// TODO</span>
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>After that, the specification defines two variables, <code class="highlighter-rouge">thenFinally</code> and <code class="highlighter-rouge">catchFinally</code>, which are the fulfillment and rejection handlers that will be passed to <code class="highlighter-rouge">then()</code>. Just like <code class="highlighter-rouge">catch()</code>, <code class="highlighter-rouge">finally()</code> eventually calls the <code class="highlighter-rouge">then()</code> method directly. The only question is what values will be passed. For instance, if the <code class="highlighter-rouge">onFinally</code> argument isn’t callable, then <code class="highlighter-rouge">thenFinally</code> and <code class="highlighter-rouge">catchFinally</code> are set equal to <code class="highlighter-rouge">onFinally</code> and no other work needs to be done:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// constructor omitted for space</span>
+
+    <span class="kd">static</span> <span class="kd">get</span> <span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">]()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">finally</span><span class="p">(</span><span class="nx">onFinally</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="nx">assertIsPledge</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+        <span class="kd">const</span> <span class="nx">C</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="kd">constructor</span><span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">];</span>
+
+        <span class="kd">let</span> <span class="nx">thenFinally</span><span class="p">,</span> <span class="nx">catchFinally</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">onFinally</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nx">thenFinally</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">;</span>
+            <span class="nx">catchFinally</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+            <span class="c1">// TODO</span>
+
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">thenFinally</span><span class="p">,</span> <span class="nx">catchFinally</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You might be confused as to why an uncallable <code class="highlighter-rouge">onFinally</code> will be passed into <code class="highlighter-rouge">then()</code>, as was I when I first read the specification. Remember that <code class="highlighter-rouge">then()</code> ultimately delegates to <code class="highlighter-rouge">performPledgeThen()</code>, which in turn sets any uncallable handlers to <code class="highlighter-rouge">undefined</code>. So <code class="highlighter-rouge">finally()</code> is relying on that validation step in <code class="highlighter-rouge">performPledgeThen()</code> to ensure that uncallable handlers are never formally added.</p>
+
+<p>The next step is to define the values for <code class="highlighter-rouge">thenFinally</code> and <code class="highlighter-rouge">catchFinally</code> if <code class="highlighter-rouge">onFinally</code> is callable. Each of these functions is defined in the specification as a sequence of steps to perform in order to pass on the settlement state and value from the first promise to the returned promise. The steps for <code class="highlighter-rouge">thenFinally</code> are a bit difficult to decipher in the specification<sup id="fnref:8"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:8" class="footnote">8</a></sup> but are really straight forward when you see the code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// constructor omitted for space</span>
+
+    <span class="kd">static</span> <span class="kd">get</span> <span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">]()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">finally</span><span class="p">(</span><span class="nx">onFinally</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="nx">assertIsPledge</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+        <span class="kd">const</span> <span class="nx">C</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="kd">constructor</span><span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">];</span>
+
+        <span class="kd">let</span> <span class="nx">thenFinally</span><span class="p">,</span> <span class="nx">catchFinally</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">onFinally</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nx">thenFinally</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">;</span>
+            <span class="nx">catchFinally</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+            <span class="nx">thenFinally</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+                <span class="kd">const</span> <span class="nx">pledge</span> <span class="o">=</span> <span class="nx">pledgeResolve</span><span class="p">(</span><span class="nx">C</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+                <span class="kd">const</span> <span class="nx">valueThunk</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">value</span><span class="p">;</span>
+                <span class="k">return</span> <span class="nx">pledge</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">valueThunk</span><span class="p">);</span>
+            <span class="p">};</span>
+
+            <span class="c1">// not used by included for completeness with spec</span>
+            <span class="nx">thenFinally</span><span class="p">.</span><span class="nx">C</span> <span class="o">=</span> <span class="nx">C</span><span class="p">;</span>
+            <span class="nx">thenFinally</span><span class="p">.</span><span class="nx">onFinally</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">;</span>
+
+            <span class="c1">// TODO</span>
+
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">thenFinally</span><span class="p">,</span> <span class="nx">catchFinally</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Essentially, the <code class="highlighter-rouge">thenFinally</code> value is a function that accepts the fulfilled value of the promise and then:</p>
+
+<ol>
+  <li>Calls <code class="highlighter-rouge">onFinally()</code>.</li>
+  <li>Creates a resolved pledge with the result of step 1. (This result is ultimately discarded.)</li>
+  <li>Creates a function called <code class="highlighter-rouge">valueThunk</code> that does nothing but return the fulfilled value.</li>
+  <li>Assigns <code class="highlighter-rouge">valueThunk</code> as the fulfillment handler for the newly-created pledge and then returns the value.</li>
+</ol>
+
+<p>After that, references to <code class="highlighter-rouge">C</code> and <code class="highlighter-rouge">onFinally</code> are stored on the function, but as noted in the code, these aren’t necessary for the JavaScript implementation. In the specification, this is the way that the <code class="highlighter-rouge">thenFinally</code> functions gets access to both <code class="highlighter-rouge">C</code> and <code class="highlighter-rouge">onFinally</code>. In JavaScript, I’m using a closure to get access to those values.</p>
+
+<p>The <code class="highlighter-rouge">pledgeResolve()</code> function is straightforward and follows the algorithm described in the specification<sup id="fnref:9"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:9" class="footnote">9</a></sup> almost exactly:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">pledgeResolve</span><span class="p">(</span><span class="nx">C</span><span class="p">,</span> <span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">assertIsObject</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">isPledge</span><span class="p">(</span><span class="nx">x</span><span class="p">))</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">xConstructor</span> <span class="o">=</span> <span class="nx">x</span><span class="p">.</span><span class="kd">constructor</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">is</span><span class="p">(</span><span class="nx">xConstructor</span><span class="p">,</span> <span class="nx">C</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">x</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">pledgeCapability</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeCapability</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+    <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>For the purposes of this post, it’s not important to get into the specifics of checking to see if <code class="highlighter-rouge">x</code> is an instance of <code class="highlighter-rouge">Pledge</code> because that value is never used within <code class="highlighter-rouge">onFinally</code>. (This will be discussed, however, in my next post as it’s an important feature used in <code class="highlighter-rouge">Promise.resolve()</code>.) Ultimately, the function creates a new <code class="highlighter-rouge">PledgeCapability</code> so it can return a <code class="highlighter-rouge">Pledge</code> instance.</p>
+
+<p>The steps to create <code class="highlighter-rouge">catchFinally</code><sup id="fnref:10"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:10" class="footnote">10</a></sup> are similar, but the end result is a function that throws a reason:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// constructor omitted for space</span>
+
+    <span class="kd">static</span> <span class="kd">get</span> <span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">]()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">finally</span><span class="p">(</span><span class="nx">onFinally</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="nx">assertIsPledge</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+        <span class="kd">const</span> <span class="nx">C</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="kd">constructor</span><span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">species</span><span class="p">];</span>
+
+        <span class="kd">let</span> <span class="nx">thenFinally</span><span class="p">,</span> <span class="nx">catchFinally</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">onFinally</span><span class="p">))</span> <span class="p">{</span>
+            <span class="nx">thenFinally</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">;</span>
+            <span class="nx">catchFinally</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+            <span class="nx">thenFinally</span> <span class="o">=</span> <span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+                <span class="kd">const</span> <span class="nx">pledge</span> <span class="o">=</span> <span class="nx">pledgeResolve</span><span class="p">(</span><span class="nx">C</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+                <span class="kd">const</span> <span class="nx">valueThunk</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="nx">value</span><span class="p">;</span>
+                <span class="k">return</span> <span class="nx">pledge</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">valueThunk</span><span class="p">);</span>
+            <span class="p">};</span>
+
+            <span class="c1">// not used by included for completeness with spec</span>
+            <span class="nx">thenFinally</span><span class="p">.</span><span class="nx">C</span> <span class="o">=</span> <span class="nx">C</span><span class="p">;</span>
+            <span class="nx">thenFinally</span><span class="p">.</span><span class="nx">onFinally</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">;</span>
+
+            <span class="nx">catchFinally</span> <span class="o">=</span> <span class="nx">reason</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+                <span class="kd">const</span> <span class="nx">pledge</span> <span class="o">=</span> <span class="nx">pledgeResolve</span><span class="p">(</span><span class="nx">C</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+                <span class="kd">const</span> <span class="nx">thrower</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                    <span class="k">throw</span> <span class="nx">reason</span><span class="p">;</span>
+                <span class="p">};</span>
+                <span class="k">return</span> <span class="nx">pledge</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">thrower</span><span class="p">);</span>
+            <span class="p">};</span>
+
+            <span class="c1">// not used by included for completeness with spec</span>
+            <span class="nx">catchFinally</span><span class="p">.</span><span class="nx">C</span> <span class="o">=</span> <span class="nx">C</span><span class="p">;</span>
+            <span class="nx">catchFinally</span><span class="p">.</span><span class="nx">onFinally</span> <span class="o">=</span> <span class="nx">onFinally</span><span class="p">;</span>
+
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">thenFinally</span><span class="p">,</span> <span class="nx">catchFinally</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You might be wondering why the <code class="highlighter-rouge">catchFinally</code> function is calling <code class="highlighter-rouge">pledge.then(thrower)</code> instead of <code class="highlighter-rouge">pledge.catch(thrower)</code>. This is the way the specification defines this step to take place, and it really doesn’t matter whether you use <code class="highlighter-rouge">then()</code> or <code class="highlighter-rouge">catch()</code> because a handler that throws a value will always trigger a rejected promise.</p>
+
+<p>With this completed <code class="highlighter-rouge">finally()</code> method, you can now see that when <code class="highlighter-rouge">onFinally</code> is callable, the method creates a <code class="highlighter-rouge">thenFinally</code> function that resolves to the same value as the original function and a <code class="highlighter-rouge">catchFinally</code> function that throws any reason it receives. These two functions are then passed to <code class="highlighter-rouge">then()</code> so that both fulfillment and rejection are handled in a way that mirrors the settled state of the original promise.</p>
+
+<h2 id="wrapping-up">Wrapping Up</h2>
+
+<p>This post covered the internals of <code class="highlighter-rouge">then()</code>, <code class="highlighter-rouge">catch()</code>, and <code class="highlighter-rouge">finally()</code>, with <code class="highlighter-rouge">then()</code> containing most of the functionality of interest while <code class="highlighter-rouge">catch()</code> and <code class="highlighter-rouge">finally()</code> each delegate to <code class="highlighter-rouge">then()</code>. Handling promise reactions is, without a doubt, the most complicated part of the promises specification. You should now have a good understanding that all reactions are executed asynchronously as jobs (microtasks) regardless of promise state. This understanding really is key to a good overall understanding of how promises work and when you should expect various handlers to be executed.</p>
+
+<p>In the next post in this series, I’ll cover creating settled promises with <code class="highlighter-rouge">Promise.resolve()</code> and <code class="highlighter-rouge">Promise.reject()</code>.</p>
+
+<p>All of this code is available in the <a href="https://github.com/humanwhocodes/pledge">Pledge</a> on GitHub. I hope you’ll download it and try it out to get a better understanding of promises.</p>
+
+<h2 id="references">References</h2>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promisecapability-records">PromiseCapability Records</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-newpromisecapability">NewPromiseCapability( C )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promise.prototype.then">Promise.prototype.then( onFulfilled, onRejected )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:4">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-newpromisereactionjob">NewPromiseReactionJob( reaction, argument )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:5">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-completion-record-specification-type">The Completion Record Specification Type</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:6">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-triggerpromisereactions">TriggerPromiseReactions( reactions, argument )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:7">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promise.prototype.finally">Promise.prototype.finally( onFinally )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:7" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:8">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-thenfinallyfunctions">Then Finally Functions</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:8" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:9">
+      <p><a href="https://www.ecma-international.org/ecma-262/#sec-promise-resolve">PromiseResolve( C, x )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:9" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:10">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-catchfinallyfunctions">Catch Finally Functions</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:10" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="https://humanwhocodes.com/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='../../index.html'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

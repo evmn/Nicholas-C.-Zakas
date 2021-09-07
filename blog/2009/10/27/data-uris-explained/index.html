@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Data URIs explained - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/10/27/data-uris-explained/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Data URIs explained">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/10/27/data-uris-explained/" />
+<meta name="og:title" content="Data URIs explained">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="One of the most frequently requested browser features in recent memory is data URI support. There’s been a fair amount written about data URIs recently: my colleague Stoyan Stefanov has written a couple...">
+<meta name="keywords" content="Base 64,CSS,Data URI,Images,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Data URIs explained</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-10-27T00:00:00+00:00" itemprop="datePublished">October 27, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/base-64" rel="tag">Base 64</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/css" rel="tag">CSS</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/data-uri" rel="tag">Data URI</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/images" rel="tag">Images</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>One of the most frequently requested browser features in recent memory is data URI support. There’s been a fair amount written about data URIs recently: my colleague Stoyan Stefanov has written a <a href="http://phpied.com/data-urls-what-are-they-and-how-to-use">couple</a> of <a href="http://www.phpied.com/mhtml-when-you-need-data-uris-in-ie7-and-under/">posts</a> about data URIs, and my former colleague Hedger Wang also penned a <a href="http://www.hedgerwow.com/360/dhtml/base64-image/demo.php">post</a> about how to use data URIs in IE. Surprisingly, there’s still a lot of misunderstanding and confusion about data URIs, what they are, how they work, and why you’d ever want to use one.</p>
+
+<h2 id="uri-not-url">URI, not URL</h2>
+
+<p>URL is short for uniform resource locator, which is a combination of protocol (how to retrieve the data) andÂ  the address at which a given resource exists. Every publicly-accessible resource, such as an image, JavaScript file, HTML file, or style sheet, has a URL that tells the browser from where to download the file. The browser then makes a connection and begins to download and/or execute the file.</p>
+
+<p>Every URL is also a URI, which is short for uniform resource identifier. A URI indicates a protocol for retrieving information as well as additional information about the resource. That additional information may or may not be an address (if it is, then the URI is a URL) but it is always related to the specified protocol. Hence, data URIs are not URLs since they do not contain address information.</p>
+
+<h2 id="data-uri-format">Data URI format</h2>
+
+<p>The data URI format is pretty simple and is spelled out in <a href="http://tools.ietf.org/html/rfc2397">RFC 2397</a> (which actually is short enough that you can read it all). The basic format is as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>data:[&lt;mime type&gt;][;charset=&lt;charset&gt;][;base64],&lt;encoded data&gt;
+</code></pre></div></div>
+
+<p>In this format, <code class="highlighter-rouge">data:</code> is the protocol of the URI, indicating that this is a data URI. The second part, the MIME type, indicates the type of data being represented. For PNG images, for example, this would be <code class="highlighter-rouge">image/png</code>. When not specified, the MIME type defaults to <code class="highlighter-rouge">text/plain</code>. The character set can, most often, safely be omitted and isn’t used at all for images. The next section indicates the encoding used. Contrary to popular belief, you do not have to use base 64 encoding. If the content isn’t base 64 encoded, then the data is encoded using standard URL-encoding (URL-safe ASCII characters represented as themselves, all others represented as a hex encoding in the format <code class="highlighter-rouge">%xx</code>). The encoded data may contain white space, which is not considered significant.</p>
+
+<h2 id="base-64-encoding">Base 64 encoding</h2>
+
+<p><a href="http://en.wikipedia.org/wiki/Base64">Base 64</a> encoding is a system of encoding whereby data is converted into bits and then grouped numerically into a set of base 64 digits. Base 64 digits include A through Z, both uppercase and lowercase, numbers, and plus (+) and slash (/). The equals sign (=) is used to indicate padding has occurred (please read the Wikipedia article for more information about this). All you really need to understand is that base 64 encoding makes the encoded data much smaller.</p>
+
+<p>Here’s an example of a GIF image as a base 64-encoded data URI (<a href="http://www.websiteoptimization.com/speed/tweak/inline-images/">source</a>):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>data:image/gif;base64,R0lGODlhEAAOALMAAOazToeHh0tLS/7LZv/0jvb29t/f3//Ub//ge
+8WSLf/rhf/3kdbW1mxsbP//mf///yH5BAAAAAAALAAAAAAQAA4AAARe8L1Ekyky67QZ1h
+LnjM5UUde0ECwLJoExKcppV0aCcGCmTIHEIUEqjgaORCMxIC6e0CcguWw6aFjsVMkkIr7g
+77ZKPJjPZqIyd7sJAgVGoEGv2xsBxqNgYPj/gAwXEQA7
+</code></pre></div></div>
+
+<p>The same image can be represented without base 64-encoding as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>data:image/gif,GIF89a%22%00%1B%00%F7%00%00lll%D6%D6%D6%FF%EB%85
+%FF%E0%7B%FF%F7%91%FF%D4o%DF%DF%DF%F6%F6%F6%87%87%87%FE
+%CBf%FF%F4%8E%E6%B3NKKK%C5%92-%FF%FF%99%FF%FF%FF%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00
+%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%2C%00%00
+%00%00%22%00%1B%00%00%08%A9%00%1F%08%1CH%B0%A0%C1%83%08
+%13*%5C%C8%B0%A1%C3%87%10%23J%9CH%91%60%83%8B%0D%0C%1C
+%A8h%B0%81%C5%00%1B9%0A%F4%E8%A0%A4%83%07%181j%9C%D8%80
+%80%82%97%2F%0B6%40%60%80%A5%00%01)s%AA%94%D8%60%80G%84
+%02P%22%E0Y%A0%81%C9%A3%25%138h%00%80g%02%A3%04%A2J%8D
+%BA%60i%D3%88%0D%9E%3A%B8%C9%95kU%A6N%8D%0E%18Kv%EC%D7
+%AB%10%B3%1A-%C0%B6-%5B%A3%60%23%1A%D0I%97%C1%D0%88%07
+%02%20%00%C0%B7%AF_%00%08%02L%3C%60%20%80%E1%C3%88%03
+%AC%14%C9%B8%B1%E3%C7%90%23K%9EL0%20%00%3B
+</code></pre></div></div>
+
+<p>The clear winner for size is the base 64-encoded version of the image, which is significantly smaller.</p>
+
+<p>**Note: **Base 64-encoding actually makes images larger. If you’re using HTTP compression, however, you likely won’t notice a difference because base 64-encoded data compresses extremely well. If for some reason you can’t use HTTP compression, you may want to check how many bytes you’re sending over the wire to determine if the tradeoff is worth it.</p>
+
+<h2 id="not-just-for-images">Not just for images</h2>
+
+<p>Even though most people talk about data URIs as the way to embed images inside of an HTML or CSS file, there is nothing here that is image-specific. You can encode and embed any type of file, even HTML itself. Ian Hickson, of HTML 5 fame (or infamy, depending on your position), has a <a href="http://software.hixie.ch/utilities/cgi/data/data">tool</a> that allows you to play with data URIs. THe default example is an HTML file that can be turned into a data URI either with or without base 64-encoding. Playing around with this data URI generator for a while really helps to solidify the core concepts.</p>
+
+<p><strong>Note:</strong> Internet Explorer 8 has <a href="http://msdn.microsoft.com/en-us/library/cc848897(VS.85).aspx">security restrictions</a> on data URIs that make them less useful for non-image data.</p>
+
+<h2 id="performance-implications">Performance implications</h2>
+
+<p>The most interesting part of the data URI story is that it gives you the ability to embed files inside of other files. Most <a href="http://www.websiteoptimization.com/speed/tweak/inline-images/">writeups</a> focus on embedding data URIs in CSS files as a way to improve performance. Indeed, there’s been a lot of <a href="http://stevesouders.com/hpws/rule-min-http.php">research</a> indicating that HTTP requests are one of the major performance holes for web sites, and decreasing the number of requests results in better page performance. “Minimize HTTP requests” is actually the first rule of the <a href="http://developer.yahoo.com/performance/rules.html">Yahoo! Exceptional Performance Best Practices</a>, and it specifically mentions data URIs:</p>
+
+<blockquote>
+  <p>Inline images use the data: URI scheme to embed the image data in the actual page. This can increase the size of your HTML document. Combining inline images into your (cached) stylesheets is a way to reduce HTTP requests and avoid increasing the size of your pages. Inline images are not yet supported across all major browsers.</p>
+</blockquote>
+
+<p>This is good advice for using data URIs: you want to use them where they will be cached most frequently. Regular images downloaded over HTTP are cached according to their headers and/or browser-specific settings so that they needn’t be re-downloaded all the time. Data URIs are considered to be part of the file that contains them, so they are part of the HTML or CSS file in which it is embedded. This means that the data URI has no standalone cache control policy. Embedding data URIs in your files make the files themselves larger, and if the file changes frequently (such as the homepage of a blog), then the larger file must be downloaded frequently. This slows down your site.</p>
+
+<p>The easiest usage is to embed data URIs in external style sheets that are aggressively cached. That way, the empty cache experience is faster (due to fewer overall requests) and the primed cache experience is the same.</p>
+
+<h2 id="browser-support">Browser support</h2>
+
+<p>Most modern browsers support data URIs:</p>
+
+<ul>
+  <li>Firefox 2+</li>
+  <li>Opera 7.2+ – data URIs must not be longer than 4100 characters</li>
+  <li>Chrome (all versions)</li>
+  <li>Safari (all versions)</li>
+  <li>Internet Explorer 8+ – data URIs must be smaller than 32k</li>
+</ul>
+
+<p>Since data URIs are not supported in IE prior to version 8, you need to decide whether or not it’s worthwhile to serve alternate content to those browsers (read <a href="http://www.phpied.com/mhtml-when-you-need-data-uris-in-ie7-and-under/">Stoyan’s post</a>).</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Data URIs are an interesting and unique concept on the Web, and are likely to get more coverage going forward. For the time being, it seems that they are best suited to performance-related tasks, but who knows where the future will take us. In the short term, you can see some good performance savings by using data URIs to eliminate additional HTTP requests for fetching images. Data URIs also open up the possibility of generating images dynamically using JavaScript, though growing support for <code class="highlighter-rouge">&lt;canvas&gt;</code> may make this use case obsolete.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/10/27/data-uris-explained/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

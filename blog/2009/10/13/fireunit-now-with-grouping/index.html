@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>FireUnit: Now with grouping - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/10/13/fireunit-now-with-grouping/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="FireUnit: Now with grouping">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/10/13/fireunit-now-with-grouping/" />
+<meta name="og:title" content="FireUnit: Now with grouping">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="When I first got wind of John Resig’s FireUnit extension for Firefox, I was very excited. JavaScript unit testing, and front-end testing in general, is an area of particular interest to me. It’s...">
+<meta name="keywords" content="Firebug,FireUnit,Unit Testing,YUI Test,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">FireUnit: Now with grouping</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-10-13T00:00:00+00:00" itemprop="datePublished">October 13, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/firebug" rel="tag">Firebug</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/fireunit" rel="tag">FireUnit</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/unit-testing" rel="tag">Unit Testing</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/yui-test" rel="tag">YUI Test</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>When I first got wind of John Resig’s <a href="http://www.fireunit.org">FireUnit</a> extension for Firefox, I was very excited. JavaScript unit testing, and front-end testing in general, is an area of particular interest to me. It’s so interesting that a couple of years ago I wrote <a href="http://developer.yahoo.com/yui/yuitest/">YUI Test</a> as a way to enable front-end testing in the browser. This past month, <a href="http://developer.yahoo.com/yui/3/test/">YUI Test for YUI 3.x</a> was also released, updated with mock objects.</p>
+
+<p>One of the things I never got around to with YUI Test was to create a useful console for outputting the results (both version use the built-in YUI Logger to display the results). The TestRunner object itself is event-driven, so it’s fairly easy to create a different way of displaying test results. I thought FireUnit looked like a great way to display test results in a logical, out-of-the-page way.</p>
+
+<h2 id="basic-usage">Basic usage</h2>
+
+<p>FireUnit is interesting in that it’s both a console for displaying test results as well as a mini unit testing framework (John wrote a post on <a href="http://ejohn.org/blog/fireunit/">basic FireUnit usage</a>, so I’m not going to go too deep into it here). The extension embeds as part of Firebug, creating a new “Test” tab and exposing the <code class="highlighter-rouge">fireunit</code> object. This object is similar to <code class="highlighter-rouge">console</code> but interacts only with the Test panel.</p>
+
+<p>The main method is <code class="highlighter-rouge">fireunit.ok()</code>, which accepts two arguments: a Boolean value and a string. The Boolean indicates if the test passed while the string provides a message to display. You can use this method either to run a simple test or to simply output a test result:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fireunit.ok(true, "This test passed.");
+fireunit.ok(num == 2, "The number should be 2.");
+</code></pre></div></div>
+
+<p>In order to get the results to show up in the FireUnit console, you need to call <code class="highlighter-rouge">fireunit.testDone()</code>. Then, all of the information is beautifully displayed for your perusal.</p>
+
+<h2 id="tying-to-yui-test">Tying to YUI Test</h2>
+
+<p>When I first saw this, I realized FireUnit could be used to output results from YUI Test by tying the <code class="highlighter-rouge">pass</code> and <code class="highlighter-rouge">fail</code> events to <code class="highlighter-rouge">fireunit.ok()</code>, which led me to create a <a href="../../../../2008/12/19/fireunit-extension-for-yui-test/index.html">FireUnit extension for YUI Test</a>. The basic code was pretty simple:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//Copyright 2008-2009 Nicholas C. Zakas. All rights reserved.
+//BSD license
+YAHOO.tool.FireUnit = function(){
+
+    function handleEvent(event){
+        switch(event.type){
+            case "pass":
+                fireunit.ok(true, event.testName + " passed.");
+                break;
+            case "fail":
+                fireunit.ok(false, event.testName + "failed: " + event.error.getMessage());
+                break;
+            case "complete":
+                fireunit.testDone();
+                break;
+        }
+    }
+
+    return {
+
+        attach: function(){
+            var testRunner = YAHOO.tool.TestRunner;
+            testRunner.subscribe("pass", handleEvent);
+            testRunner.subscribe("fail", handleEvent);
+            testRunner.subscribe("complete", handleEvent);
+        },
+
+        detach: function(){
+            var testRunner = YAHOO.tool.TestRunner;
+            testRunner.unsubscribe("pass", handleEvent);
+            testRunner.unsubscribe("fail", handleEvent);
+            testRunner.unsubscribe("complete", handleEvent);
+        }
+    };
+
+}();
+</code></pre></div></div>
+
+<p>In order to attach to FireUnit, you just have to call <code class="highlighter-rouge">YAHOO.tool.FireUnit.attach()</code>, which sets up all of the appropriate event handlers.</p>
+
+<h2 id="grouping">Grouping</h2>
+
+<p>I liked what I saw from FireUnit at this point, but I thought it was missing a major feature: grouping. Since most unit testing frameworks group tests into either test cases or test suites, or both, the ability to group the results of tests as noticeably missing. I asked John if he was planning on implementing such a feature and he said that if I’d like to implement it, he’d merge the changes in.</p>
+
+<p>My initial thoughts about the API were to keep it simple and generic so that everyone could benefit, not just YUI Test. Since different unit testing frameworks use different grouping terminology, I looked to Firebug for inspiration. I ultimately decided to mimic the <code class="highlighter-rouge">console.group()</code> and <code class="highlighter-rouge">console.groupEnd()</code> and created <code class="highlighter-rouge">fireunit.group()</code> and <code class="highlighter-rouge">fireunit.groupEnd()</code>. The usage is almost exactly the same: <code class="highlighter-rouge">fireunit.group()</code> accepts a string that is the name of the group and begins a new section in the console while <code class="highlighter-rouge">fireunit.groupEnd()</code> doesn’t have any arguments and simply closes out the section in the console. You can have as many nested groups as you’d like, which makes it easy to work with YUI Test test suites and test cases. Example usage:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fireunit.ok(true, "Passing test result");
+fireunit.ok(false, "Failing test result.");
+
+//create first group
+fireunit.group("Group #1");
+fireunit.compare("expected data", "expected data",
+    "Passing verification of expected and actual input.");
+fireunit.compare("&lt;div&gt;expected&lt;/div&gt;", "&lt;div&gt;actual&lt;/div&gt;",
+    "Failing verification of expected and actual input.");
+fireunit.groupEnd();
+
+//create second group
+fireunit.group("Group #2");
+fireunit.compare("expected data", "expected data",
+    "Passing verification of expected and actual input.");
+
+//create third group inside of second group
+fireunit.group("Group #3");
+fireunit.compare("expected data", "expected data",
+    "Passing verification of expected and actual input.");
+fireunit.compare("&lt;div&gt;expected&lt;/div&gt;", "&lt;div&gt;actual&lt;/div&gt;",
+    "Failing verification of expected and actual input.");
+fireunit.groupEnd();    //close third group
+fireunit.compare("&lt;div&gt;expected&lt;/div&gt;", "&lt;div&gt;actual&lt;/div&gt;",
+    "Failing verification of expected and actual input.");
+fireunit.groupEnd();  //close second group
+
+fireunit.ok(false, "My test", 5, "5");
+
+// Finish test
+fireunit.testDone();
+</code></pre></div></div>
+
+<p>This code results in the following output in FireUnit:</p>
+
+<p style="text-align: center;">
+  <img class="alignnone" title="FireUnit" src="http://i764.photobucket.com/albums/xx289/nzakas/blog/fireunit1.png" alt="" width="595" height="316" />
+</p>
+
+<p>FireUnit now displays a hierarchical view of the groups so that you can expand/collapse to investigate the results. By default, the groups are open so you can see all of the tests that have been executed within a specific group.</p>
+
+<h2 id="other-changes">Other changes</h2>
+
+<p>Another thing I liked about FireUnit was the Compare tab that appeared whenever you used the <code class="highlighter-rouge">fireunit.compare()</code> method. This method does a comparison and creates either a passing or failing test based on whether two values are equivalent. YUI Test does this comparison as part of the test, and I really wanted to be able to use the Compare tab without needing to redo the comparison. To that end, I added two additional optional arguments to <code class="highlighter-rouge">fireunit.ok()</code>: an expected value and an actual value. If these arguments are provided, the Compare tab is displayed with the comparison. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fireunit.ok(false, "This test failed.", 1, "1");
+</code></pre></div></div>
+
+<p>This will cause the Compare tab to be displayed and will show that the number 1 is not equal to the string “1″. The main difference between this and <code class="highlighter-rouge">fireunit.compare()</code> is that the comparison has no bearing on the result of the test; it’s purely informational. To make things a little bit easier, I also added the type of each result (via the <code class="highlighter-rouge">typeof</code> operator).</p>
+
+<p style="text-align: center;">
+  <img class="alignnone" title="FireUnit" src="http://i764.photobucket.com/albums/xx289/nzakas/blog/fireunit2.png" alt="" width="595" height="316" />
+</p>
+
+<h2 id="working-with-yui-test">Working with YUI Test</h2>
+
+<p>With this addition to FireUnit, I’ve updated the FireUnit extension for YUI Test to make use of these grouping functionality. Since YUI Test is completely event-driven, adding this functionality was as easy as assigning more event handlers:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//Copyright 2008-2009 Nicholas C. Zakas. All rights reserved.
+//BSD license
+
+YAHOO.tool.FireUnit = function(){
+
+    function handleEvent(event){
+        switch(event.type){
+            case "pass":
+                fireunit.ok(true, event.testName + " passed.");
+                break;
+            case "fail":
+                if (event.error instanceof YAHOO.util.ComparisonFailure){
+                    fireunit.ok(false, event.testName + "failed: " + event.error.message, event.error.expected, event.error.actual);
+                } else {
+                    fireunit.ok(false, event.testName + "failed: " + event.error.message);
+                }
+                break;
+            case "testsuitebegin":
+                fireunit.group(event.testSuite.name);
+                break;
+            case "testcasebegin":
+                fireunit.group(event.testCase.name);
+                break;
+            case "testsuitecomplete":
+            case "testcasecomplete":
+                fireunit.groupEnd();
+                break;
+            case "complete":
+                fireunit.testDone();
+                break;
+        }
+    }
+
+    return {
+
+        attach: function(){
+            var testRunner = YAHOO.tool.TestRunner;
+            testRunner.subscribe("pass", handleEvent);
+            testRunner.subscribe("fail", handleEvent);
+            testRunner.subscribe("complete", handleEvent);
+            testRunner.subscribe("testsuitebegin", handleEvent);
+            testRunner.subscribe("testsuitecomplete", handleEvent);
+            testRunner.subscribe("testcasebegin", handleEvent);
+            testRunner.subscribe("testcasecomplete", handleEvent);
+        },
+
+        detach: function(){
+            var testRunner = YAHOO.tool.TestRunner;
+            testRunner.unsubscribe("pass", handleEvent);
+            testRunner.unsubscribe("fail", handleEvent);
+            testRunner.unsubscribe("complete", handleEvent);
+            testRunner.unsubscribe("testsuitebegin", handleEvent);
+            testRunner.unsubscribe("testsuitecomplete", handleEvent);
+            testRunner.unsubscribe("testcasebegin", handleEvent);
+            testRunner.unsubscribe("testcasecomplete", handleEvent);
+        }
+    };
+
+}();
+</code></pre></div></div>
+
+<p>By hooking into the events that are fired when testcases and testsuites begin and end, I’m able to call the <code class="highlighter-rouge">fireunit.group()</code> and <code class="highlighter-rouge">fireunit.groupEnd()</code> methods at the correct time and with the correct data to create the appropriate console output.</p>
+
+<h2 id="get-the-source">Get the source</h2>
+
+<p>FireUnit is open source and can be forked from <a href="http://github.com/jeresig/fireunit">John’s GitHub repository</a>. I’ve also released my <a href="http://github.com/nzakas/jstools/tree/master/yuitest-fireunit/">FireUnit for YUI Test</a> extension as open source on GitHub. There are both YUI 2.x and YUI 3.x versions available. Note that the YUI 3.x version requires you to pass in the <code class="highlighter-rouge">TestRunner</code> object to the <code class="highlighter-rouge">attach()</code> and <code class="highlighter-rouge">detach()</code> methods (because there can be multiple instances on a page).</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/10/13/fireunit-now-with-grouping/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

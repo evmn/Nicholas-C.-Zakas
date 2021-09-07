@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Consensus-Driven Development - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2015/04/14/consensus-driven-development/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Consensus-Driven Development">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2015/04/14/consensus-driven-development/" />
+<meta name="og:title" content="Consensus-Driven Development">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="If you grew up in a democratic country, chances are you were taught at a young age about the importance of democracy and people’s right to vote. Children growing up in the United...">
+<meta name="keywords" content="consensus,team,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Consensus-Driven Development</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2015-04-14T00:00:00+00:00" itemprop="datePublished">April 14, 2015</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/consensus" rel="tag">consensus</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/team" rel="tag">team</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>If you grew up in a democratic country, chances are you were taught at a young age about the importance of democracy and people’s right to vote. Children growing up in the United States, in particular, are inundated with the message that democracy is the best form of government and voting is the best way to determine the correct course of action. We are then often shell-shocked when we get out of school and discover that, in may cases, our voices don’t matter. Democracy and voting, while important for running the country, are often inefficient and ineffective in our every day lives.</p>
+
+<h2 id="the-challenges-of-software">The challenges of software</h2>
+
+<p>Software engineering is interesting due to the plurality of opinions around nearly everything: which programming language to use, how to write your code using that language, the patterns to apply in your code, how to name things, feature language features are good or bad, and the list goes on. What’s more, software engineers tend to be quite loud about their preferences, sometimes at the expense of decorum, even in situations where the outcome has already been determined or doesn’t matter.</p>
+
+<p>And yet, somehow we need to move the conversation forward and get our work done. Everyone’s first reaction? We should vote on it, and the majority rules. However, making group decisions based on a vote is rarely the right way to go. As a technical leader, you need to find a way to move forward.</p>
+
+<h2 id="the-problem-with-voting">The problem with voting</h2>
+
+<p>There is a hierarchy in any group of people. At one end are the people of power and influence and at the other end are those without. This spectrum exists even in today’s “flat org structures,” meaning that there is an imbalance within any group as to who is able to affect the most change. The most influential and the most willing to speak up can sway a group in one direction or another as the shy or less self-assured people feel content to follow their lead.</p>
+
+<p>The long-term effects of such a setup are, I believe, detrimental to the health and well-being of the team as a whole. Voting can help determine the winner but cannot ensure that everyone is on the same page. Some of the negative effects I’ve seen in these situations are:</p>
+
+<ul>
+  <li><strong>Holding grudges</strong> – there are few things more demoralizing than having your idea voted down. If it happens frequently, it tends to lead to hard feelings and people being less willing to share their ideas.</li>
+  <li><strong>Centralized power</strong> – the people whose ideas get voted up most frequently start to have an overwhelming effect on the group as a whole. Those people can easily sway the group, effectively changing it from a democracy into an authoritarian system (which leads to resentment).</li>
+  <li><strong>Split decisions</strong> – when a vote ends up tied or is mostly split down the middle (6-5, 2-3), it means the group really hasn’t made a decision.</li>
+</ul>
+
+<p>When these situations start to happen, the code and people’s behavior will reflect the growing angst on the team. People will explicitly not do what was voted on as a form of rebellion against what they perceive to be an unfair system; people will leave because they feel like they don’t have a voice; people will quietly grow more resentful and their work will suffer.</p>
+
+<p>So how can a group make decisions in an effective way where everyone buys in?</p>
+
+<h2 id="driving-consensus">Driving consensus</h2>
+
+<p><cite>Wikipedia</cite> defines<sup><a href="http://en.wikipedia.org/wiki/Consensus_decision-making">1</a></sup> consensus as:</p>
+
+<blockquote>
+  <p>Consensus decision-making is a group decision-making process that seeks the consent of all participants. Consensus may be defined professionally as an acceptable resolution, one that can be supported, even if not the “favourite” of each individual.</p>
+</blockquote>
+
+<p>This is why consensus is a much better tool for making decisions on a team: it requires the input of each individual and an explicit agreement to abide by the decision even if you don’t personally agree. This is a powerful difference from the majority rules approach of democratic voting.</p>
+
+<p>Consensus-building, however, takes a lot more work than simple majority-rules voting. It requires significantly more discussion because you must find a resolution that everyone will agree to follow. In order to do that and avoid going back to vote, there are some things I do to move the process forward:</p>
+
+<ol>
+  <li><strong>Agree on how to agree</strong> – the first step is set expectations for the group and explain that you’re looking to gain consensus, and that means having everyone bought into the decision. It’s also helpful to frame the discussion based on the impact of the decision. For low-impact decisions, you should set a time limit by which a decision will be made (it doesn’t make sense to debate for days a decision whose implementation has no significant impact); for high-impact decisions, lay out the important points to be discussed.</li>
+  <li><strong>Take the temperature of the room</strong>** – <strong>before getting started, ask for people’s thoughts on the topic at hand in a free-form way. Sometimes you’ll find there is already general agreement and therefore you can move to a final decision fairly quickly. Don’t extend the conversation any further than necessary. The other times, you can get a sense of how</strong> **far apart various sides are on a topic. Either way, you get a good picture of how the team is feeling about the topic.</li>
+  <li><strong>Encourage competing views</strong> – when someone makes a strong point, ask if anyone would like to counter the claim. The only way you can drive consensus is to make sure all the information is presented. Questions like, “does anyone feel differently?” or, “does anyone disagree with that?” help to everyone to focus in on the issue and think more deeply about their perspective.</li>
+</ol>
+
+<p>It’s important to keep control over the conversation by making sure the tone stays positive and constructive, and that the group doesn’t start recycling topics. Equally important is ensuring that everyone who wants to speak is heard, and that missing details are added into the conversation whenever possible. Some phrases that help to guide the conversation:</p>
+
+<ul>
+  <li>Does anyone have experience with that? Has anyone experienced the opposite?</li>
+  <li>Has anyone else found that to be true?</li>
+  <li>How do people feel about that suggestion?</li>
+</ul>
+
+<h2 id="finding-agreement">Finding agreement</h2>
+
+<p>Once you feel that there is enough information to make a decision, it’s time to get everyone in the room to commit. There are several ways to determine the final decision. I’ve used all of these at some point, depending on the situation:</p>
+
+<ul>
+  <li><strong>General agreement</strong> – if it seems like there’s already consensus, you can stop and ask if there’s any strong objections to moving forward with the decision. If not, then you’re done.</li>
+  <li><strong>Defer to the champion</strong> – sometimes a topic is very important to one or two people, and not at all important to everyone else. Those people will give impassioned speeches about their point while the rest of the group doesn’t seem to have an opinion. In this case, I tend to suggest that the group follow the lead of those who are most passionate about the topic. This works on a number of levels: people know that their voice will be heard when they are passionate about something and the group learns that debating just for the sake of debating isn’t useful. If someone is willing to champion a position, and there is no strong opposition, then it makes sense to drive towards the champion’s position.</li>
+  <li><strong>Champions debate</strong> – sometimes there are people who are passionate about opposite positions, so you have two champions rather than just one. In this case, it can be helpful to focus the conversation around these champions and see if they can determine between them if one is truly more passionate than the other. I’ve found that you can get to a point where one of them will defer and realize they don’t care as much about the outcome as they previously thought. If that happens, then you’re back to a one-champion model. If it doesn’t, then it’s time to move on to another strategy.</li>
+  <li><strong>Taking turns</strong> – sometimes the best way to drive consensus is through the childhood practice of taking turns. This approach is most useful when there are opposing champions who can’t seem to work out their differences. If one of them has more recently had a group decide in their favor, then it helps to suggest that it may be the other person’s turn to have their opinion be the consensus. The innate sense of fairness that most people have can sometimes short circuit an otherwise contentious battle.</li>
+  <li><strong>Voting</strong> – yes, sometimes consensus can be gained through voting. However, the difference between this and majority-rules is that voting is used simply to determine how close to consensus the group is. If it’s still a split, it means that there’s information in the discussion; if there are a handful of outliers, you can use of the previous approaches to see if they will abide by the general agreement; if it is unanimous, then consensus has been reached. I tend to use voting only as a last resort if the other approaches have failed.</li>
+</ul>
+
+<p>The most important aspect of driving consensus is that everyone must be bought into the decision once made. That means people must be comfortable with the idea of disagreeing while supporting the decision. To gain that closure, it’s important that any dissenters are asked specifically, “I know you disagree with the decision, but is it something you can live with and support?” You haven’t reached consensus until each dissenter answers that question with a, “yes.”</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Consensus-driven development, the use of consensus on software development teams, is a health way to solve disputes and make decisions as a group. I’ve found that using this approach leads to better morale and stricter adherence to decisions. It doesn’t matter if the topic is code conventions, third-party libraries, or which tools to use, making these decisions by consensus has a positive effect on the process.</p>
+
+<p>Keep in mind that consensus is best used in situations where the available options are similar enough that there’s no clear best choice (or no clear worst choice). It’s also important to remember that not all decisions are suitable to be made in groups. In all companies, there are some decisions that are individual and some that are group; trying to recast an individual decision as a group decision tends not to work, and consensus isn’t appropriate in such situations.</p>
+
+<p>In situations where group decisions are appropriate, consensus is a great tool to use. It does require a strong leader who can manage the process and keep the level of discourse up (consensus can’t be built without someone guiding the conversation), so make sure that someone is appointed to do so before giving it a try.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://en.wikipedia.org/wiki/Consensus_decision-making">Consensus decision making</a> (Wikipedia)</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2015/04/14/consensus-driven-development/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

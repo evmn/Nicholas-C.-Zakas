@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Using HTML5 semantic elements today - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2011/03/22/using-html5-semantic-elements-today/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Using HTML5 semantic elements today">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2011/03/22/using-html5-semantic-elements-today/" />
+<meta name="og:title" content="Using HTML5 semantic elements today">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Over the past year, the argument over whether or not to use the new HTML5 semantic elements has morphed into how to use the new HTML5 semantic elements. All major browsers officially supporting...">
+<meta name="keywords" content="HTML5,JavaScript,Web Development,Web Standards,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Using HTML5 semantic elements today</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2011-03-22T00:00:00+00:00" itemprop="datePublished">March 22, 2011</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/html5" rel="tag">HTML5</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/web-development" rel="tag">Web Development</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/web-standards" rel="tag">Web Standards</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Over the past year, the argument over whether or not to use the new HTML5 semantic elements has morphed into <em>how</em> to use the new HTML5 semantic elements. All major browsers officially supporting these elements before the end of the year (many before the end of the quarter), and as such, the time to start using these new elements is now. Of course, the world is not just made up of HTML5-capable browser and so the question of writing for backwards compatibility is a major question that many have attempted to answer.</p>
+
+<h2 id="the-problem">The problem</h2>
+
+<p>The biggest issue with using the new semantic elements is how non-supporting browsers deal with them. There are essentially three possible outcomes when HTML5 elements are used in a page:</p>
+
+<ol>
+  <li>The tag is considered an error and is completely ignored. The DOM is constructed as if the tag doesn’t exist.</li>
+  <li>The tag is considered an error and a DOM node is created as a placeholder. The DOM is constructed as indicated by the code but the tag has no styles applied (considered an inline element).</li>
+  <li>The tag is recognized as an HTML5 tag and a DOM node is created to represent it. The DOM is constructed as indicated by the code and the tag has appropriate styling applied (in many cases, as a block element).</li>
+</ol>
+
+<p>As a concrete example, consider this code:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="outer"&gt;
+    &lt;section&gt;
+        &lt;h1&gt;title&lt;/h1&gt;
+        &lt;p&gt;text&lt;/p&gt;
+    &lt;/section&gt;
+&lt;/div&gt;
+</code></pre></div></div>
+
+<p>Many browsers (such as Firefox 3.6 and Safari 4) will parse this as a top-level <code class="highlighter-rouge">&lt;div&gt;</code> element with an unknown child element (<code class="highlighter-rouge">&lt;section&gt;</code>) that is created in the DOM but treated as an inline element. The <code class="highlighter-rouge">&lt;h1&gt;</code> and <code class="highlighter-rouge">&lt;p&gt;</code> elements are children of <code class="highlighter-rouge">&lt;section&gt;</code>. Because <code class="highlighter-rouge">&lt;section&gt;</code> is represented in the DOM, it is possible to style the element. This is case #2.</p>
+
+<p>Internet Explorer prior to 9 parses this as a top-level <code class="highlighter-rouge">&lt;div&gt;</code> but sees <code class="highlighter-rouge">&lt;section&gt;</code> as an error. So <code class="highlighter-rouge">&lt;section&gt;</code> is ignored and then <code class="highlighter-rouge">&lt;h1&gt;</code> and <code class="highlighter-rouge">&lt;p&gt;</code> are parsed, both becoming children of <code class="highlighter-rouge">&lt;div&gt;</code>. The closing <code class="highlighter-rouge">&lt;/section&gt;</code> is also seen as an error and skipped. The effective understanding of this code in the browser is equivalent to:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="outer"&gt;
+    &lt;h1&gt;title&lt;/h1&gt;
+    &lt;p&gt;text&lt;/p&gt;
+&lt;/div&gt;
+</code></pre></div></div>
+
+<p>So older Internet Explorer browsers actually recover quite nicely from unknown elements but creates a different DOM structure than other browsers. Because there is no DOM representation of the unknown element, you also cannot apply styles to <code class="highlighter-rouge">&lt;section&gt;</code>. This is case #1.</p>
+
+<p>Of course, HTML5-capable browsers such as Internet Explorer 9, Firefox 4, and Safari 5 create the correct DOM structure and also apply the correct default styles to that element as specified in HTML5.</p>
+
+<p>So the big problem is that browser produce not only different DOM structures for the same code, but also different styling rules for the same DOM structures.</p>
+
+<h2 id="the-solutions">The solutions</h2>
+
+<p>A number of people have come up with a number of different solutions to using HTML5 elements in pages today. Each attempts to attack one or more of the specific problems already mentioned in an effort to provide cross-browser compatibility.</p>
+
+<h3 id="javascript-shims">JavaScript shims</h3>
+
+<p>JavaScript shims aim to primarily solve the problem of styling HTML5 elements in older Internet Explorer browsers. There is a now-well-known quirk in Internet Explorer where it won’t recognize unknown elements unless one of these elements has already been created via <code class="highlighter-rouge">document.createElement()</code>. So the browser will create a DOM element and will allow styling of a <code class="highlighter-rouge">&lt;section&gt;</code> element so long as <code class="highlighter-rouge">document.createElement("section")</code> is called.</p>
+
+<p>Shims such as html5shim<sup><a href="http://code.google.com/p/html5shim/">1</a></sup> use this capability to ensure that HTML5 elements correctly create DOM elements in Internet Explorer and therefore allow you to apply styles. Shims typically also set HTML5 block element to <code class="highlighter-rouge">display: block</code> so they display correctly across other browsers as well.</p>
+
+<p>I don’t like this approach because it breaks one of my primary web application principles: JavaScript should not be relied on for layout. This is about more than creating a bad experience for those with JavaScript disabled, it’s about making a predictable and maintainable web application codebase where there is a clear separation of concerns amongst layers. It does have the benefit of producing the same DOM structure across all browsers, thus making sure your JavaScript and CSS works exactly the same everywhere, but that benefit doesn’t outweigh the downside in my opinion.</p>
+
+<h3 id="namespace-hack">Namespace hack</h3>
+
+<p>Never short on hacks, Internet Explorer also has another technique for making the browser recognize unknown elements. This one was first gained wide attention through Elco Klingen’s article, <cite>HTML5 elements in Internet Explorer without JavaScript</cite><sup><a href="http://www.debeterevormgever.nl/html5-ie-without-javascript/">2</a></sup>. This technique involves declaring an XML-style namespace and then using elements with the namespace prefix, such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;html</span> <span class="na">xmlns=</span><span class="s">"http://www.w3.org/1999/xhtml"</span> <span class="na">xmlns:html5=</span><span class="s">"http://www.w3.org/html5/"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;html5:section&gt;</span>
+        <span class="c">&lt;!-- content --&gt;</span>
+    <span class="nt">&lt;/html5:section&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">html5</code> prefix is just purely pretend and isn’t official at all – you could just as well have the prefix be “foo” and the effect would be the same. With the prefix in place, Internet Explorer will recognize the new elements so that you can apply styles. This also works in other browsers, so you’ll end up with the same DOM and same styling everywhere.</p>
+
+<p>The downside is clear: you must use XML-style namespaces in an HTML document and also use them in CSS, meaning something like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>html5\:section {
+    display: block;
+}
+</code></pre></div></div>
+
+<p>This isn’t the way I’d like web developers to have to write their code. It’s a brilliant solution to the problem but one that teaches what I consider to be an unnatural application of the new elements. I don’t want to see files full of namespaced elements.</p>
+
+<h3 id="bulletproof-technique">“Bulletproof” technique</h3>
+
+<p>I was first exposed to this technique at YUIConf 2010, when Tantek Çelik gave a talk entitled, <cite>HTML5: Right Here, Right Now</cite><sup><a href="http://developer.yahoo.com/yui/theater/video.php?v=yuiconf2010-tantek">3</a></sup>. In that talk, Tantek suggests using an inner <code class="highlighter-rouge">&lt;div&gt;</code> element for each of the new HTML5 block elements, and to include a CSS class name on that <code class="highlighter-rouge">&lt;div&gt;</code> indicating that it represents the HTML5 element. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;section&gt;&lt;div class="section"&gt;
+   &lt;!-- content --&gt;
+&lt;/div&gt;&lt;/section&gt;
+</code></pre></div></div>
+
+<p>The intent of this approach is to ensure that content flows correctly in all browsers. Using one block element inside of an HTML5 element that should be a block means you’ll either have a single block element (Internet Explorer &lt; 9), a block element inside of an inline element (Firefox 3.6, Safari 4, etc.), or a block element inside of a block element (Internet Explorer 9, Firefox 4, Safari 5, etc.). In each of these three cases, the default rendering is the same.</p>
+
+<p>Tantek did note one exception where this doesn’t work, and that is with <code class="highlighter-rouge">&lt;hgroup&gt;</code>, which explicitly disallows non-heading child elements. For that he recommended putting the <code class="highlighter-rouge">&lt;div&gt;</code> on the outside:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="hgroup"&gt;&lt;hgroup&gt;
+   &lt;!-- content --&gt;
+&lt;/hgroup&gt;&lt;/div&gt;
+</code></pre></div></div>
+
+<p>For styling, Tantek recommended not to try to style the HTML5 element itself but rather to style the surrogate <code class="highlighter-rouge">&lt;div&gt;</code>. So instead of this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>section {
+    color: blue;
+}
+</code></pre></div></div>
+
+<p>Use this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.section {
+    color: blue;
+}
+</code></pre></div></div>
+
+<p>The rationale is that it will be easy to automatically convert this pattern into one referencing the HTML5 element tag name later on. I’m not a fan of this part of his suggestion, since I generally do not like applying styles via tag name.</p>
+
+<p>The downside of this approach is that different browsers create different DOM structures and so you must be careful in how you write JavaScript and CSS. For instance, using the immediate child selector (<code class="highlighter-rouge">&gt;</code>) across an HTML5 element won’t work in all browsers. Also, directly accessing <code class="highlighter-rouge">parentNode</code> might result in a different node in different browsers. This is especially obvious in code such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="outer"&gt;
+    &lt;section&gt;&lt;div class="section main"&gt;
+        &lt;!-- content --&gt;
+    &lt;/div&gt;&lt;/section&gt;
+&lt;/div&gt;
+</code></pre></div></div>
+
+<p>If you then have a selector such as <code class="highlighter-rouge">section &gt; .main</code>, it will not be applied in Internet Explorer 8 and earlier. Whenever you cross the HTML 4 to HTML5 to HTML 4 barrier, you’ll end up with these issues.</p>
+
+<h3 id="reverse-bulletproof-technique">Reverse bulletproof technique</h3>
+
+<p>There are other posts, such as Thierry Koblentz’s, <cite>HTML elements and surrogate DIVs</cite><sup><a href="http://tantek.com/presentations/2010/11/html5-now/">4</a></sup> that have explored reversing Tantek’s approach so that the HTML5 elements appear inside of the <code class="highlighter-rouge">&lt;div&gt;</code> elements. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="section"&gt;&lt;section&gt;
+    &lt;!-- content --&gt;
+&lt;/section&gt;&lt;div&gt;
+</code></pre></div></div>
+
+<p>The only difference is the placement of the HTML5 element – everything else is the same. Proponents like this technique because of its consistency (works the same for all elements, including <code class="highlighter-rouge">&lt;hgroup&gt;</code>). It’s worth noting that this approach has the same caveats as Tantek’s as part as selector usage and JavaScript DOM traversal goes. It’s main advantage is the consistency of technique.</p>
+
+<h2 id="my-approach">My approach</h2>
+
+<p>My main goal in choosing an approach was to ensure that I would only have to make changes to the HTML of a page. That meant zero changes to either CSS or JavaScript. Why make such a requirement? The more layers of a web application (or any application) that have to change, the more likely you are to introduce bugs. Limiting the changes to one layer limits the introduction of bugs and, if they occur, limits your search for the underlying problem to one area. For example, if a layout breaks, I’ll know it was because I added <code class="highlighter-rouge">&lt;section&gt;</code> rather than the combination of that plus a change to the CSS that styles that area.</p>
+
+<p>After researching each of these techniques, doing some prototyping and testing, I eventually arrived back at Tantek’s approach. It was the only one where I could get all of the existing pages I was prototyping with to work without requiring changes to CSS and JavaScript. Now, I didn’t follow his approach to the letter and made several changes where I thought improvements could be made.</p>
+
+<p>First, I never styled anything based on the class name representing the HTML5 element (so no <code class="highlighter-rouge">.section</code>in my selectors). I kept the same <code class="highlighter-rouge">&lt;div&gt;</code> elements that were already in the page and used the semantic class names that were applied to these elements as my style and JavaScript hooks. For instance, this code:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;div class="content"&gt;
+    &lt;!-- content --&gt;
+&lt;/div&gt;
+</code></pre></div></div>
+
+<p>Became this code:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;section&gt;&lt;div class="section content"&gt;
+    &lt;!-- content --&gt;
+&lt;/div&gt;&lt;/section&gt;
+</code></pre></div></div>
+
+<p>With this change, I still used <code class="highlighter-rouge">.content</code> as the style and scripting hook for that area of the page. In doing so, the JavaScript and CSS I already had didn’t need to change.</p>
+
+<p>Second, instead of having a special case for <code class="highlighter-rouge">&lt;hgroup&gt;</code>, I opted not to use it. The honest truth is that I didn’t find anywhere in any of my existing pages where this element would have been useful. Since <code class="highlighter-rouge">&lt;hgroup&gt;</code> can only contain headings, it’s mostly safe to include <code class="highlighter-rouge">&lt;hgroup&gt;</code> on its own if you really want to (assuming its contained within another block element).</p>
+
+<p>I did spend a considerable amount of time bouncing back and forth between bulletproof and reverse bulletproof trying to determine which one worked best. The key determining factor for me was that reverse bulletproof required me to add CSS to make it work. In browsers that created a DOM node for the HTML5 element but did not apply default styling, having an HTML5 block element inside of a <code class="highlighter-rouge">&lt;div&gt;</code> messed up my layouts on more than one occasion because they became inline elements in older browsers. I had to explicitly add rules to make them into block elements to make my layouts work, and that broke my own requirement of not changing CSS to make things work.</p>
+
+<h2 id="the-proof">The proof</h2>
+
+<p>One of the things I’ve found incredibly frustrating in this realm of discussion is how people too quickly dismiss one approach because they can find at least one situation where it doesn’t work. None of the solutions I presented here is perfect; none of them work in every single situation you may run into. If you give me any technique I can virtually guarantee you that someone can come up with a situation where it won’t work. That doesn’t invalidate the technique, it simply informs you of the technique’s limitations so you can make a better decision.</p>
+
+<p>In my research I took several existing pages and converted them to use the modified bulletproof technique. I put them in pages with simple layouts and complex layouts, pages with and without JavaScript interactions. In each case, the only changes I made were to the HTML and everything continued to work correctly (no changes to JavaScript or CSS). What about those caveats about child nodes and parent node relationships? The interesting thing is that I never ran into these problems.</p>
+
+<p>Granted, the reason it may have been so easy for me is because of the rigor I apply to my coding. I religiously double-check that:</p>
+
+<ul>
+  <li>Tag names and IDs are not being used to apply styles (only use class names)</li>
+  <li>CSS selectors are as general as possible and use as few selector types as possible</li>
+  <li>JavaScript doesn’t rely on a specific DOM structure to work</li>
+  <li>Tag names aren’t being used to manipulate the DOM</li>
+</ul>
+
+<p>Another interesting thing I noted is that I was using the HTML5 elements as containers. These new elements really are just boundaries between groups of functionality rather than anything else. You spend most of your time styling and scripting items inside of these boundaries rather than crossing the boundaries themselves. Since my JavaScript and CSS targets what’s going on inside of containers, <em>everything continued to work.</em> I suspect this would be the case for most sites that have been well-coded.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The technique I ultimately decided on and would recommend to others is a modification of Tantek’s bulletproof technique. Clearly the name is a bit of a misnomer as there are some side effects in CSS and JavaScript, but in my experiments it really did seem to be the one approach that allowed me to change just the HTML of a page and have everything continue to work. I’m sure the debate will continue both inside of companies and on the Internet in general, and I hope this post helps you make an informed decision.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://code.google.com/p/html5shim/">html5shim</a></li>
+  <li><a href="http://www.debeterevormgever.nl/html5-ie-without-javascript/"><cite>HTML5 elements in Internet Explorer without JavaScript</cite></a>, by Elco Klingen<cite><em> </em></cite></li>
+  <li><cite>HTML5: Right Here, Right Now</cite>, by Tantek Çelik (<a href="http://developer.yahoo.com/yui/theater/video.php?v=yuiconf2010-tantek">Video</a>, <a href="http://tantek.com/presentations/2010/11/html5-now/">Slides</a>)</li>
+  <li><a href="http://www.css-101.org/articles/thoughts_on_the_new_html_elements_and_surrogate_divs/"><cite>HTML elements and surrogate DIVs</cite></a>, by Thierry Koblentz</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2011/03/22/using-html5-semantic-elements-today/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Creating a JavaScript promise from scratch, Part 5: Promise.race() and Promise.any() - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Creating a JavaScript promise from scratch, Part 5: Promise.race() and Promise.any()">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/" />
+<meta name="og:title" content="Creating a JavaScript promise from scratch, Part 5: Promise.race() and Promise.any()">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html">
+
+
+
+<meta name="description" content="In the previous posts in this series, I discussed implementing a promise from scratch in JavaScript. Now that there’s a full promise implementation, it’s time to look at how you can monitor multiple...">
+<meta name="keywords" content="JavaScript,Promises,ECMAScript 6,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Creating a JavaScript promise from scratch, Part 5: Promise.race() and Promise.any()</h1>
+        <p itemprop="description" class="no-margin-top">Promise.race() and Promise.any() work on any number of promises to allow you to know when certain ones have resolved </p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2020-11-24T00:00:00+00:00" itemprop="datePublished">November 24, 2020</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/promises" rel="tag">Promises</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ecmascript-6" rel="tag">ECMAScript 6</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>In the previous posts in this series, I discussed implementing a promise from scratch in JavaScript. Now that there’s a full promise implementation, it’s time to look at how you can monitor multiple promises at once using <code class="highlighter-rouge">Promise.race()</code> and <code class="highlighter-rouge">Promise.any()</code> (<code class="highlighter-rouge">Promise.all()</code> and <code class="highlighter-rouge">Promise.allSettled()</code> will be covered in the next post). You’ll see that, for the most part, all of the methods that work with multiple promises follow a similar algorithm, which makes it fairly easy to move from implementing one of these methods to the next.</p>
+
+<p>Note: This is the fifth post in my series about creating JavaScript promises from scratch. If you haven’t already read the <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">first post</a>, the <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">second post</a>, the <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">third post</a>, and the <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html">fourth post</a>, I would suggest you do so because this post builds on the topics covered in those posts.</p>
+
+<p>As a reminder, this series is based on my promise library, <a href="https://github.com/humanwhocodes/pledge">Pledge</a>. You can view and download all of the source code from GitHub.</p>
+
+<h2 id="prerequisite-using-iterators">Prerequisite: Using iterators</h2>
+
+<p>Most of the time you see examples using <code class="highlighter-rouge">Promise.race()</code> and <code class="highlighter-rouge">Promise.any()</code> with an array being passed as the only argument, like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">Promise</span><span class="p">.</span><span class="nx">race</span><span class="p">([</span><span class="nx">p1</span><span class="p">,</span> <span class="nx">p2</span><span class="p">,</span> <span class="nx">p3</span><span class="p">]).</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Because of this, it’s easy to assume that the argument to <code class="highlighter-rouge">Promise.race()</code> must be an array. In fact, the argument doesn’t need to be an array, but it must be an <em>iterable</em>. An iterable is just an object that has a <code class="highlighter-rouge">Symbol.iterator</code> method that returns an <em>iterator</em>. An iterator is an object with a <code class="highlighter-rouge">next()</code> method that returns an object containing two properties: <code class="highlighter-rouge">value</code>, the next value in the iterator or <code class="highlighter-rouge">undefined</code> if none are left, and <code class="highlighter-rouge">done</code>, a Boolean value that is set to <code class="highlighter-rouge">true</code> when there are no more values in the iterator.</p>
+
+<p>Arrays are iterables by default, meaning they have a default <code class="highlighter-rouge">Symbol.iterator</code> method that returns an iterator. As such, you can pass an array anywhere an iterator is required and it just works. What that means for the implementations of <code class="highlighter-rouge">Promise.race()</code> and <code class="highlighter-rouge">Promise.all()</code> is that they must work with iterables, and unfortunately, ECMA-262 makes working with iterables a little bit opaque.</p>
+
+<p>The first operation we need is <code class="highlighter-rouge">GetIterator()</code><sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:1" class="footnote">1</a></sup>, which is the operation that retrieves the iterator for an iterable and returns an <code class="highlighter-rouge">IteratorRecord</code> containing the iterator, the <code class="highlighter-rouge">next()</code> method for that iterator, and a <code class="highlighter-rouge">done</code> flag. The algorithm is a bit difficult to understand, but fundamentally <code class="highlighter-rouge">GetIterator()</code> will attempt to retrieve either an async or sync iterator based on a <code class="highlighter-rouge">hint</code> that is passed. For the purposes of this post, just know that only sync iterators will be used, so you can effectively ignore the parts that have to do with async iterators. Here’s the operation translated into JavaScript:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">getIterator</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">hint</span><span class="o">=</span><span class="dl">"</span><span class="s2">sync</span><span class="dl">"</span><span class="p">,</span> <span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">hint</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">sync</span><span class="dl">"</span> <span class="o">&amp;&amp;</span> <span class="nx">hint</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">async</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">Invalid hint.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">method</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="nx">hint</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">async</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        
+            <span class="nx">method</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">asyncIterator</span><span class="p">];</span>
+        
+            <span class="k">if</span> <span class="p">(</span><span class="nx">method</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">const</span> <span class="nx">syncMethod</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">iterator</span><span class="p">];</span>
+                <span class="kd">const</span> <span class="nx">syncIteratorRecord</span> <span class="o">=</span> <span class="nx">getIterator</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="dl">"</span><span class="s2">sync</span><span class="dl">"</span><span class="p">,</span> <span class="nx">syncMethod</span><span class="p">);</span>
+
+                <span class="c1">// can't accurately represent CreateAsyncFromSyncIterator()</span>
+                <span class="k">return</span> <span class="nx">syncIteratorRecord</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">method</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">[</span><span class="nb">Symbol</span><span class="p">.</span><span class="nx">iterator</span><span class="p">];</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">iterator</span> <span class="o">=</span> <span class="nx">method</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">obj</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">iterator</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">Iterator must be an object.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">nextMethod</span> <span class="o">=</span> <span class="nx">iterator</span><span class="p">.</span><span class="nx">next</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">iterator</span><span class="p">,</span>
+        <span class="nx">nextMethod</span><span class="p">,</span>
+        <span class="na">done</span><span class="p">:</span> <span class="kc">false</span>
+    <span class="p">};</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In ECMA-262, you always use <code class="highlighter-rouge">IteratorRecord</code> to work with iterators instead of using the iterator directly. Similarly, there are several operations that are used to manually work with an iterator:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">IteratorNext()</code><sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:2" class="footnote">2</a></sup> - calls the <code class="highlighter-rouge">next()</code> method on an iterator and returns the result.</li>
+  <li><code class="highlighter-rouge">ItereatorComplete()</code><sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:3" class="footnote">3</a></sup> - returns a Boolean indicating if the iterator is done (simply reads the <code class="highlighter-rouge">done</code> field of the given result from <code class="highlighter-rouge">IteratorNext()</code>).</li>
+  <li><code class="highlighter-rouge">IteratorValue()</code><sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:4" class="footnote">4</a></sup> - returns the <code class="highlighter-rouge">value</code> field of the given result from <code class="highlighter-rouge">IteratorNext()</code>.</li>
+  <li><code class="highlighter-rouge">IteratorStep()</code><sup id="fnref:5"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:5" class="footnote">5</a></sup> - returns the result from <code class="highlighter-rouge">IteratorNext()</code> if <code class="highlighter-rouge">done</code> is <code class="highlighter-rouge">false</code>; returns <code class="highlighter-rouge">false</code> if <code class="highlighter-rouge">done</code> is <code class="highlighter-rouge">true</code> (just for fun, I suppose).</li>
+</ul>
+
+<p>Each of these operations is pretty straightforward as they simply wrap built-in iterator operations. Here are the operations implemented in JavaScript:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">iteratorNext</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">let</span> <span class="nx">result</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">value</span> <span class="o">===</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">result</span> <span class="o">=</span> <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">nextMethod</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">iterator</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">result</span> <span class="o">=</span> <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">nextMethod</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">iterator</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">result</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">Result must be an object.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">iteratorComplete</span><span class="p">(</span><span class="nx">iterResult</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">iterResult</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">Argument must be an object.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nb">Boolean</span><span class="p">(</span><span class="nx">iterResult</span><span class="p">.</span><span class="nx">done</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">iteratorValue</span><span class="p">(</span><span class="nx">iterResult</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">iterResult</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">Argument must be an object.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">iterResult</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nx">iteratorStep</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">iteratorNext</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">done</span> <span class="o">=</span> <span class="nx">iteratorComplete</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+    
+    <span class="k">if</span> <span class="p">(</span><span class="nx">done</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>To get an idea about how these operations are used, consider this simple loop using an array:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">nextValue</span> <span class="k">of</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">nextValue</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">for-of</code> loop operates on the iterator creates for the <code class="highlighter-rouge">values</code> array. Here’s a similar loop using the iterator functions defined previously:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">];</span>
+<span class="kd">const</span> <span class="nx">iteratorRecord</span> <span class="o">=</span> <span class="nx">getIterator</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+
+<span class="c1">// ECMA-262 always uses infinite loops that break</span>
+<span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">let</span> <span class="nx">next</span><span class="p">;</span>
+        
+        <span class="cm">/*
+         * Get the next step in the iterator. If there's an error, don't forget
+         * to set the `done` property to `true` for posterity.
+         */</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">next</span> <span class="o">=</span> <span class="nx">iteratorStep</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="c1">// if `next` is false then we are done and can exit</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">next</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kd">let</span> <span class="nx">nextValue</span><span class="p">;</span>
+
+        <span class="cm">/*
+         * Try to retrieve the value of the next step. The spec says this might
+         * actually throw an error, so once again, catch that error, set the
+         * `done` field to `true`, and then re-throw the error.
+         */</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">nextValue</span> <span class="o">=</span> <span class="nx">iteratorValue</span><span class="p">(</span><span class="nx">next</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="c1">// actually output the value</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">nextValue</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>As you can probably tell from this example, there’s a lot of unnecessary complexity involved with looping over an iterator in ECMA-262. Just know that all of these operations can be easily replaced with a <code class="highlighter-rouge">for-of</code> loop. I chose to use the iterator operations so that it’s easier to go back and forth between the code and the specification, but there are definitely more concise and less error-prone ways of implementing the same functionality.</p>
+
+<h2 id="the-promiserace-method">The <code class="highlighter-rouge">Promise.race()</code> method</h2>
+
+<p>The <code class="highlighter-rouge">Promise.race()</code> method is the simplest of the methods that work on multiple promises: whichever promise settles first, regardless if it’s fulfilled or rejected, that result is passed through to the returned promise. So if the first promise to settle is fulfilled, then the returned promise is fulfilled with the same value; if the first promise to settle is rejected, then the returned promise is rejected with the same reason. Here are a couple examples:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise1</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">race</span><span class="p">([</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span>
+<span class="p">]);</span>
+
+<span class="nx">promise1</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>     <span class="c1">// 42</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">promise2</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">race</span><span class="p">([</span>
+    <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+        <span class="p">},</span> <span class="mi">500</span><span class="p">);</span>
+    <span class="p">}),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span>
+<span class="p">]);</span>
+
+<span class="nx">promise2</span><span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">reason</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>    <span class="c1">// 43</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>The behavior of <code class="highlighter-rouge">Promise.race()</code> makes it easier to implement than the other three methods that work on multiple promises, all of which require keeping at least one array to track results.</p>
+
+<h3 id="creating-the-pledgerace-method">Creating the <code class="highlighter-rouge">Pledge.race()</code> method</h3>
+
+<p>The specification<sup id="fnref:6"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:6" class="footnote">6</a></sup> for <code class="highlighter-rouge">Promise.race()</code> describes the algorithm as follows:</p>
+
+<ol>
+  <li>Let <code class="highlighter-rouge">C</code> be the <code class="highlighter-rouge">this</code> value.</li>
+  <li>Let <code class="highlighter-rouge">promiseCapability</code> be <code class="highlighter-rouge">?</code> <code class="highlighter-rouge">NewPromiseCapability(C)</code>.</li>
+  <li>Let <code class="highlighter-rouge">promiseResolve</code> be <code class="highlighter-rouge">GetPromiseResolve(C)</code>.</li>
+  <li><code class="highlighter-rouge">IfAbruptRejectPromise(promiseResolve, promiseCapability)</code>.</li>
+  <li>Let <code class="highlighter-rouge">iteratorRecord</code> be <code class="highlighter-rouge">GetIterator(iterable)</code>.</li>
+  <li><code class="highlighter-rouge">IfAbruptRejectPromise(iteratorRecord, promiseCapability)</code>.</li>
+  <li>Let <code class="highlighter-rouge">result</code> be <code class="highlighter-rouge">PerformPromiseRace(iteratorRecord, C, promiseCapability, promiseResolve)</code>.</li>
+  <li>If <code class="highlighter-rouge">result</code> is an abrupt completion, then
+    <ol>
+      <li>If <code class="highlighter-rouge">iteratorRecord.[[Done]]</code> is <code class="highlighter-rouge">false</code>, set <code class="highlighter-rouge">result</code> to <code class="highlighter-rouge">IteratorClose(iteratorRecord, result)</code>.</li>
+      <li><code class="highlighter-rouge">IfAbruptRejectPromise(result, promiseCapability)</code>.</li>
+    </ol>
+  </li>
+  <li>Return <code class="highlighter-rouge">Completion(result)</code>.</li>
+</ol>
+
+<p>The main algorithm for <code class="highlighter-rouge">Promise.race()</code> actually takes place in an operation called <code class="highlighter-rouge">PerformPromiseRace</code>. The rest is just setting up all of the appropriate data to pass to the operation and then interpreting the result of the operation. All four of the methods that deal with multiple promises, <code class="highlighter-rouge">Promise.race()</code>, <code class="highlighter-rouge">Promise.any()</code>, <code class="highlighter-rouge">Promise.all()</code>, and <code class="highlighter-rouge">Promise.allSettled()</code>, all follow this same basic algorithm for their methods with the only difference being the operations they delegate to. This will become clear later in this post when I discussed <code class="highlighter-rouge">Promise.any()</code>.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// other methods omitted for space</span>
+
+    <span class="kd">static</span> <span class="nx">race</span><span class="p">(</span><span class="nx">iterable</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">const</span> <span class="nx">C</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="nx">pledgeCapability</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeCapability</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+        <span class="kd">let</span> <span class="nx">iteratorRecord</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">pledgeResolve</span> <span class="o">=</span> <span class="nx">getPledgeResolve</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+            <span class="nx">iteratorRecord</span> <span class="o">=</span> <span class="nx">getIterator</span><span class="p">(</span><span class="nx">iterable</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">performPledgeRace</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="nx">C</span><span class="p">,</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ThrowCompletion</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="nx">iteratorRecord</span> <span class="o">&amp;&amp;</span> <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">result</span> <span class="o">=</span> <span class="nx">iteratorClose</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Like many of the other methods in the <code class="highlighter-rouge">Pledge</code> class, this one starts by retrieving the <code class="highlighter-rouge">this</code> value and creating a <code class="highlighter-rouge">PledgeCapability</code> object. The next step is to retrieve the <code class="highlighter-rouge">resolve</code> method from the constructor, which basically means <code class="highlighter-rouge">pledgeResolve</code> is set equal to <code class="highlighter-rouge">Pledge.resolve()</code> (discussed in part 4). The <code class="highlighter-rouge">getPledgeResolve()</code> method is the equivalent of the <code class="highlighter-rouge">GetPromiseResolve</code><sup id="fnref:7"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:7" class="footnote">7</a></sup> operation in the spec. Here’s the code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getPledgeResolve</span><span class="p">(</span><span class="nx">pledgeConstructor</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">assertIsConstructor</span><span class="p">(</span><span class="nx">pledgeConstructor</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">pledgeResolve</span> <span class="o">=</span> <span class="nx">pledgeConstructor</span><span class="p">.</span><span class="nx">resolve</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">pledgeResolve</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">resolve is not callable.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">pledgeResolve</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>After that, an iterator is retrieved for the iterable that was passed into the method. All of the important pieces of data are passed into <code class="highlighter-rouge">performPledgeRace()</code>, which I’ll cover in a moment.</p>
+
+<p>The <code class="highlighter-rouge">catch</code> clause of the <code class="highlighter-rouge">try-catch</code> statement handles any errors that are thrown. In order to make the code easier to compare the specification, I’ve chosen to once again use completion records (completion records were introduced in part 3 of this series). This part isn’t very important to the overall algorithm, so I’m going to skip explaining it and the <code class="highlighter-rouge">iteratorClose()</code> function in detail. Just know that when an error is thrown, the iterator might not have completed and so <code class="highlighter-rouge">iteratorClose()</code> is used to close out the iterator, freeing up any memory associated with it. The <code class="highlighter-rouge">iteratorClose()</code> function may return its own error, and if so, that’s the error that should be rejected into the created pledge. If you’d like to learn more about <code class="highlighter-rouge">iteratorClose()</code>, please check out the source code on GitHub.</p>
+
+<p>The next step is to implement the <code class="highlighter-rouge">PerformPromiseRace()</code><sup id="fnref:8"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:8" class="footnote">8</a></sup> operation as <code class="highlighter-rouge">performPledgeRace()</code>. The algorithm for this operation seems more complicated than it actually is due to the iterator loop I described at the start of this post. See if you can figure out what is happening in this code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">performPledgeRace</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="kd">constructor</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">assertIsConstructor</span><span class="p">(</span><span class="kd">constructor</span><span class="p">);</span>
+    <span class="nx">assertIsCallable</span><span class="p">(</span><span class="nx">pledgeResolve</span><span class="p">);</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">let</span> <span class="nx">next</span><span class="p">;</span>
+        
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">next</span> <span class="o">=</span> <span class="nx">iteratorStep</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">next</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kd">let</span> <span class="nx">nextValue</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">nextValue</span> <span class="o">=</span> <span class="nx">iteratorValue</span><span class="p">(</span><span class="nx">next</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kd">const</span> <span class="nx">nextPledge</span> <span class="o">=</span> <span class="nx">pledgeResolve</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="kd">constructor</span><span class="p">,</span> <span class="nx">nextValue</span><span class="p">);</span>
+        <span class="nx">nextPledge</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">resultCapability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The first thing to notice is that, unlike the loops described in the first section of this post, no errors are thrown. Instead, any errors that occur are passed to the <code class="highlighter-rouge">resultCapability.reject()</code> method and the created pledge object is returned. All of the error checking really gets in the way of understanding what is a very simple algorithm, so here’s a version that better illustrates how the algorithm works using JavaScript you’d write in real life:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">performPledgeRaceSimple</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="kd">constructor</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">assertIsConstructor</span><span class="p">(</span><span class="kd">constructor</span><span class="p">);</span>
+    <span class="nx">assertIsCallable</span><span class="p">(</span><span class="nx">pledgeResolve</span><span class="p">);</span>
+
+    <span class="c1">// You could actually just pass the iterator instead of `iteratatorRecord`</span>
+    <span class="kd">const</span> <span class="nx">iterator</span> <span class="o">=</span> <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">iterator</span><span class="p">;</span>
+
+    <span class="k">try</span> <span class="p">{</span>
+
+        <span class="c1">// loop over every value in the iterator</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">nextValue</span> <span class="k">of</span> <span class="nx">iterator</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">nextPledge</span> <span class="o">=</span> <span class="nx">pledgeResolve</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="kd">constructor</span><span class="p">,</span> <span class="nx">nextValue</span><span class="p">);</span>
+            <span class="nx">nextPledge</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">resultCapability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>With this stripped-down version of <code class="highlighter-rouge">performPledgeRace()</code>, you can see that the fundamental algorithm is take each value returned from the iterator and pass it to <code class="highlighter-rouge">Pledge.resolve()</code> to ensure you have an instance of <code class="highlighter-rouge">Pledge</code> to work with. The iterator can contain both <code class="highlighter-rouge">Pledge</code> objects and any other non-<code class="highlighter-rouge">Pledge</code> value, so the best way to ensure you have a <code class="highlighter-rouge">Pledge</code> object is to pass all values to <code class="highlighter-rouge">Pledge.resolve()</code> and use the result (<code class="highlighter-rouge">nextPledge</code>). Then, all you need to do is attach <code class="highlighter-rouge">resultCapability.resolve()</code> as the fulfillment handler and <code class="highlighter-rouge">resultCapability.reject()</code> as the rejection handler. Keep in mind that these methods only work once and otherwise do nothing, so there is no harm in assigning them to all pledges (see part 3 for detail on how this works).</p>
+
+<p>With that, the <code class="highlighter-rouge">Pledge.race()</code> method is complete. This is the simplest of the static methods that work on multiple promises. The next method, <code class="highlighter-rouge">Pledge.any()</code>, uses some of the same logic but also adds a bit more complexity for handling rejections.</p>
+
+<h2 id="the-promiseany-method">The <code class="highlighter-rouge">Promise.any()</code> method</h2>
+
+<p>The <code class="highlighter-rouge">Promise.any()</code> method is a variation of the <code class="highlighter-rouge">Promise.race()</code> method. Like <code class="highlighter-rouge">Promise.race()</code>, <code class="highlighter-rouge">Promise.any()</code> will return a promise that is fulfilled with the same value as the first promise to be fulfilled. In effect, there’s still a “race” to see which promise will be fulfilled first. The difference is when none of the promises are fulfilled, in which case the returned promise is rejected with an <code class="highlighter-rouge">AggregateError</code> object<sup id="fnref:9"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:9" class="footnote">9</a></sup> that contains an <code class="highlighter-rouge">errors</code> array with the rejection reasons of each promise. Here are some examples to better illustrate:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise1</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">any</span><span class="p">([</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span>
+<span class="p">]);</span>
+
+<span class="nx">promise1</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>     <span class="c1">// 42</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">promise2</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">any</span><span class="p">([</span>
+    <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+        <span class="p">},</span> <span class="mi">500</span><span class="p">);</span>
+    <span class="p">}),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span>
+<span class="p">]);</span>
+
+<span class="nx">promise2</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>    <span class="c1">// 44</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">promise3</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">any</span><span class="p">([</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span>
+<span class="p">]);</span>
+
+<span class="nx">promise3</span><span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">reason</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">reason</span><span class="p">.</span><span class="nx">errors</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>    <span class="c1">// 42</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">reason</span><span class="p">.</span><span class="nx">errors</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>    <span class="c1">// 43</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">reason</span><span class="p">.</span><span class="nx">errors</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>    <span class="c1">// 44</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>The first two calls to <code class="highlighter-rouge">Promise.any()</code> in this code are resolved to a fulfilled promise because at least one promise was fulfilled; the last call resolves to an <code class="highlighter-rouge">AggregateError</code> object where the <code class="highlighter-rouge">errors</code> property is an array of all the rejected values.</p>
+
+<h3 id="creating-an-aggregateerror-object">Creating an <code class="highlighter-rouge">AggregateError</code> object</h3>
+
+<p>The first step in implementing <code class="highlighter-rouge">Pledge.any()</code> is to create a representation of <code class="highlighter-rouge">AggregateError</code>. This class is new enough to JavaScript that it’s not present in a lot of runtimes yet, so it’s helpful to have a standalone representation. The specification<sup id="fnref:9:1"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:9" class="footnote">9</a></sup> indicates that <code class="highlighter-rouge">AggregateError</code> is not really a class, but rather a function that can be called with or without <code class="highlighter-rouge">new</code>. Here’s what a translation of the specification looks like:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">PledgeAggregateError</span><span class="p">(</span><span class="nx">errors</span><span class="o">=</span><span class="p">[],</span> <span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">O</span> <span class="o">=</span> <span class="k">new</span><span class="p">.</span><span class="nx">target</span> <span class="o">===</span> <span class="kc">undefined</span> <span class="p">?</span> <span class="k">new</span> <span class="nx">PledgeAggregateError</span><span class="p">()</span> <span class="p">:</span> <span class="k">this</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">message</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">undefined</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">msg</span> <span class="o">=</span> <span class="nb">String</span><span class="p">(</span><span class="nx">message</span><span class="p">);</span>
+
+        <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">O</span><span class="p">,</span> <span class="dl">"</span><span class="s2">message</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+            <span class="na">value</span><span class="p">:</span> <span class="nx">msg</span><span class="p">,</span>
+            <span class="na">writable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+            <span class="na">enumerable</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+            <span class="na">configurable</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="c1">// errors can be an iterable</span>
+    <span class="kd">const</span> <span class="nx">errorsList</span> <span class="o">=</span> <span class="p">[...</span><span class="nx">errors</span><span class="p">];</span>
+
+    <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">O</span><span class="p">,</span> <span class="dl">"</span><span class="s2">errors</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">configurable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">enumerable</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+        <span class="na">writable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">value</span><span class="p">:</span> <span class="nx">errorsList</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span> <span class="nx">O</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>An interesting note about this type of error is that the <code class="highlighter-rouge">message</code> parameter is optional and may not appear on the object. The <code class="highlighter-rouge">errors</code> parameter is also optional, however, the created object will always have an <code class="highlighter-rouge">errors</code> property. Due to this, and the fact that the implementation is done with a function, there are a variety of ways to create a new instance:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">error1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeAggregateError</span><span class="p">();</span>
+<span class="kd">const</span> <span class="nx">error2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeAggregateError</span><span class="p">([</span><span class="mi">42</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">44</span><span class="p">]);</span>
+<span class="kd">const</span> <span class="nx">error3</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeAggregateError</span><span class="p">([</span><span class="mi">42</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">44</span><span class="p">],</span> <span class="dl">"</span><span class="s2">Oops!</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">error4</span> <span class="o">=</span> <span class="nx">PledgeAggregateError</span><span class="p">();</span>
+<span class="kd">const</span> <span class="nx">error5</span> <span class="o">=</span> <span class="nx">PledgeAggregateError</span><span class="p">([</span><span class="mi">42</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">44</span><span class="p">]);</span>
+<span class="kd">const</span> <span class="nx">error6</span> <span class="o">=</span> <span class="nx">PledgeAggregateError</span><span class="p">([</span><span class="mi">42</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">44</span><span class="p">],</span> <span class="dl">"</span><span class="s2">Oops!</span><span class="dl">"</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>This implementation matches how the specification defines <code class="highlighter-rouge">AggregateError</code> objects, so now it’s time to move on to implementing <code class="highlighter-rouge">Pledge.any()</code> itself.</p>
+
+<h3 id="creating-the-pledgeany-method">Creating the <code class="highlighter-rouge">Pledge.any()</code> method</h3>
+
+<p>As I mentioned in the previous section, all of the algorithms for the static methods that work on multiple promises are similar, with the only real exception being the name of the operation that it delegates to. The <code class="highlighter-rouge">Promise.any()</code> method<sup id="fnref:10"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:10" class="footnote">10</a></sup> follows the same structure as the <code class="highlighter-rouge">Promise.race()</code> method, and so the <code class="highlighter-rouge">Pledge.any()</code> method in this library should look familiar:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// other methods omitted for space</span>
+
+    <span class="kd">static</span> <span class="nx">any</span><span class="p">(</span><span class="nx">iterable</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">const</span> <span class="nx">C</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="nx">pledgeCapability</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeCapability</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+        <span class="kd">let</span> <span class="nx">iteratorRecord</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">pledgeResolve</span> <span class="o">=</span> <span class="nx">getPledgeResolve</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+            <span class="nx">iteratorRecord</span> <span class="o">=</span> <span class="nx">getIterator</span><span class="p">(</span><span class="nx">iterable</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">performPledgeAny</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="nx">C</span><span class="p">,</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ThrowCompletion</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="nx">iteratorRecord</span> <span class="o">&amp;&amp;</span> <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">result</span> <span class="o">=</span> <span class="nx">iteratorClose</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Because you’re already familiar with this basic algorithm, I’ll skip directly to what the <code class="highlighter-rouge">performPledgeAny()</code> function does.</p>
+
+<p>The algorithm for the <code class="highlighter-rouge">PerformPromiseAny()</code> method<sup id="fnref:11"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:11" class="footnote">11</a></sup> looks more complicated than it actually is. Part of the reason for that is the wacky way iterators are used, but you are already familiar with that. In fact, all this method does is attach <code class="highlighter-rouge">resultCapability.resolve</code> to be the fulfillment handler of each promise and attaches a special rejection handler that simply collects all of the rejection reasons in case they are needed.</p>
+
+<p>To keep track of rejection reasons, the operation defines three variables:</p>
+
+<ol>
+  <li><code class="highlighter-rouge">errors</code> - the array to keep track of all rejection reasons</li>
+  <li><code class="highlighter-rouge">remainingElementsCount</code> - a record whose only purpose is to track how many promises still need to be fulfilled</li>
+  <li><code class="highlighter-rouge">index</code> - the index in the <code class="highlighter-rouge">errors</code> array where each rejection reason should be placed</li>
+</ol>
+
+<p>These three variables are the primary difference between <code class="highlighter-rouge">performPledgeAny()</code> and <code class="highlighter-rouge">performPledgeRace()</code>, and these will also appear in the implementations for <code class="highlighter-rouge">Pledge.all()</code> and <code class="highlighter-rouge">Pledge.allSettled()</code>.</p>
+
+<p>With that basic explanation out of the way, here’s the code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">performPledgeAny</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="kd">constructor</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">assertIsConstructor</span><span class="p">(</span><span class="kd">constructor</span><span class="p">);</span>
+    <span class="nx">assertIsCallable</span><span class="p">(</span><span class="nx">pledgeResolve</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">errors</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="kd">const</span> <span class="nx">remainingElementsCount</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="mi">1</span> <span class="p">};</span>
+    <span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">next</span><span class="p">;</span>
+        
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">next</span> <span class="o">=</span> <span class="nx">iteratorStep</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">next</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">const</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeAggregateError</span><span class="p">();</span>
+                <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="dl">"</span><span class="s2">errors</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+                    <span class="na">configurable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                    <span class="na">enumerable</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                    <span class="na">writable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                    <span class="na">value</span><span class="p">:</span> <span class="nx">errors</span>
+                <span class="p">});</span>
+        
+                <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+            <span class="p">}</span>
+        
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="kd">let</span> <span class="nx">nextValue</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">nextValue</span> <span class="o">=</span> <span class="nx">iteratorValue</span><span class="p">(</span><span class="nx">next</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">nextPledge</span> <span class="o">=</span> <span class="nx">pledgeResolve</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="kd">constructor</span><span class="p">,</span> <span class="nx">nextValue</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">rejectElement</span> <span class="o">=</span> <span class="nx">createPledgeAnyRejectElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">errors</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">);</span>
+        
+        <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="nx">nextPledge</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">resultCapability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">rejectElement</span><span class="p">);</span>
+        <span class="nx">index</span> <span class="o">=</span> <span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The first important part of this function is when <code class="highlighter-rouge">remainingElementsCount.value</code> is <code class="highlighter-rouge">0</code>, then a new <code class="highlighter-rouge">PledgeAggregateError</code> object is created and passed to <code class="highlighter-rouge">resultCapability.reject()</code>. This is the condition where there are no more promises in the iterator and all of the promises have been rejected.</p>
+
+<p>The next important part of the code is the <code class="highlighter-rouge">createPledgeAnyRejectElement()</code> function. This function doesn’t have a corresponding operation in the specification, but rather, is defined as a series of steps<sup id="fnref:12"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:12" class="footnote">12</a></sup> to take; I split it out into a function to make the code easier to understand. The “reject element” is the rejection handler that should be attached to each promise, and it’s job is to aggregate the rejection reason. Here’s the code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">createPledgeAnyRejectElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">errors</span><span class="p">,</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">alreadyCalled</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="kc">false</span> <span class="p">};</span>
+
+    <span class="k">return</span> <span class="nx">x</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">alreadyCalled</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nx">alreadyCalled</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+        <span class="nx">errors</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
+        <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeAggregateError</span><span class="p">();</span>
+            <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="dl">"</span><span class="s2">errors</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+                <span class="na">configurable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="na">enumerable</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="na">writable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="na">value</span><span class="p">:</span> <span class="nx">errors</span>
+            <span class="p">});</span>
+
+            <span class="k">return</span> <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+
+        <span class="p">}</span>
+
+    <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>As with other fulfillment and rejection handlers, this function returns a function that first checks to make sure it’s not being called twice. The <code class="highlighter-rouge">x</code> parameter is the reason for the rejection and so is placed into the <code class="highlighter-rouge">errors</code> array at <code class="highlighter-rouge">index</code>. Then, <code class="highlighter-rouge">remainingElementsCount.value</code> is checked to see if it’s <code class="highlighter-rouge">0</code>, and if so, a new <code class="highlighter-rouge">PledgeAggregateError</code> is created. This is necessary because the promises might be rejected long after the initial called to <code class="highlighter-rouge">Pledge.any()</code> has completed. So the check in <code class="highlighter-rouge">performPledgeAny()</code> handles the situation where all of the promises are rejected synchronously while the reject element functions handle the situation where all of the promises are rejected asynchronously.</p>
+
+<p>And for clarify, here is what the <code class="highlighter-rouge">performPledgeAny()</code> method would look like without the iterator craziness:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">performPledgeAnySimple</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="kd">constructor</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">assertIsConstructor</span><span class="p">(</span><span class="kd">constructor</span><span class="p">);</span>
+    <span class="nx">assertIsCallable</span><span class="p">(</span><span class="nx">pledgeResolve</span><span class="p">);</span>
+
+    <span class="c1">// You could actually just pass the iterator instead of `iteratatorRecord`</span>
+    <span class="kd">const</span> <span class="nx">iterator</span> <span class="o">=</span> <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">iterator</span><span class="p">;</span>
+
+    <span class="kd">const</span> <span class="nx">errors</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="kd">const</span> <span class="nx">remainingElementsCount</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="mi">1</span> <span class="p">};</span>
+    <span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">try</span> <span class="p">{</span>
+
+        <span class="c1">// loop over every value in the iterator</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">nextValue</span> <span class="k">of</span> <span class="nx">iterator</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">errors</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+
+            <span class="kd">const</span> <span class="nx">nextPledge</span> <span class="o">=</span> <span class="nx">pledgeResolve</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="kd">constructor</span><span class="p">,</span> <span class="nx">nextValue</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">rejectElement</span> <span class="o">=</span> <span class="nx">createPledgeAnyRejectElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">errors</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">);</span>
+
+            <span class="nx">nextPledge</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">resultCapability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">rejectElement</span><span class="p">);</span>
+
+            <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="nx">index</span> <span class="o">=</span> <span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">error</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeAggregateError</span><span class="p">();</span>
+            <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">error</span><span class="p">,</span> <span class="dl">"</span><span class="s2">errors</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+                <span class="na">configurable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="na">enumerable</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+                <span class="na">writable</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+                <span class="na">value</span><span class="p">:</span> <span class="nx">errors</span>
+            <span class="p">});</span>
+    
+            <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This version is not as straightforward as the <code class="highlighter-rouge">performPledgeRace()</code> equivalent, but hopefully you can see that the overall approach is still just looping over the promises and attaching appropriate fulfillment and rejection handlers.</p>
+
+<h2 id="wrapping-up">Wrapping Up</h2>
+
+<p>This post covered creating <code class="highlighter-rouge">Promise.race()</code> and <code class="highlighter-rouge">Promise.any()</code> from scratch. These are just two of the built-in methods that work on multiple promises. The <code class="highlighter-rouge">Promise.race()</code> method is the simplest of these four methods because you don’t have to do any tracking; each promise is assigned the same fulfillment and rejection handlers, and that is all you need to worry about. The <code class="highlighter-rouge">Promise.any()</code> method is a bit more complex because you need to keep track of all the rejections in case none of the promises are fulfilled.</p>
+
+<p>All of this code is available in the <a href="https://github.com/humanwhocodes/pledge">Pledge</a> on GitHub. I hope you’ll download it and try it out to get a better understanding of promises.</p>
+
+<h2 id="want-more-posts-in-this-series">Want more posts in this series?</h2>
+
+<p>If you are enjoying this series and would like to see it continue, please <a href="https://github.com/sponsors/nzakas">sponsor me</a> on GitHub. For every five new sponsors I receive, I’ll release a new post. Here’s what I plan on covering:</p>
+
+<ul>
+  <li>Part 6: <code class="highlighter-rouge">Promise.all()</code> and <code class="highlighter-rouge">Promise.allSettled()</code> (when I have 40 sponsors)</li>
+  <li>Part 7: Unhandled promise rejection tracking (when I have 45 sponsors)</li>
+</ul>
+
+<p>It takes a significant amount of time to put together posts like these, and I appreciate your consideration in helping me continue to create quality content like this.</p>
+
+<h2 id="references">References</h2>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://tc39.es/ecma262/#sec-getiterator">GetIterator ( obj [ , hint [ , method ] ] )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p><a href="https://tc39.es/ecma262/#sec-iteratornext">IteratorNext (IteratorNext ( iteratorRecord [ , value ] ))</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p><a href="https://tc39.es/ecma262/#sec-iteratorcomplete">IteratorComplete ( iterResult )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:4">
+      <p><a href="https://tc39.es/ecma262/#sec-iteratorvalue">IteratorValue ( iterResult )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:5">
+      <p><a href="https://tc39.es/ecma262/#sec-iteratorstep">IteratorStep ( iteratorRecord )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:6">
+      <p><a href="https://tc39.es/ecma262/#sec-promise.race">Promise.race ( iterable )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:7">
+      <p><a href="https://tc39.es/ecma262/#sec-getpromiseresolve">GetPromiseResolve ( promiseConstructor )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:7" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:8">
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiserace">PerformPromiseRace ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:8" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:9">
+      <p><a href="https://tc39.es/ecma262/#sec-aggregate-error-objects">AggregateError Objects</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:9" class="reversefootnote">&#8617;</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:9:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
+    </li>
+    <li id="fn:10">
+      <p><a href="https://tc39.es/ecma262/#sec-promise.any">Promise.any ( iterable )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:10" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:11">
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiseany">PerformPromiseAny ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:11" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:12">
+      <p><a href="https://tc39.es/ecma262/#sec-promise.any-reject-element-functions">Promise.any Reject Element Functions</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:12" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='../../index.html'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

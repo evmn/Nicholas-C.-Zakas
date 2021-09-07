@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Creating a JavaScript promise from scratch, Part 1: Constructor - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Creating a JavaScript promise from scratch, Part 1: Constructor">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/" />
+<meta name="og:title" content="Creating a JavaScript promise from scratch, Part 1: Constructor">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">
+
+
+
+<meta name="description" content="Early on in my career, I learned a lot by trying to recreate functionality I saw on websites. I found it helpful to investigate why something worked the way that it worked, and...">
+<meta name="keywords" content="JavaScript,Promises,ECMAScript 6,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Creating a JavaScript promise from scratch, Part 1: Constructor</h1>
+        <p itemprop="description" class="no-margin-top">Sometimes it's easier to understand complex concepts like promises by creating them yourself.</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2020-09-22T00:00:00+00:00" itemprop="datePublished">September 22, 2020</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/promises" rel="tag">Promises</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ecmascript-6" rel="tag">ECMAScript 6</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Early on in my career, I learned a lot by trying to recreate functionality I saw on websites. I found it helpful to investigate why something worked the way that it worked, and that lesson has stuck with me for decades. The best way to know if you really understand something is to take it apart and put it back together again. That’s why, when I decided to deepen my understanding of promises, I started thinking about creating promises from scratch.</p>
+
+<p>Yes, I wrote a book on ECMAScript 6 in which I covered promises, but at that time, promises were still very new and not yet implemented everywhere. I made my best guess as to how certain things worked but I never felt truly comfortable with my understanding. So, I decided to turn ECMA-262’s description of promises<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:1" class="footnote">1</a></sup> and implement that functionality from scratch.</p>
+
+<p>In this series of posts, I’ll be digging into the internals of my promise library, <a href="https://github.com/humanwhocodes/pledge">Pledge</a>. My hope is that exploring this code will help everyone understand how JavaScript promises work.</p>
+
+<h2 id="an-introduction-to-pledge">An Introduction to Pledge</h2>
+
+<p>Pledge is a standalone JavaScript library that implements the ECMA-262 promises specification. I chose the name “Pledge” instead of using “Promise” so that I could make it clear whether something was part of native promise functionality or if it was something in the library. As such, wherever the spec using the term “promise,”, I’ve replaced that with the word “pledge” in the library.</p>
+
+<p>If I’ve implemented it correctly, the <code class="highlighter-rouge">Pledge</code> class should work the same as the native <code class="highlighter-rouge">Promise</code> class. Here’s an example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Pledge</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">https://unpkg.com/@humanwhocodes/pledge/dist/pledge.js</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">pledge</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Pledge</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+
+    <span class="c1">// or</span>
+
+    <span class="nx">reject</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">pledge</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">then</span><span class="p">);</span>
+<span class="p">}).</span><span class="k">catch</span><span class="p">(</span><span class="nx">reason</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+<span class="p">}).</span><span class="k">finally</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">done</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">// create resolved pledges</span>
+<span class="kd">const</span> <span class="nx">fulfilled</span> <span class="o">=</span> <span class="nx">Pledge</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">rejected</span> <span class="o">=</span> <span class="nx">Pledge</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Uh oh!</span><span class="dl">"</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>Being able to see behind each code example has helped me understand promises a lot better, and I hope it will do the same for you.</p>
+
+<p><strong>Note:</strong> This library is not intended for use in production. It’s intended only as an educational tool. There’s no reason not to use the native <code class="highlighter-rouge">Promise</code> functionality.</p>
+
+<h2 id="internal-properties-of-a-promise">Internal properties of a promise</h2>
+
+<p>ECMA-262<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:2" class="footnote">2</a></sup> specifies the following internal properties (called <em>slots</em> in the spec) for instances of <code class="highlighter-rouge">Promise</code>:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th><strong>Internal Slot</strong></th>
+      <th><strong>Description</strong></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="highlighter-rouge">[[PromiseState]]</code></td>
+      <td>One of <code class="highlighter-rouge">pending</code>, <code class="highlighter-rouge">fulfilled</code>, or <code class="highlighter-rouge">rejected</code>. Governs how a promise will react to incoming calls to its then method.</td>
+    </tr>
+    <tr>
+      <td><code class="highlighter-rouge">[[PromiseResult]]</code></td>
+      <td>The value with which the promise has been fulfilled or rejected, if any. Only meaningful if <code class="highlighter-rouge">[[PromiseState]]</code> is not <code class="highlighter-rouge">pending</code>.</td>
+    </tr>
+    <tr>
+      <td><code class="highlighter-rouge">[[PromiseFulfillReactions]]</code></td>
+      <td>A <code class="highlighter-rouge">List</code> of <code class="highlighter-rouge">PromiseReaction</code> records to be processed when/if the promise transitions from the pending state to the fulfilled state.</td>
+    </tr>
+    <tr>
+      <td><code class="highlighter-rouge">[[PromiseRejectReactions]]</code></td>
+      <td>A <code class="highlighter-rouge">List</code> of <code class="highlighter-rouge">PromiseReaction</code> records to be processed when/if the promise transitions from the pending state to the rejected state.</td>
+    </tr>
+    <tr>
+      <td><code class="highlighter-rouge">[[PromiseIsHandled]]</code></td>
+      <td>A boolean indicating whether the promise has ever had a fulfillment or rejection handler; used in unhandled rejection tracking.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Because these properties are not supposed to be visible to developers but need to exist on the instances themselves for easy tracking and manipulation, I chose to use symbols for their identifiers and created the <code class="highlighter-rouge">PledgeSymbol</code> object as an easy way to reference them in various files:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">PledgeSymbol</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">freeze</span><span class="p">({</span>
+    <span class="na">state</span><span class="p">:</span> <span class="nb">Symbol</span><span class="p">(</span><span class="dl">"</span><span class="s2">PledgeState</span><span class="dl">"</span><span class="p">),</span>
+    <span class="na">result</span><span class="p">:</span> <span class="nb">Symbol</span><span class="p">(</span><span class="dl">"</span><span class="s2">PledgeResult</span><span class="dl">"</span><span class="p">),</span>
+    <span class="na">isHandled</span><span class="p">:</span> <span class="nb">Symbol</span><span class="p">(</span><span class="dl">"</span><span class="s2">PledgeIsHandled</span><span class="dl">"</span><span class="p">),</span>
+    <span class="na">fulfillReactions</span><span class="p">:</span> <span class="nb">Symbol</span><span class="p">(</span><span class="dl">"</span><span class="s2">PledgeFulfillReactions</span><span class="dl">"</span><span class="p">),</span>
+    <span class="na">rejectReactions</span><span class="p">:</span> <span class="nb">Symbol</span><span class="p">(</span><span class="dl">"</span><span class="s2">PledgeRejectReactions</span><span class="dl">"</span><span class="p">)</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>With <code class="highlighter-rouge">PledgeSymbol</code> now defined, it’s time to move on to creating the <code class="highlighter-rouge">Pledge</code> constructor.</p>
+
+<h2 id="how-does-the-promise-constructor-work">How does the <code class="highlighter-rouge">Promise</code> constructor work?</h2>
+
+<p>The <code class="highlighter-rouge">Promise</code> constructor is used to create a new promise in JavaScript. You pass in a function (called the <em>executor</em>) that receives two arguments, <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> which are functions that bring the promise’s lifecycle to completion. The <code class="highlighter-rouge">resolve()</code> function resolves the promise to some value (or no value) and the <code class="highlighter-rouge">reject()</code> function rejects the promise with a given reason (or no reason). For example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">promise</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>     <span class="c1">// 42</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>The executor is run immediately so the variable <code class="highlighter-rouge">promise</code> in this example is already fulfilled with the value <code class="highlighter-rouge">42</code> (the internal <code class="highlighter-rouge">[[PromiseState]]</code> property is <code class="highlighter-rouge">Fulfilled</code>). (If you used <code class="highlighter-rouge">reject()</code> instead of <code class="highlighter-rouge">resolve()</code>, then <code class="highlighter-rouge">promise</code> would be in a rejected state.)</p>
+
+<p>Additionally, if the executor throws an error, then that error is caught and the promise is rejected, as in this example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Oops!</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">promise</span><span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">reason</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">reason</span><span class="p">.</span><span class="nx">message</span><span class="p">);</span>     <span class="c1">// "Oops!"</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<p>A couple of other notes about how the constructor works:</p>
+
+<ol>
+  <li>If the executor is missing then an error is thrown</li>
+  <li>If the executor is not a function then an error is thrown</li>
+</ol>
+
+<p>In both cases, the error is thrown as usual and does not result in a rejected promise.</p>
+
+<p>With all of this background information, here’s what the code to implement these behaviors looks like:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">executor</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">executor</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">undefined</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">Executor missing.</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">executor</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">Executor must be a function.</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// initialize properties</span>
+        <span class="k">this</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">pending</span><span class="dl">"</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">]</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">isHandled</span><span class="p">]</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">fulfillReactions</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span>
+        <span class="k">this</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectReactions</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span>
+
+        <span class="kd">const</span> <span class="p">{</span> <span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">createResolvingFunctions</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+        <span class="cm">/*
+         * The executor is executed immediately. If it throws an error, then
+         * that is a rejection. The error should not be allowed to bubble
+         * out of this function.
+         */</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">executor</span><span class="p">(</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>After checking the validity of the <code class="highlighter-rouge">executor</code> argument, the constructor next initializes all of the internal properties by using <code class="highlighter-rouge">PledgeSymbol</code>. These properties are close approximations of what the specification describes, where a string is used for the state instead of an enum and the fulfill and reject reactions are instances of <code class="highlighter-rouge">Array</code> because there is no <code class="highlighter-rouge">List</code> class in JavaScript.</p>
+
+<p>Next, the <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions used in the executor are created using the <code class="highlighter-rouge">createResolvingFunctions()</code> function. (I’ll go into detail about this function later in this post.) Last, the executor is run, passing in <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code>. It’s important to run the executor inside of a <code class="highlighter-rouge">try-catch</code> statement to ensure that any error results in a promise rejection rather than a thrown error.</p>
+
+<p>The <code class="highlighter-rouge">isCallable()</code> function is just a helper function I created to make the code read more like the specification. Here’s the implementation:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">isCallable</span><span class="p">(</span><span class="nx">argument</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">typeof</span> <span class="nx">argument</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">function</span><span class="dl">"</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>I think you’ll agree that the <code class="highlighter-rouge">Pledge</code> constructor itself is not very complicated and follows a fairly standard process of validating the input, initializing instance properties, and then performing some operations. The real work is done inside of <code class="highlighter-rouge">createResolvingFunctions()</code>.</p>
+
+<h2 id="creating-the-resolving-functions">Creating the resolving functions</h2>
+
+<p>The specification defines a <code class="highlighter-rouge">CreateResolvingFunctions</code> abstract operation<sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:3" class="footnote">3</a></sup>, which is a fancy way of saying that it’s a series of steps to perform as part of some other function or method. To make it easy to go back and forth between the specification and the Pledge library, I’ve opted to use the same name for an actual function. The details in the specification aren’t all relevant to implementing the code in JavaScript, so I’ve omitted or changed some parts. I’ve also kept some parts that may seem nonsensical within the context of JavaScript – I’ve done that intentionally, once again, for ease of going back and forth with the specification.</p>
+
+<p>The <code class="highlighter-rouge">createResolvingFunctions()</code> function is responsible for creating the <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions that are passed into the executor. However, this function is actually used elsewhere, as well, allowing any parts of the library to retrieve these functions in order to manipulate existing <code class="highlighter-rouge">Pledge</code> instances.</p>
+
+<p>To start, the basic structure of the function is as follows:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">createResolvingFunctions</span><span class="p">(</span><span class="nx">pledge</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="c1">// this "record" is used to track whether a Pledge is already resolved</span>
+    <span class="kd">const</span> <span class="nx">alreadyResolved</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="kc">false</span> <span class="p">};</span>
+
+    <span class="kd">const</span> <span class="nx">resolve</span> <span class="o">=</span> <span class="nx">resolution</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// TODO</span>
+    <span class="p">};</span>
+
+    <span class="c1">// attach the record of resolution and the original pledge</span>
+    <span class="nx">resolve</span><span class="p">.</span><span class="nx">alreadyResolved</span> <span class="o">=</span> <span class="nx">alreadyResolved</span><span class="p">;</span>
+    <span class="nx">resolve</span><span class="p">.</span><span class="nx">pledge</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">;</span>
+
+    <span class="kd">const</span> <span class="nx">reject</span> <span class="o">=</span> <span class="nx">reason</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="c1">// TODO</span>
+    <span class="p">};</span>
+
+    <span class="c1">// attach the record of resolution and the original pledge</span>
+    <span class="nx">reject</span><span class="p">.</span><span class="nx">alreadyResolved</span> <span class="o">=</span> <span class="nx">alreadyResolved</span><span class="p">;</span>
+    <span class="nx">reject</span><span class="p">.</span><span class="nx">pledge</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">resolve</span><span class="p">,</span>
+        <span class="nx">reject</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The first oddity of this function is the <code class="highlighter-rouge">alreadyResolved</code> object. The specification states that it’s a record, so I’ve chosen to implement it using an object. Doing so ensures the same value is being read and modified regardless of location (using a simple boolean value would not have allowed for this sharing if the value was being written to or read from the <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> properties).</p>
+
+<p>The specification also indicates that the <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions should have properties containing <code class="highlighter-rouge">alreadyResolved</code> and the original promise (<code class="highlighter-rouge">pledge</code>). This is done so that the <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions can access those values while executing. However, that’s not necessary in JavaScript because both functions are closures and can access those same values directly. I’ve opted to keep this detail in the code for completeness with the specification but they won’t actually be used.</p>
+
+<p>As mentioned previously, the contents of each function is where most of the work is done. However, the functions vary in how complex they are. I’ll start by describing the <code class="highlighter-rouge">reject</code> function, as that is a great deal simpler than <code class="highlighter-rouge">resolve</code>.</p>
+
+<h3 id="creating-the-reject-function">Creating the <code class="highlighter-rouge">reject</code> function</h3>
+
+<p>The <code class="highlighter-rouge">reject</code> function accepts a single argument, the reason for the rejection, and places the promise in a rejected state. That means any rejection handlers added using <code class="highlighter-rouge">then()</code> or <code class="highlighter-rouge">catch()</code> will be executed. The first step in that process is to ensure that the promise hasn’t already been resolved, so you check the value of <code class="highlighter-rouge">alreadyResolved.value</code>, and if <code class="highlighter-rouge">true</code>, just return without doing anything. If <code class="highlighter-rouge">alreadyResolved.value</code> is <code class="highlighter-rouge">false</code> then you can continue on and the value to <code class="highlighter-rouge">true</code>. This ensures that this set of <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> handlers can only be called once. After that, you can continue on change the internal state of the promise. Here’s what that function looks like in the Pledge library:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">createResolvingFunctions</span><span class="p">(</span><span class="nx">pledge</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">alreadyResolved</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="kc">false</span> <span class="p">};</span>
+
+    <span class="c1">// resolve function omitted for ease of reading</span>
+
+    <span class="kd">const</span> <span class="nx">reject</span> <span class="o">=</span> <span class="nx">reason</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">alreadyResolved</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nx">alreadyResolved</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+        <span class="k">return</span> <span class="nx">rejectPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">reason</span><span class="p">);</span>
+    <span class="p">};</span>
+
+    <span class="nx">reject</span><span class="p">.</span><span class="nx">pledge</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">;</span>
+    <span class="nx">reject</span><span class="p">.</span><span class="nx">alreadyResolved</span> <span class="o">=</span> <span class="nx">alreadyResolved</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">resolve</span><span class="p">,</span>
+        <span class="nx">reject</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">rejectPledge()</code> function is another abstract operation from the specification<sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:4" class="footnote">4</a></sup> that is used in multiple places and is responsible for changing the internal state of a promise. Here’s the steps directly from the specification:</p>
+
+<ol>
+  <li>Assert: The value of <code class="highlighter-rouge">promise.[[PromiseState]]</code> is <code class="highlighter-rouge">pending</code>.</li>
+  <li>Let <code class="highlighter-rouge">reactions</code> be <code class="highlighter-rouge">promise.[[PromiseRejectReactions]]</code>.</li>
+  <li>Set <code class="highlighter-rouge">promise.[[PromiseResult]]</code> to <code class="highlighter-rouge">reason</code>.</li>
+  <li>Set <code class="highlighter-rouge">promise.[[PromiseFulfillReactions]]</code> to <code class="highlighter-rouge">undefined</code>.</li>
+  <li>Set <code class="highlighter-rouge">promise.[[PromiseRejectReactions]]</code> to <code class="highlighter-rouge">undefined</code>.</li>
+  <li>Set <code class="highlighter-rouge">promise.[[PromiseState]]</code> to <code class="highlighter-rouge">rejected</code>.</li>
+  <li>If <code class="highlighter-rouge">promise.[[PromiseIsHandled]]</code> is <code class="highlighter-rouge">false</code>, perform <code class="highlighter-rouge">HostPromiseRejectionTracker(promise, "reject")</code>.</li>
+  <li>Return <code class="highlighter-rouge">TriggerPromiseReactions(reactions, reason)</code>.</li>
+</ol>
+
+<p>For the time being, I’m going to skip steps 7 and 8, as those are concepts I’ll cover later in this series of blog posts. The rest can be almost directly translated into JavaScript code like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">rejectPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">pending</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Pledge is already settled.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">reactions</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectReactions</span><span class="p">];</span>
+
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">]</span> <span class="o">=</span> <span class="nx">reason</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">fulfillReactions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectReactions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">rejected</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">isHandled</span><span class="p">])</span> <span class="p">{</span>
+        <span class="c1">// TODO: perform HostPromiseRejectionTracker(promise, "reject").</span>
+    <span class="p">}</span>
+
+    <span class="c1">// TODO: Return `TriggerPromiseReactions(reactions, reason)`.</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>All <code class="highlighter-rouge">rejectPledge()</code> is really doing is setting the various internal properties to the appropriate values for a rejection and then triggering the reject reactions. Once you understand that promises are being ruled by their internal properties, they become a lot less mysterious.</p>
+
+<p>The next step is to implement the <code class="highlighter-rouge">resolve</code> function, which is quite a bit more involved than <code class="highlighter-rouge">reject</code> but fundamentally is still modifying internal state.</p>
+
+<h3 id="creating-the-resolve-function">Creating the <code class="highlighter-rouge">resolve</code> function</h3>
+
+<p>I’ve saved the <code class="highlighter-rouge">resolve</code> function for last due to the number of steps involved. If you’re unfamiliar with promises, you may wonder why it’s more complicated than <code class="highlighter-rouge">reject</code>, as they should be doing most of the same steps but with different values. The complexity comes due to the different ways <code class="highlighter-rouge">resolve</code> handles different types of values:</p>
+
+<ol>
+  <li>If the resolution value is the promise itself, then throw an error.</li>
+  <li>If the resolution value is a non-object, then fulfill the promise with the resolution value.</li>
+  <li>If the resolution value is an object with a <code class="highlighter-rouge">then</code> property:
+    <ol>
+      <li>If the <code class="highlighter-rouge">then</code> property is not a method, then fulfill the promise with the resolution value.</li>
+      <li>If the <code class="highlighter-rouge">then</code> property is a method (that makes the object a <em>thenable</em>), then call <code class="highlighter-rouge">then</code> with both a fulfillment and a rejection handler that will resolve or reject the promise.</li>
+    </ol>
+  </li>
+</ol>
+
+<p>So the <code class="highlighter-rouge">resolve</code> function only fulfills a promise immediately in the case of a non-object resolution value or a resolution value that is an object but doesn’t have a callable <code class="highlighter-rouge">then</code> property. If a second promise is passed to <code class="highlighter-rouge">resolve</code> then the original promise can’t be settled (either fulfilled or rejected) until the second promise is settled. Here’s what the code looks like:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">createResolvingFunctions</span><span class="p">(</span><span class="nx">pledge</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">alreadyResolved</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="kc">false</span> <span class="p">};</span>
+
+    <span class="kd">const</span> <span class="nx">resolve</span> <span class="o">=</span> <span class="nx">resolution</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">alreadyResolved</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nx">alreadyResolved</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+        <span class="c1">// can't resolve to the same pledge</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">is</span><span class="p">(</span><span class="nx">resolution</span><span class="p">,</span> <span class="nx">pledge</span><span class="p">))</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">selfResolutionError</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">Cannot resolve to self.</span><span class="dl">"</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">rejectPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">selfResolutionError</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// non-objects fulfill immediately</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">resolution</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">fulfillPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">resolution</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="kd">let</span> <span class="nx">thenAction</span><span class="p">;</span>
+
+        <span class="cm">/*
+         * At this point, we know `resolution` is an object. If the object
+         * is a thenable, then we need to wait until the thenable is resolved
+         * before resolving the original pledge.
+         * 
+         * The `try-catch` is because retrieving the `then` property may cause
+         * an error if it has a getter and any errors must be caught and used
+         * to reject the pledge.
+         */</span>
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">thenAction</span> <span class="o">=</span> <span class="nx">resolution</span><span class="p">.</span><span class="nx">then</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">thenError</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">rejectPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">thenError</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// if the thenAction isn't callable then fulfill the pledge</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">thenAction</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">fulfillPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">resolution</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="cm">/*
+         * If `thenAction` is callable, then we need to wait for the thenable
+         * to resolve before we can resolve this pledge.
+         */</span>
+
+        <span class="c1">// TODO: Let job be NewPromiseResolveThenableJob(promise, resolution, thenAction).</span>
+        <span class="c1">// TODO: Perform HostEnqueuePromiseJob(job.[[Job]], job.[[Realm]]).</span>
+    <span class="p">};</span>
+
+    <span class="c1">// attach the record of resolution and the original pledge</span>
+    <span class="nx">resolve</span><span class="p">.</span><span class="nx">alreadyResolved</span> <span class="o">=</span> <span class="nx">alreadyResolved</span><span class="p">;</span>
+    <span class="nx">resolve</span><span class="p">.</span><span class="nx">pledge</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">;</span>
+
+    <span class="c1">// reject function omitted for ease of reading</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">resolve</span><span class="p">,</span>
+        <span class="nx">reject</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>As with the <code class="highlighter-rouge">reject</code> function, the first step in the <code class="highlighter-rouge">resolve</code> function is to check the value of <code class="highlighter-rouge">alreadyResolved.value</code> and either return immediately if <code class="highlighter-rouge">true</code> or set to <code class="highlighter-rouge">true</code>. After that, the <code class="highlighter-rouge">resolution</code> value needs to be checked to see what action to take. The last step in the <code class="highlighter-rouge">resolve</code> function (marked with <code class="highlighter-rouge">TODO</code> comments) is for the case of a thenable that needs handlers attached. This will be discussed in my next post.</p>
+
+<p>The <code class="highlighter-rouge">fulfillPledge()</code> function referenced in the <code class="highlighter-rouge">resolve</code> function looks a lot like the <code class="highlighter-rouge">rejectPledge()</code> function referenced in the <code class="highlighter-rouge">reject</code> function and simply sets the internal state:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">fulfillPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">pending</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Pledge is already settled.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">reactions</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">fulfillReactions</span><span class="p">];</span>
+
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">]</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">fulfillReactions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectReactions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">fulfilled</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="c1">// TODO: Return `TriggerPromiseReactions(reactions, reason)`.</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>As with <code class="highlighter-rouge">rejectPledge()</code>, I’m leaving off the <code class="highlighter-rouge">TriggerPromiseReactions</code> operations for discussion in a later post.</p>
+
+<h2 id="wrapping-up">Wrapping Up</h2>
+
+<p>At this point, you should have a good understanding of how a <code class="highlighter-rouge">Promise</code> constructor works. The most important thing to remember is that every operation so far is synchronous; there is no asynchronous operation until we start dealing with other operations, such as <code class="highlighter-rouge">then()</code>, <code class="highlighter-rouge">catch()</code>, and <code class="highlighter-rouge">finally()</code>, which will be covered later in this series. When you create a new instance of <code class="highlighter-rouge">Promise</code> and pass in an executor, that executor is run immediately, and if either <code class="highlighter-rouge">resolve</code> or <code class="highlighter-rouge">reject</code> is called synchronously, then the newly created promise is already fulfilled or rejected, respectively. It’s only what happens after that point where you get into asynchronous operations, and asynchronous operations are discussed in the <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">next post</a>.</p>
+
+<p>All of this code is available in the <a href="https://github.com/humanwhocodes/pledge">Pledge</a> on GitHub. I hope you’ll download it and try it out to get a better understanding of promises.</p>
+
+<h2 id="references">References</h2>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promise-objects">Promise Objects</a> <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-properties-of-promise-instances">Properties of Promise instances</a> <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-createresolvingfunctions">CreateResolvingFunctions(promise)</a> <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:4">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-rejectpromise">RejectPromise(promise, reason)</a> <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="https://humanwhocodes.com/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='../../index.html'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

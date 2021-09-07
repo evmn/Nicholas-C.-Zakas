@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>The basics of web advertisement tracking - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2010/05/11/the-basics-of-web-advertisement-tracking/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="The basics of web advertisement tracking">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2010/05/11/the-basics-of-web-advertisement-tracking/" />
+<meta name="og:title" content="The basics of web advertisement tracking">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="There is little debate over how important advertising is to the web. Web ads have made Google a powerhouse and everyone else envious. Their Adsense product made ads ubiquitous on even the smallest...">
+<meta name="keywords" content="Ads,CPM,CTR,HTML,Web,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">The basics of web advertisement tracking</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2010-05-11T00:00:00+00:00" itemprop="datePublished">May 11, 2010</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/ads" rel="tag">Ads</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/cpm" rel="tag">CPM</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ctr" rel="tag">CTR</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/html" rel="tag">HTML</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/web" rel="tag">Web</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>There is little debate over how important advertising is to the web. Web ads have made Google a powerhouse and everyone else envious. Their Adsense product made ads ubiquitous on even the smallest of web sites and yet people still don’t have a good understanding of ads are tracked, and therefore, how they make money. What follows here is a description of the modern web advertisement tracking paradigm. Keep in mind that this is a bit of a simplification, though the most important aspects are definitely covered.</p>
+
+<h2 id="example-amazon-associates-links">Example: Amazon Associates links</h2>
+
+<p>Before getting fully into a discussion of how ads are tracked, it helps to have an example. <a href="http://www.amazon.com/?tag-nczonline-20">Amazon</a> has a great program called Amazon Associates which allows you to refer visitors to Amazon. If a referred user makes a purchase on Amazon, then the associates who sent them along gets a referral fee. The fee is typically pretty low, starting at around 4%, and increases as your referred visitors sell more. All of the book pictures on this site contain an Amazon Associates link, and many other sites do the same thing.</p>
+
+<p>As an associate, you can decide what kind of link to show on your site. The simplest is a text link. Here’s an example text link, pasted from the Amazon Associates site, for <cite><a href="http://www.amazon.com/gp/product/059680279X?ie=UTF8&amp;tag=nczonline-20&amp;linkCode=as2&amp;camp=1789&amp;creative=390957&amp;creativeASIN=059680279X">High Performance JavaScript</a>:</cite></p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;a href="http://www.amazon.com/gp/product/059680279X?ie=UTF8&amp;tag=nczonline-20&amp;linkCode=as2&amp;camp=1789
+&amp;creative=390957&amp;creativeASIN=059680279X"&gt;High Performance JavaScript (Build Faster Web Application Interfaces)&lt;/a&gt;
+&lt;img src="http://www.assoc-amazon.com/e/ir?t=nczonline-20&amp;l=as2&amp;o=1&amp;a=059680279X" width="1" height="1"
+ border="0" alt="" style="border:none !important; margin:0px !important;" /&gt;
+</code></pre></div></div>
+
+<p>Note that there are actually two tags in this code: an <code class="highlighter-rouge">&lt;a&gt;</code> tag and an <code class="highlighter-rouge">&lt;img&gt;</code> tag. You may be wondering why an image is present in what should be a text link. Take a look at the styles applies to the image: it’s a 1×1 image with no border and no margin, which effectively keeps it at 1×1 no matter what styles are on the page. What gives?</p>
+
+<h2 id="makeup-of-a-web-ad">Makeup of a web ad</h2>
+
+<p>This is actually a very common occurrence in the world of web advertising. Each ad is typically made up of two portions:</p>
+
+<ol>
+  <li>The payload, which is the markup displayed to the user. This might be plain text, an image, a Flash movie, or other.</li>
+  <li>The tracking beacon, which is used to determine when the payload was displayed. When an image is used, this is frequently called a “tracking pixel.”</li>
+</ol>
+
+<p>In the case of the Amazon Associates link above, the payload is the text link and the image is a tracking beacon. Without the image, Amazon has no idea how frequently the given link is displayed</p>
+
+<p>Most ads use images this way for a number of reasons. First, the image is virtually guaranteed to be downloaded if the payload is displayed due to the proximity of the image markup to the payload markup. The ad server returns an image that cannot be cached (through the use of HTTP headers) and so the image is requested every time the ad markup is parsed. Because it’s simply a 1×1 image, it doesn’t take a long time to download and it doesn’t really affect the layout of the page.</p>
+
+<p>Second, images can be loaded from a different domain than the rest of the page, allowing for different cookies to be written and read. Note that the Amazon Associates example uses two different domains: one for the text link and one for the image.</p>
+
+<h2 id="tracking-ads">Tracking ads</h2>
+
+<p>There are many metrics used to determine both the cost of an ad and how successful the ad really is. Big companies like Google are obsessed with these metrics as they are so tied to revenue.</p>
+
+<h3 id="impressions">Impressions</h3>
+
+<p>Ad impressions, also called ad views, are the number of times that each ad is displayed to the user. This is precisely the measurement for which the tracking beacon is used. Each time a request is made to the tracking beacon, it means an ad was displayed to a user and so the impression count for that ad is incremented.</p>
+
+<p>Impressions are important because they are typically used to determine the cost of ads. It’s quite common to sell ads based on a thousand impressions (called CPM or cost per thousand – “M” is the Roman numeral for a thousand). Because impressions are so closely tied to cost, it’s imperative that this number be as correct as possible. Tracking beacons are the current state-of-the-art to assure accurate impression count.</p>
+
+<h3 id="clickthroughs-and-clickthrough-rate">Clickthroughs and clickthrough rate</h3>
+
+<p>A clickthrough occurs when a user clicks on the given ad. Clickthroughs are tracked by the link in the ad, so in the Amazon Associates example, a click is tracked through the amazon.com domain name based on the extra query string parameters. A clickthrough means that the user arrived on the ad’s destination site and, presumably, is ready to spend money on the product.</p>
+
+<p>Clickthrough rate, often called CTR by businessfolk, is the measure of how many users who saw the link actually clicked on it as a percentage. In order to calculate this number, you divide the total clickthroughs for a given period by the total impressions for the same time period.</p>
+
+<p>Clickthrough rates are typically used to measure the success of an advertising campaign. Most ads clickthrough at a very low rate (0.5% or less, source: <a href="http://www.imediaconnection.com/content/25781.asp">8 ways to improve your clickthrough rate</a>), so an ad that clicks through at a rate of 2% is considered a big success. Advertisers frequently use the known clickthrough rate of a given ad spot combined with CPM to determine whether it would be a good idea to buy an ad in that position or not.</p>
+
+<p>There are pay-per-click (PPC) advertising campaigns, as well, for which the clickthrough count and clickthrough rate are very important.</p>
+
+<h3 id="page-views">Page views</h3>
+
+<p>Another important metric that is frequently tracked are the page views of the page on which a given ad is displayed. This has to be done by the site that is hosting the ad, since the ad provider has no way of knowing this data. A page view is typically counted when the page begins to output markup from the server. In effect, once the opening <code class="highlighter-rouge"><span class="nt">&lt;html&gt;</span></code> tag is sent, a page view is counted.</p>
+
+<p>Page views are important because they are a checkpoint for how many impressions to expect for a given ad. For example, if there are 1,000 page views for a single page during a specific time but 100,000 ad impressions, that could mean something is very wrong. Basically, you’d like to see one ad impression for each page view, though in reality these numbers rarely ad up.</p>
+
+<h3 id="metrics-mixups">Metrics mixups</h3>
+
+<p>Page views and ad impressions are usually tracked together to determine what a “normal” relationship looks like between the two. For some, a normal relationship may be 80% of page views have an ad impression, where for others it may be 90% and still others may be lower or higher. The numbers don’t typically add up to 100% for a few reasons:</p>
+
+<ul>
+  <li><strong>Page abandonment.</strong> There are times when the user leaves a page while it’s still loading, so a page view is counted but an ad impression is not. This can happen for any number of reasons: server error results in the page not completely rendering, a network connection is lost so the page isn’t fully served, the user clicks on a link at the top of the page before the rest of the page is rendered, etc. Since the page view is counted right at the beginning but the ad impression isn’t counted until the ad markup is returned, a page view without a corresponding ad impression is considered to be an “abandoned” page.</li>
+  <li><strong>Browser cache.</strong> It’s possible that the page may be served from the browser’s cache. This happens most frequently when someone clicks a link on the page and then hits the back button. In that case, the page is served from the browser’s cache and so does not generate a page view (remember, page views are measured by the server that is serving the page). Because the tracking beacon is not cached, it will still fire and count as an ad impression, so you have the opposite scenario of page abandonment: an ad impression without a page view.</li>
+</ul>
+
+<p>These two circumstances tend to happen with a predictable rate for any given page on the web, so the ratio of page views to ad impressions tends to remain constant even as traffic increases and decreases due to seasonality (different browsing behaviors based on the time of year). Big traffic increases or decreases may change the ratio. A big change in the ratio without an accompanying big change in traffic means that there’s a serious problem with ads.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Web ads aren’t going away anytime soon, and at some point you may need to understand how they work. What I’ve shared here are the basics that you need to know in order to grasp the concept of web ads and tracking. At some point, you may be asked to help debug some ads tracking and it’s my hope that this post serves as a good jumping off point to help those who end up in that position.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2010/05/11/the-basics-of-web-advertisement-tracking/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>HTTP cookies explained - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="HTTP cookies explained">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/" />
+<meta name="og:title" content="HTTP cookies explained">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="HTTP cookies, most often just called “cookies,” have been around for a while but are still not very well understood. The first problem is a lot of misconceptions, ranging from cookies as spyware...">
+<meta name="keywords" content="Cookies,HTTP,Web Development,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">HTTP cookies explained</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-05-05T00:00:00+00:00" itemprop="datePublished">May 5, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/cookies" rel="tag">Cookies</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/http" rel="tag">HTTP</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/web-development" rel="tag">Web Development</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>HTTP cookies, most often just called “cookies,” have been around for a while but are still not very well understood. The first problem is a lot of misconceptions, ranging from cookies as spyware or viruses to just plain ignorance over how they work. The second problem is a lack of consistent interfaces to work with cookies. Despite all of the issues surrounding them, cookies are such an important part of web development that, should they disappear without a replacement, many of our favorite web applications would be rendered useless.</p>
+
+<h2 id="origin-of-cookies">Origin of cookies</h2>
+
+<p>One of the biggest issues in the early days of the web was how to manage state. In short, the server had no way of knowing if two requests came from the same browser. The easiest approach, at the time, was to insert some token into the page when it was requested and get that token passed back with the next request. This required either using a form with a hidden field containing the token or to pass the token as part of the URL’s query string. Both solutions were intensely manual operations and prone to errors.</p>
+
+<p><a href="http://en.wikipedia.org/wiki/Lou_Montulli" title="Lou Montulli">Lou Montulli</a>, an employee of Netscape Communications at the time, is credited with applying the concept of “<a href="http://en.wikipedia.org/wiki/Magic_cookie">magic cookies</a>” to web communication in 1994. The problem he was attempting to solve was that of the web’s first shopping cart, now a mainstay on all shopping sites. His <a href="http://curl.haxx.se/rfc/cookie_spec.html">original specification</a> provides basic information about how cookies work, which was formalized in <a href="http://tools.ietf.org/html/rfc2109">RFC 2109</a> (the reference for most browser implementations) and eventually evolved into <a href="http://tools.ietf.org/html/rfc2965">RFC 2965</a>. Montulli would also be granted a United States <a href="http://v3.espacenet.com/publicationDetails/biblio?CC=US&amp;NR=5774670&amp;KC=&amp;FT=E">patent</a> for cookies. Netscape Navigator supported cookies since its first version, and cookies are now supported by all web browsers.</p>
+
+<h2 id="what-is-a-cookie">What is a cookie?</h2>
+
+<p>Quite simply, a cookie is a small text file that is stored by a browser on the user’s machine. Cookies are plain text; they contain no executable code. A web page or server instructs a browser to store this information and then send it back with each subsequent request based on a set of rules. Web servers can then use this information to identify individual users. Most sites requiring a login will typically set a cookie once your credentials have been verified, and you are then free to navigate to all parts of the site so long as that cookie is present and validated. Once again, the cookie just contains data and isn’t harmful in and of itself.</p>
+
+<h2 id="cooke-creation">Cooke creation</h2>
+
+<p>A web server specifies a cookie to be stored by sending an HTTP header called <code class="highlighter-rouge">Set-Cookie</code>. The format of the <code class="highlighter-rouge">Set-Cookie</code> header is a string as follows (parts in square brackets are optional):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: &lt;em&gt;value&lt;/em&gt;[; expires=&lt;em&gt;date&lt;/em&gt;][; domain=&lt;em&gt;domain&lt;/em&gt;][; path=&lt;em&gt;path&lt;/em&gt;][; secure]
+</code></pre></div></div>
+
+<p>The first part of the header, the value, is typically a string in the format <code class="highlighter-rouge">name=value</code>. Indeed, the original specification indicates that this is the format to use but browsers do no such validation on cookie values. You can, in fact, specify a string without an equals sign and it will be stored just the same. Still, the most common usage is to specify a cookie value as <code class="highlighter-rouge">name=value</code> (and most interfaces support this exclusively).</p>
+
+<p>When a cookie is present, and the optional rules allow, the cookie value is sent to the server with each subsequent request. The cookie value is stored in an HTTP header called <code class="highlighter-rouge">Cookie</code> and contains just the cookie value without any of the other options. Such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cookie: value
+</code></pre></div></div>
+
+<p>The options specified with <code class="highlighter-rouge">Set-Cookie</code> are for the browser’s use only and aren’t retrievable once they have been set. The cookie value is the exact same string that was specified with <code class="highlighter-rouge">Set-Cookie</code>; there is no further interpretation or encoding of the value. If there are multiple cookies for the given request, then they are separated by a semicolon and space, such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cookie: value1; value2; name1=value1
+</code></pre></div></div>
+
+<p>Server-side frameworks typically provide functionality to parse cookies and make their values available programmatically.</p>
+
+<h3 id="cookie-encoding">Cookie encoding</h3>
+
+<p>There is some confusion over encoding of a cookie value. The commonly held belief is that cookie values must be URL-encoded, but this is a fallacy even though it is the de facto implementation. The original specification indicates that only three types of characters must be encoded: semicolon, comma, and white space. The specification indicates that URL encoding may be used but stops short of requiring it. The RFC makes no mention of encoding whatsoever. Still, almost all implementations perform some sort of URL encoding on cookie values. In the case of <code class="highlighter-rouge">name=value</code> formats, the name and value are typically encoded separately while the equals sign is left as is.</p>
+
+<h3 id="the-expires-option">The expires option</h3>
+
+<p>Each of the options after the cookie value are separated by a semicolon and space and each specifies rules about when the cookie should be sent back to the server. The first option is <code class="highlighter-rouge">expires</code>, which indicates when the cookie should no longer be sent to the server and therefore may be deleted by the browser. The value for this option is a date in the format <code class="highlighter-rouge">Wdy, DD-Mon-YYYY HH:MM:SS GMT</code> such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: name=Nicholas; expires=Sat, 02 May 2009 23:38:25 GMT
+</code></pre></div></div>
+
+<p>Without the <code class="highlighter-rouge">expires</code> option, a cookie has a lifespan of a single session. A session is defined as finished when the browser is shut down, so session cookies exist only while the browser remains open. This is why you’ll often see a checkbox when signing into a web application asking if you would like your login information to be saved: if you select yes, then an <code class="highlighter-rouge">expires</code> option is attached to the login cookie. If the <code class="highlighter-rouge">expires</code> option is set to a date that appears in the past, then the cookie is immediately deleted.</p>
+
+<h3 id="the-domain-option">The domain option</h3>
+
+<p>The next option is <code class="highlighter-rouge">domain</code>, which indicates the domain(s) for which the cookie should be sent. By default, <code class="highlighter-rouge">domain</code> is set to the host name of the page setting the cookie, so the cookie value is sent whenever a request is made to the same host name.Â  For example, the default domain for a cookie set on this site would be <code class="highlighter-rouge">www.nczonline.net</code>. The <code class="highlighter-rouge">domain</code> option is used to widen the number of domains for which the cookie value will be sent. Sample:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: name=Nicholas; domain=nczonline.net
+</code></pre></div></div>
+
+<p>Consider the case of a large network such as <a href="http://www.yahoo.com/">Yahoo!</a> that has many sites in the form of <em>name</em>.yahoo.com (e.g., <a href="http://my.yahoo.com/">my.yahoo.com</a>, <a href="http://finance.yahoo.com/">finance.yahoo.com</a>, etc.). A single cookie value can be set for all of these sites by setting the <code class="highlighter-rouge">domain</code> option to simply <code class="highlighter-rouge">yahoo.com</code>. The browser performs a tail comparison of this value and the host name to which a request is sent (meaning it starts the comparison from the end of the string) and sends the corresponding <code class="highlighter-rouge">Cookie</code> header when there’s a match.</p>
+
+<p>The value set for the <code class="highlighter-rouge">domain</code> option must be part of the host name that is sending the <code class="highlighter-rouge">Set-Cookie</code> header. I couldn’t, for example, set a cookie on <a href="http://www.google.com">google.com</a> because that would introduce a security issue. Invalid <code class="highlighter-rouge">domain</code> options are simply ignored.</p>
+
+<h3 id="the-path-option">The path option</h3>
+
+<p>Another way to control when the <code class="highlighter-rouge">Cookie</code> header will be sent is to specify the <code class="highlighter-rouge">path</code> option. Similar to the domain option, <code class="highlighter-rouge">path</code> indicates a URL path that must exist in the requested resource before sending the <code class="highlighter-rouge">Cookie</code> header. This comparison is done by comparing the option value character-by-character against the start of the request URL. If the characters match, then the <code class="highlighter-rouge">Cookie</code> header is sent. Sample:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: name=Nicholas; path=/blog
+</code></pre></div></div>
+
+<p>In this example, the <code class="highlighter-rouge">path</code> option would match <code class="highlighter-rouge">/blog</code>, <code class="highlighter-rouge">/blogroll</code>, etc.; anything that begins with <code class="highlighter-rouge">/blog</code> is valid. Note that this comparison is only done once the <code class="highlighter-rouge">domain</code> option has been verified. The default value for the <code class="highlighter-rouge">path</code> option is the path of the URL that sent the <code class="highlighter-rouge">Set-Cookie</code> header.</p>
+
+<h3 id="the-secure-option">The secure option</h3>
+
+<p>The last option is <code class="highlighter-rouge">secure</code>. Unlike the other options, this is just a flag and has no additional value specified. A secure cookie will only be sent to the server when a request is made using SSL and the HTTPS protocol. The idea that the contents of the cookie are of high value and could be potentially damaging to transmit as clear text. Sample:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: name=Nicholas; secure
+</code></pre></div></div>
+
+<p>In reality, confidential or sensitive information should never be stored or transmitted in cookies as the entire mechanism is inherently insecure. By default, cookies set over an HTTPS connection are automatically set to be secure.</p>
+
+<h2 id="cookie-maintenance-and-lifecycle">Cookie maintenance and lifecycle</h2>
+
+<p>Any number of options can be specified for a single cookie, and those options may appear in any order. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: name=Nicholas; domain=nczonline.net; path=/blog
+</code></pre></div></div>
+
+<p>This cookie has four identifying characteristics: the cookie <code class="highlighter-rouge">name</code>, the <code class="highlighter-rouge">domain</code>, the <code class="highlighter-rouge">path</code>, and the <code class="highlighter-rouge">secure</code> flag. In order to change the value of this cookie in the future, another <code class="highlighter-rouge">Set-Cookie</code> header must be sent using the same cookie name, domain, and path. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: name=Greg; domain=nczonline.net; path=/blog
+</code></pre></div></div>
+
+<p>This overwrites the original cookie’s value with a new one. However, changing even one of these options creates a completely different cookie, such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: name=Nicholas; domain=nczonline.net; path=/
+</code></pre></div></div>
+
+<p>After returning this header, there are now two cookies with a name of “name”. If you were to access a page at <code class="highlighter-rouge">www.nczonline.net/blog</code>, the following header would be included in the request:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cookie: name=Greg; name=Nicholas
+</code></pre></div></div>
+
+<p>There are two cookies in this header named “name”, with the more specific <code class="highlighter-rouge">path</code> being returned first. The cookie string is always returned in order from most specific <code class="highlighter-rouge">domain-path-secure</code> tuple to least specific. Suppose I’m at <code class="highlighter-rouge">www.nczonline.net/blog</code> and set another cookie with default settings:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: name=Mike
+</code></pre></div></div>
+
+<p>The returned header now becomes:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Cookie: name=Mike; name=Greg; name=Nicholas
+</code></pre></div></div>
+
+<p>Since the cookie with the value “Mike” uses the hostname (<code class="highlighter-rouge">www.nczonline.net</code>) for its domain and the full path (<code class="highlighter-rouge">/blog</code>) as its path, it is more specific than the two others.</p>
+
+<h3 id="using-expiration-dates">Using expiration dates</h3>
+
+<p>When a cookie is created with an expiration date, that expiration date relates to the cookie identified by name-<code class="highlighter-rouge">domain</code>-<code class="highlighter-rouge">path</code>-<code class="highlighter-rouge">secure</code>. In order to change the expiration date of a cookie, you must specify the exact same tuple. When changing a cookie’s value, you need not set the expiration date each time because it’s not part of the identifying information. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: name=Mike; expires=Sat, 03 May 2025 17:44:22 GMT
+</code></pre></div></div>
+
+<p>The expiration date of the cookie has now been set, so the next time I want to change the value of the cookie, I can just use its name:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: name=Matt
+</code></pre></div></div>
+
+<p>The expiration date on this cookie hasn’t changed, since the identifying characteristics of the cookie are the same. In fact, the expiration date won’t change until you manually change it again. That means a session cookie can become a persistent cookie (one that lasts multiple sessions) within the same session but the opposite isn’t true. In order to change a persistent cookie to a session cookie, you must delete the persistent cookie by setting its expiration date to a time in the past and then create a session cookie with the same name.</p>
+
+<p>Keep in mind that the expiration date is checked against the system time on the computer that is running the browser. There is no way to verify that the system time is in sync with the server time and so errors may occur when there is a discrepancy between the system time and the server time.</p>
+
+<h3 id="automatic-cookie-removal">Automatic cookie removal</h3>
+
+<p>There are a few reasons why a cookie might be automatically removed by the browser:</p>
+
+<ul>
+  <li>Session cookies are removed when the session is over (browser is closed).</li>
+  <li>Persistent cookies are removed when the expiration date and time have been reached.</li>
+  <li>If the browser’s cookie limit is reached, then cookies will be removed to make room for the most recently created cookie. For more details, see my post on <a href="../../../../2008/05/17/browser-cookie-restrictions/index.html">cookie restrictions</a>.</li>
+</ul>
+
+<p>Cookie management is important to avoid any of these automatic removal cases when they are unintended.</p>
+
+<h2 id="cookie-restrictions">Cookie restrictions</h2>
+
+<p>There are a number of restrictions placed on cookies in order to prevent abuse and protect both the browser and the server from detrimental effects. There are two types of restrictions: number of cookies and total cookie size. The original specification placed a limit of 20 cookies per domain, which was followed by early browsers and continued up through Internet Explorer 7. During one of Microsoft’s updates, they <a href="http://blogs.msdn.com/ie/archive/2007/08/29/update-to-internet-explorer-s-cookie-jar.aspx">increased the cookie limit</a> in IE 7 to 50 cookies. IE 8 has a maximum of 50 cookies per domain as well. Firefox also has a limit of 50 cookies while Opera has a limit of 30 cookies. Safari and Chrome have no limit on the number of cookies per domain.</p>
+
+<p>The maximum size for all cookies sent to the server has remained the same since the original cookie specification: 4 KB. Anything over that limit is truncated and won’t be sent to the server.</p>
+
+<h2 id="subcookies">Subcookies</h2>
+
+<p>Due to the cookie number limit, developers have come up with the idea of subcookies to increase the amount of storage available to them. Subcookies are name-value pairs stored within a cookie value and typically have a format similar to the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>name=a=b&amp;c=d&amp;e=f&amp;g=h
+</code></pre></div></div>
+
+<p>This approach allows a single cookie to hold multiple name-value combinations without going over the browser’s cookie limit. The downside to creating cookies in this format is that custom parsing is needed to extract the values rather than relying on the much simplier cookie format. Some server-side frameworks are beginning to support subcookie storage. The <a href="http://developer.yahoo.com/yui/cookie/">YUI Cookie utility</a>, which I wrote, supports subcookies reading/writing from JavaScript.</p>
+
+<h3 id="cookies-in-javascript">Cookies in JavaScript</h3>
+
+<p>You can create, manipulate, and remove cookies in JavaScript by using the <code class="highlighter-rouge">document.cookie</code> property. This property acts as the <code class="highlighter-rouge">Set-Cookie</code> header when assigned to and as the <code class="highlighter-rouge">Cookie</code> header when read from. When creating a cookie, you must use a string that’s in the same format that <code class="highlighter-rouge">Set-Cookie</code> expects:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>document.cookie="name=Nicholas; domain=nczonline.net; path=/";
+</code></pre></div></div>
+
+<p>Setting the value of <code class="highlighter-rouge">document.cookie</code> <em>does not</em> delete all of the cookies stored on the page. It simply creates or modifies the cookie specified in the string. The next time a request is made to the server, these cookies are sent along with any others that were created via <code class="highlighter-rouge">Set-Cookie</code>. There is no perceivable difference between these cookies.</p>
+
+<p>To retrieve cookie values in JavaScript, just read from the <code class="highlighter-rouge">document.cookie</code> property. The returned string is in the same format as the <code class="highlighter-rouge">Cookie</code> header value, so multiple cookies are separated by a semicolon and space. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>name1=Greg; name2=Nicholas
+</code></pre></div></div>
+
+<p>Because of this, you need to parse the cookie string manually to extract actual cookie data. There are numerous resources describing cookie parsing approaches for JavaScript, including my book, <a href="http://www.amazon.com/gp/product/047022780X?ie=UTF8&amp;tag=nczonline-20&amp;linkCode=as2&amp;camp=1789&amp;creative=390957&amp;creativeASIN=047022780X">Professional JavaScript</a>, so I won’t go into it here. It’s often easier to use an already-existing JavaScript library, such as the <a href="http://developer.yahoo.com/yui/cookie/">YUI Cookie utility</a> to deal with cookies in JavaScript rather than recreating these algorithms by hand.</p>
+
+<p>The cookies returned by accessing document.cookie follow the same access rules as cookies sent to the server. In order to access cookies via JavaScript, the page must be in the same domain and have the same path and have the same security level as specified by the cookie.</p>
+
+<p>Note: It’s not possible to retrieve the options for cookies once they’ve been set via JavaScript, so you’ll have no idea what the <code class="highlighter-rouge">domain</code>, <code class="highlighter-rouge">path</code>, expiration date, or <code class="highlighter-rouge">secure</code> flag.</p>
+
+<h2 id="http-only-cookies">HTTP-Only cookies</h2>
+
+<p>Microsoft introduced a new option for cookies in Internet explorer 6 SP1: HTTP-only cookies. The idea behind HTTP-only cookies is to instruct a browser that a cookie should never be accessible via JavaScript through the <code class="highlighter-rouge">document.cookie</code> property. This feature was designed as a security measure to help prevent cross-site scripting (XSS) attacks perpetrated by stealing cookies via JavaScript (I’ll discuss security issues with cookies in another post, this one is long enough as it is). Today, Firefox 2.0.0.5+, Opera 9.5+, and Chrome also support HTTP-only cookies. Safari as of 3.2 still does not.</p>
+
+<p>To create an HTTP-only cookie, just add an <code class="highlighter-rouge">HttpOnly</code> flag to your cookie:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-Cookie: name=Nicholas; HttpOnly
+</code></pre></div></div>
+
+<p>Once this flag is set, there is no access via <code class="highlighter-rouge">document.cookie</code> to this cookie. Internet Explorer also goes a step further and doesn’t allow access to this header using the <code class="highlighter-rouge">getAllResponseHeaders()</code> or <code class="highlighter-rouge">getResponseHeader()</code> methods on <code class="highlighter-rouge">XMLHttpRequest</code> while other browsers still permit it. Firefox <a href="http://www.mozilla.org/security/announce/2009/mfsa2009-05.html">fixed this vulnerability</a> in 3.0.6 though there are still <a href="http://manicode.blogspot.com/2009/01/browser-httponly-support-update.html">various browser vulnerabilities</a> floating around (<a href="https://www.owasp.org/index.php/HTTPOnly#Browsers_Supporting_HTTPOnly">complete browser support list</a>).</p>
+
+<p>You cannot set HTTP-only cookies from JavaScript, which makes sense since you also can’t read them from JavaScript.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>There’s a lot to know and understand about cookies in order to use them effectively. It’s truly amazing how a technique created more than ten years ago is still in use in almost the exact same way as it was first implemented. This post is a guide to the basics that everyone should know about cookies in browsers but is not, in any way, a complete reference. Cookies are an important part of the web today and improperly managing them can lead to all kinds of issues from poor user experience to security holes. I hope that this writeup has shed some light on the magic of cookies.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

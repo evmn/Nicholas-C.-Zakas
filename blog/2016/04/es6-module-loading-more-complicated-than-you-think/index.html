@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>ES6 module loading: More complicated than you think - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2016/04/es6-module-loading-more-complicated-than-you-think/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="ES6 module loading: More complicated than you think">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2016/04/es6-module-loading-more-complicated-than-you-think/" />
+<meta name="og:title" content="ES6 module loading: More complicated than you think">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="One of the most long-awaited features of ECMAScript 6 is the formal definition of modules as part of the language. For years, JavaScript developers have struggled with organizing their code and needing to...">
+<meta name="keywords" content="JavaScript,ECMAScript 6,Modules,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">ES6 module loading: More complicated than you think</h1>
+        <p itemprop="description" class="no-margin-top">Module JavaScript can be indistinguishable from non-module JavaScript.</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2016-04-05T00:00:00+00:00" itemprop="datePublished">April 5, 2016</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ecmascript-6" rel="tag">ECMAScript 6</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/modules" rel="tag">Modules</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>One of the most long-awaited features of ECMAScript 6 is the formal definition of modules as part of the language. For years, JavaScript developers have struggled with organizing their code and needing to decide between alternate ad-hoc module formats like RequireJS, AMD, and CommonJS. Formally defining modules as part of JavaScript will eliminate a lot of heartache in the future, but right now, there is still a lot of confusion about how modules work. The confusion exists partly because, as of my writing, there are no engines that can natively load ES6 modules. In the meantime, I’m hoping this post will clarify some of the confusion.</p>
+
+<h2 id="what-is-a-module">What is a module?</h2>
+
+<p>To start, it’s important to understand that the specification defines two different types of JavaScript programs: scripts (what we’ve all been using since JavaScript was created) and modules (newly defined in ES6). While scripts behave the way everyone is used to, modules behave somewhat differently. Specifically modules:</p>
+
+<ol>
+  <li>Are always in strict mode with no option to opt-out</li>
+  <li>Have a top-level scope that is not the global scope</li>
+  <li>May import bindings from other modules using <code class="highlighter-rouge">import</code></li>
+  <li>May specify bindings that should be exported using <code class="highlighter-rouge">export</code></li>
+</ol>
+
+<p>These differences look subtle but in fact make modules different enough that parsing and loading needs to be done differently than with scripts.</p>
+
+<h2 id="parsing-differences">Parsing differences</h2>
+
+<p>One of the most frequent questions received on ESLint related to ES6 modules is this:</p>
+
+<blockquote>
+  <p>Why do I need to specify that a file is a module before it’s parsed? Can’t you just look for <code class="highlighter-rouge">import</code> or <code class="highlighter-rouge">export</code>?</p>
+</blockquote>
+
+<p>I’ve seen this question repeated all over the Internet as people struggle to understand why JavaScript engines and tools can’t autodetect that a file represents a module rather than a script. At first glance, it seems like detecting the presence of <code class="highlighter-rouge">export</code> or <code class="highlighter-rouge">import</code> should be enough to determine that a file contains a module, but in reality, that’s nowhere near enough.</p>
+
+<p>Trying to guess user intent is a dangerous and imprecise game. If you guess correctly, the world applauds you whereas guessing incorrectly has the potential to cause a great deal of damage.</p>
+
+<h3 id="parsing-challenges">Parsing challenges</h3>
+
+<p>In order to autodetect modules in JavaScript programs, you would first have to parse the entire file. Modules need not use <code class="highlighter-rouge">import</code>, and so the only positive signal that a file is a module might be the very last statement using an <code class="highlighter-rouge">export</code>. So, you cannot escape parsing the entire file in order to have a chance to determine whether or not it’s a module.</p>
+
+<p>However, modules are strict mode environments. Strict mode doesn’t just have runtime requirements, it also defines the following as syntax errors:</p>
+
+<ol>
+  <li>The <code class="highlighter-rouge">with</code> statement</li>
+  <li>Duplicate named arguments for functions</li>
+  <li>Octal numeric literals (such as <code class="highlighter-rouge">010</code>)</li>
+  <li>Duplicate property names (in ES5 only, ES6 eliminates this error)</li>
+  <li>Use of <code class="highlighter-rouge">implements</code>, <code class="highlighter-rouge">interface</code>, <code class="highlighter-rouge">let</code>, <code class="highlighter-rouge">package</code>, <code class="highlighter-rouge">private</code>, <code class="highlighter-rouge">protected</code>, <code class="highlighter-rouge">public</code>, <code class="highlighter-rouge">static</code>, and <code class="highlighter-rouge">yield</code> as identifiers.</li>
+</ol>
+
+<p>All of these are not syntax errors when running in nonstrict mode. If the only signal you have is an <code class="highlighter-rouge">export</code> in the last statement of the file, then you would actually have to re-parse the entire file in strict mode to be sure to catch all of these syntax errors. The first parse would have been wasted by running nonstrict mode.</p>
+
+<p>Of course, if you had to detect a module from file contents, you would be forced to always parse files as modules. Since module syntax is strict mode plus <code class="highlighter-rouge">import</code> and <code class="highlighter-rouge">export</code>, you’d need to default to that in order to allow for <code class="highlighter-rouge">import</code> and <code class="highlighter-rouge">export</code> to be used. If you were to parse in nonstrict mode, then <code class="highlighter-rouge">import</code> and <code class="highlighter-rouge">export</code> are a syntax error. You could alternately created a parsing mode that combined nonstrict mode with <code class="highlighter-rouge">import</code> and <code class="highlighter-rouge">export</code>, but that’s an unnatural mode whose result couldn’t be used, thus requiring a second pass once the correct mode was determined.</p>
+
+<h3 id="when-is-a-module-a-module">When is a module a module?</h3>
+
+<p>The edge case that many miss in the discussion is that modules are not required to use <code class="highlighter-rouge">import</code> or <code class="highlighter-rouge">export</code> at all. You can have a module that doesn’t import anything and doesn’t export anything. It might, for example, just modify something in the global scope. For instance, maybe you want to output a message when <code class="highlighter-rouge">window.onload</code> fires in a browser and you define a module such as:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// this is a valid module!</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">load</span><span class="dl">"</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Window is loaded</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>This module can then be loaded by another module or on its own. From looking at the source, there is no way to know that it’s a module.</p>
+
+<p>To sum up: while the presence of <code class="highlighter-rouge">import</code> or <code class="highlighter-rouge">export</code> might indicate a module, the lack of <code class="highlighter-rouge">import</code> or <code class="highlighter-rouge">export</code> does not clearly indicate that the file is not a module. So there is no effective way to autodetect that a file is a module during parsing.</p>
+
+<h2 id="loading-differences">Loading Differences</h2>
+
+<p>While the parsing differences are a bit subtle for modules, the loading differences are not. When a module is loaded, <code class="highlighter-rouge">import</code> statements trigger the loading of the specified files. The imported files must be completed parsed and loaded (without error) in order for module execution to begin. In order to do this as quickly as possible, loading begins as <code class="highlighter-rouge">import</code> statement are being parsed, prior to parsing the rest of the file.</p>
+
+<p>Once a dependency has been loaded, there’s an extra step of verifying that the imported bindings actually exist in the dependency. If you import <code class="highlighter-rouge">foo</code> from the module <code class="highlighter-rouge">foo.js</code>, the JavaScript engine needs to verify that <code class="highlighter-rouge">foo</code> is exported from <code class="highlighter-rouge">foo.js</code> before execution continues.</p>
+
+<h2 id="how-loading-will-work">How loading will work</h2>
+
+<p>At this point, hopefully it’s clear why you need to specify that a file is a module before it is parsed and loaded. In browsers, you will load modules like this:</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"module"</span> <span class="na">src=</span><span class="s">"foo.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">&lt;script&gt;</code> tag is the same as always, but the <code class="highlighter-rouge">type</code> is set to <code class="highlighter-rouge">"module"</code>[1]. This signals to the browser that the file should be loaded as a module. If that <code class="highlighter-rouge">foo.js</code> then <code class="highlighter-rouge">import</code>s other dependencies, those will be loaded dynamically.</p>
+
+<p>In Node.js, there is not yet a decision on how ES6 modules will be loaded. The most recent recommendation is to use a special file extension, such as <code class="highlighter-rouge">.jsm</code>, to indicate that a file is an ES6 module so that Node.js knows how to load it correctly[2].</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The differences between scripts and modules are subtle enough that it’s hard for developers to understand the restriction of declaring what a JavaScript file represents ahead of time. My hope is that this post clarifies some of the reasons why it’s not possible to autodetect modules from inspecting the source code and why tools such as ESLint ask you to specify the file type before executing. There will be a point in the future where ES6 modules are the dominant JavaScript file type and script files are left only on legacy applications, and at that point, it’s likely that tools will default to assuming that files are modules. In the meantime, we’re going through a difficult adolescence between scripts and modules where mixing the two is going to be a bit painful.</p>
+
+<h2 id="updates">Updates</h2>
+
+<ul>
+  <li><strong>Fix (06-Apr-2016)</strong>: The original version of this post incorrectly stated that <code class="highlighter-rouge">import</code> statements must appear at the top of the file. This was removed.</li>
+</ul>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="https://html.spec.whatwg.org/multipage/scripting.html#script">The script Element</a> (whatwg.org)</li>
+  <li><a href="https://github.com/nodejs/node/wiki/ES6-Module-Detection-in-Node">ES6 Module Detection in Node</a> (github.com)</li>
+</ol>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2016/04/es6-module-loading-more-complicated-than-you-think/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

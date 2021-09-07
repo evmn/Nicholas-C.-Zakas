@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Working with files in JavaScript, Part 5: Blobs - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/06/05/working-with-files-in-javascript-part-5-blobs/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Working with files in JavaScript, Part 5: Blobs">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/06/05/working-with-files-in-javascript-part-5-blobs/" />
+<meta name="og:title" content="Working with files in JavaScript, Part 5: Blobs">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Up to this point, this series of posts has focused on interacting with files specified by the user and accessed via File objects. The File object is actually a more specific version of...">
+<meta name="keywords" content="Blob,File API,JavaScript,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Working with files in JavaScript, Part 5: Blobs</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-06-05T00:00:00+00:00" itemprop="datePublished">June 5, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/blob" rel="tag">Blob</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/file-api" rel="tag">File API</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Up to this point, this series of posts has focused on interacting with files specified by the user and accessed via <code class="highlighter-rouge">File</code> objects. The <code class="highlighter-rouge">File</code> object is actually a more specific version of a <code class="highlighter-rouge">Blob</code>, which represents a chunk of binary data. The <code class="highlighter-rouge">size</code> and <code class="highlighter-rouge">type</code> properties exist on <code class="highlighter-rouge">Blob</code> objects and are inherited by <code class="highlighter-rouge">File</code>.</p>
+
+<p>In most cases, <code class="highlighter-rouge">Blob</code>s and <code class="highlighter-rouge">File</code>s can be used in the same places. For example, you can read from a <code class="highlighter-rouge">Blob</code> using a <code class="highlighter-rouge">FileReader</code> and you can create an object URL from a <code class="highlighter-rouge">Blob</code> using <code class="highlighter-rouge">URL.createObjectURL()</code>.</p>
+
+<h2 id="slicing">Slicing</h2>
+
+<p>One of the interesting things you can do with <code class="highlighter-rouge">Blob</code>s (and therefore, also <code class="highlighter-rouge">File</code>s) is to create a new <code class="highlighter-rouge">Blob</code> based on a subsection of another one. Since each <code class="highlighter-rouge">Blob</code> just represents pointers to data rather than the data itself, you can quickly create new <code class="highlighter-rouge">Blob</code> objects pointing to subparts of others. This is accomplished by using the <code class="highlighter-rouge">slice()</code> method.</p>
+
+<p>You may be familiar with <code class="highlighter-rouge">slice()</code> on strings and arrays, and the one for <code class="highlighter-rouge">Blob</code>s behaves in a similar manner. The method accepts three arguments: the offset of the starting byte, the offset of the ending byte, and an optional MIME type to apply to the <code class="highlighter-rouge">Blob</code>. If the MIME type isn’t specified, the new <code class="highlighter-rouge">Blob</code> has the same MIME type as the original one.</p>
+
+<p>Browser support for <code class="highlighter-rouge">slice()</code> isn’t yet ubiquitous, with Firefox supporting it via <code class="highlighter-rouge">mozSlice()</code> and <code class="highlighter-rouge">webkitSlice()</code> in Chrome (no other browsers support this method currently). Here’s an example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function sliceBlob(blob, start, end, type) {
+
+    type = type || blob.type;
+
+    if (blob.mozSlice) {
+        return blob.mozSlice(start, end, type);
+    } else if (blob.webkitSlice) {
+        return blob.webkitSlice(start, end type);
+    } else {
+        throw new Error("This doesn't work!");
+    }
+}
+</code></pre></div></div>
+
+<p>You can then use this function to, for example, split up a large file to upload it in chunks. Each new <code class="highlighter-rouge">Blob</code> being produced is independent from the original even though the data each references has an overlap. The engineers at Flickr use blob slicing to read the Exif information from photos that are uploaded<sup><a href="http://code.flickr.com/blog/2012/06/01/parsing-exif-client-side-using-javascript-2/">1</a></sup> rather than waiting to it on the server. When the file is selected, the Flickr upload page simultaneously starts to upload the file as well as read the Exif information from the photo. This allows them to give a preview of the extracted metadata in the page as the file is being uploaded.</p>
+
+<h2 id="creating-blobs-the-old-way">Creating Blobs the old way</h2>
+
+<p>Very soon after <code class="highlighter-rouge">File</code> objects started appearing in browsers, developers realized that <code class="highlighter-rouge">Blob</code> objects were actually quite powerful and so wanted to be able to create them without user interaction. After all, any data can be represented in a <code class="highlighter-rouge">Blob</code>, it doesn’t necessarily have to be tied to a file. Browsers quickly responded by creating <code class="highlighter-rouge">BlobBuilder</code>, a type whose sole purpose is to wrap some data in a <code class="highlighter-rouge">Blob</code> object. This is a non-standard type and has been implemented in Firefox (as <code class="highlighter-rouge">MozBlobBuilder</code>), Internet Explorer 10 (as <code class="highlighter-rouge">MSBlobBuilder</code>), and Chrome (as <code class="highlighter-rouge">WebKitBlobBuilder</code>).</p>
+
+<p>The <code class="highlighter-rouge">BlobBuilder</code> works by creating a new instance and calling the <code class="highlighter-rouge">append()</code> method with a string, <code class="highlighter-rouge">ArrayBuffer</code>, or <code class="highlighter-rouge">Blob</code>. Once all of the data has been added, you call <code class="highlighter-rouge">getBlob()</code> and pass in an optional MIME type that should be applied to <code class="highlighter-rouge">Blob</code>. Here’s an example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var builder = new BlobBuilder();
+builder.append("Hello world!");
+var blob = builder.getBlob("text/plain");
+</code></pre></div></div>
+
+<p>The ability to create URLs for arbitrary pieces of data is incredibly powerful, allowing you to dynamically create objects that can be addressed as files in the browser. You could, for example, use a <code class="highlighter-rouge">Blob</code> to create a web worker without having a separate file for the worker code. This technique was written up in <cite>The Basics of Web Workers</cite><sup><a href="http://www.html5rocks.com/en/tutorials/workers/basics/">2</a></sup>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Prefixed in Webkit, Chrome 12, and FF6: window.WebKitBlobBuilder, window.MozBlobBuilder
+var bb = new BlobBuilder();
+bb.append("onmessage = function(e) { postMessage('msg from worker'); }");
+
+// Obtain a blob URL reference to our worker 'file'.
+// Note: window.webkitURL.createObjectURL() in Chrome 10+.
+var blobURL = window.URL.createObjectURL(bb.getBlob());
+
+var worker = new Worker(blobURL);
+worker.onmessage = function(e) {
+  // e.data == 'msg from worker'
+};
+worker.postMessage(); // Start the worker.
+</code></pre></div></div>
+
+<p>This code creates a simple script and then creates an object URL. The object URL is assigned to a web worker in place of a script URL.</p>
+
+<p>You can call <code class="highlighter-rouge">append()</code> as many times as you like, building up the contents of the <code class="highlighter-rouge">Blob</code>.</p>
+
+<h3 id="creating-blobs-the-new-way">Creating Blobs the new way</h3>
+
+<p>Because developers kept clamoring for a way to create <code class="highlighter-rouge">Blob</code> objects directly, and browsers coming up with <code class="highlighter-rouge">BlobBuilder</code>, it was decided to add a <code class="highlighter-rouge">Blob</code> constructor. This constructor is now part of the specification and will be the way that <code class="highlighter-rouge">Blob</code> objects are created in the future.</p>
+
+<p>The constructor accepts two arguments. The first is an array of parts to combine into a <code class="highlighter-rouge">Blob</code>. These would be the same values as passed into the <code class="highlighter-rouge">append()</code> method of <code class="highlighter-rouge">BlobBuilder</code> and can be any number of strings, <code class="highlighter-rouge">Blob</code>s, and <code class="highlighter-rouge">ArrayBuffer</code>s. The second argument is an object containing properties for the newly-created <code class="highlighter-rouge">Blob</code>. There are currently two properties defined, <code class="highlighter-rouge">type</code>, which specifies the MIME type of the <code class="highlighter-rouge">Blob</code>, and <code class="highlighter-rouge">endings</code>, which can be either “transparent” (default) or “native”. Here’s an example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var blob = new Blob(["Hello world!"], { type: "text/plain" });
+</code></pre></div></div>
+
+<p>As you can see, this is much simpler than using <code class="highlighter-rouge">BlobBuilder</code>.</p>
+
+<p>The <code class="highlighter-rouge">Blob</code> constructor is currently in the nightly builds of Chrome and will be in Firefox 13. Other browsers have not yet announced plans to implement this constructor, however, it is now part of the <cite>File API</cite><sup><a href="http://dev.w3.org/2006/webapi/FileAPI/#constructorBlob">3</a></sup> standard and is expected to be implemented universally.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This is the last part of the series on working with files in JavaScript. As I hope you learned, the <cite>File API</cite> is incredibly powerful and opens up entirely new ways of working with files in web applications. You no longer need to stick with plain file upload boxes when users need to upload files, and now that you can read the files in the client, that opens up all sorts of possibilities for client-side manipulation. You could resize an image that’s too large before uploading (using <code class="highlighter-rouge">FileReader</code> and <code class="highlighter-rouge">&lt;canvas&gt;</code>); you could create a text editor that works purely in the browser; you could split up large files to upload piece by piece. The possibilities aren’t quite endless, but are pretty damn close.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://code.flickr.com/blog/2012/06/01/parsing-exif-client-side-using-javascript-2/">Parsing Exif client-side using JavaScript</a> by Flickr Team</li>
+  <li><a href="http://www.html5rocks.com/en/tutorials/workers/basics/">The Basics of Web Workers</a> by Eric Bidelman</li>
+  <li><a href="http://dev.w3.org/2006/webapi/FileAPI/#constructorBlob">File API – Blob Constructor</a></li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/06/05/working-with-files-in-javascript-part-5-blobs/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

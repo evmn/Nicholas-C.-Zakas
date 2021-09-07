@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Creating a JavaScript promise from scratch, Part 7: Unhandled rejection tracking - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Creating a JavaScript promise from scratch, Part 7: Unhandled rejection tracking">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/" />
+<meta name="og:title" content="Creating a JavaScript promise from scratch, Part 7: Unhandled rejection tracking">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html">
+
+
+
+<meta name="description" content="When promises were introduced in ECMAScript 2015, they had an interesting flaw: if a promise didn’t have a rejection handler and was later rejected, you would have no idea. The rejection silently occurred...">
+<meta name="keywords" content="JavaScript,Promises,ECMAScript 6,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Creating a JavaScript promise from scratch, Part 7: Unhandled rejection tracking</h1>
+        <p itemprop="description" class="no-margin-top">Rejected promises without rejection handlers can hide important errors, which is why both Node.js and browsers have a way of tracking them.</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2021-01-19T00:00:00+00:00" itemprop="datePublished">January 19, 2021</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/promises" rel="tag">Promises</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ecmascript-6" rel="tag">ECMAScript 6</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>When promises were introduced in ECMAScript 2015, they had an interesting flaw: if a promise didn’t have a rejection handler and was later rejected, you would have no idea. The rejection silently occurred behind the scenes and, therefore, could easily be missed. The best practice of always attaching rejection handlers to promises emerged due to this limitation. Eventually, a way to detect unhandled promise rejections was added to ECMA-262 and both Node.js and web browsers implemented console warnings when an unhandled rejection occurred. In this post, I’ll walk through how unhandled rejection tracking works and how to implement it in JavaScript.</p>
+
+<p>This is the seventh and final post in my series about creating JavaScript promises from scratch. If you haven’t already read the previous posts, I’d suggest you do before continuing on:</p>
+
+<ul>
+  <li><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">Part 1: Constructor</a></li>
+  <li><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">Part 2: Resolving to a promise</a></li>
+  <li><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">Part 3: then(), catch(), and finally()</a></li>
+  <li><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html">Part 4: Promise.resolve() and Promise.reject()</a></li>
+  <li><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html">Part 5: Promise.race() and Promise.any()</a></li>
+  <li><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html">Part 6: Promise.all() and Promise.allSettled()</a></li>
+</ul>
+
+<p>As a reminder, this series is based on my promise library, <a href="https://github.com/humanwhocodes/pledge">Pledge</a>. You can view and download all of the source code from GitHub.</p>
+
+<h2 id="unhandled-rejection-tracking-in-browsers">Unhandled rejection tracking in browsers</h2>
+
+<p>While both Node.js and web browsers have ways of dealing with unhandled rejections, I’m going to focus on the web browser implementation because it is defined in the HTML specification<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fn:1" class="footnote">1</a></sup>. Having a specification to work from makes it easier to understand what’s going on as opposed to the Node.js implementation which is custom (though still similar to web browsers). To start, suppose you have a promise defined like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>This promise doesn’t have a rejection handler defined and so when it’s rejected it ends up being tracked by the browser. Periodically, the browser checks its list of unhandled rejections and fires a <code class="highlighter-rouge">unhandledrejection</code> event on <code class="highlighter-rouge">globalThis</code>. The event handler receives an <code class="highlighter-rouge">event</code> object with a <code class="highlighter-rouge">promise</code> property containing the rejected promise and a <code class="highlighter-rouge">reason</code> property containing the rejection reason (<code class="highlighter-rouge">43</code> in the case of this example). For example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// called when an unhandled rejection occurs</span>
+<span class="nx">globalThis</span><span class="p">.</span><span class="nx">onunhandledrejection</span> <span class="o">=</span> <span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">promise</span><span class="p">);</span>     <span class="c1">// get the promise</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">reason</span><span class="p">);</span>      <span class="c1">// get the rejection reason</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>In addition to triggering the <code class="highlighter-rouge">unhandledrejection</code> event, the browser will output a warning to the console indicating that an unhandled rejection occurred. You can therefore choose to track unhandled rejections programmatically or keep your console open to see them as you’re developing.</p>
+
+<h3 id="late-handled-promise-rejection">Late-handled promise rejection</h3>
+
+<p>You may be wondering, what happens if a rejection handler is added at some later point in time? After all, you can add a rejection handler anytime between creation of the promise and the time when the promise is destroyed through garbage collection. You can, for instance, do this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">promise</span><span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">reason</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>
+    <span class="p">});</span>
+<span class="p">},</span> <span class="mi">1000</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Here, a promise is created without a rejection handler initially and then adds one later. What happens in this case depends largely on the amount of time that has passed:</p>
+
+<ul>
+  <li>If the rejection handler is added before the browser decides to trigger <code class="highlighter-rouge">unhandledrejection</code>, then the event will not be triggered.</li>
+  <li>If the rejection handler is added after the browser has triggered <code class="highlighter-rouge">unhandledrejection</code>, then a <code class="highlighter-rouge">rejectionhandled</code> event is triggered to let you know that the rejection is no longer unhandled.</li>
+</ul>
+
+<p>It’s a little bit confusing, but basically, any promise that triggers an <code class="highlighter-rouge">unhandledrejection</code> event could potentially trigger a <code class="highlighter-rouge">rejectionhandled</code> event later. Therefore, you really need to listen for both events and track which promises remain, like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">rejections</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Map</span><span class="p">();</span>
+
+<span class="c1">// called when an unhandled rejection occurs</span>
+<span class="nx">globalThis</span><span class="p">.</span><span class="nx">onunhandledrejection</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">reason</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">rejections</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="nx">promise</span><span class="p">,</span> <span class="nx">reason</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="c1">// called when an unhandled rejection occurs</span>
+<span class="nx">globalThis</span><span class="p">.</span><span class="nx">onrejectionhandled</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">promise</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">rejections</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="nx">promise</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>This code tracks unhandled rejections using a map. When an <code class="highlighter-rouge">unhandledrejection</code> event occurs, the promise and rejection reason are saved to the map; when a <code class="highlighter-rouge">rejectionhandled</code> event occurs, the promise is deleted from the map. By periodically checking the contents of <code class="highlighter-rouge">rejections</code>, you can then track which rejections occurred without handlers.</p>
+
+<p>Another quirk in the relationship between the <code class="highlighter-rouge">unhandledrejection</code> and <code class="highlighter-rouge">rejectionhandled</code> events is that you can prevent the <code class="highlighter-rouge">rejectionhandled</code> event from firing by adding a rejection handler inside of the <code class="highlighter-rouge">onunhandledrejection</code> event handler, like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// called when an unhandled rejection occurs</span>
+<span class="nx">globalThis</span><span class="p">.</span><span class="nx">onunhandledrejection</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">promise</span><span class="p">,</span> <span class="nx">reason</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">promise</span><span class="p">.</span><span class="k">catch</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{});</span>        <span class="c1">// make the rejection handled</span>
+<span class="p">};</span>
+
+<span class="c1">// this will never be called</span>
+<span class="nx">globalThis</span><span class="p">.</span><span class="nx">onrejectionhandled</span> <span class="o">=</span> <span class="p">({</span> <span class="nx">promise</span> <span class="p">})</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">promise</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>In this case, the <code class="highlighter-rouge">rejectionhandled</code> event isn’t triggered because a rejection handler is added before it’s time for that event. The browser assumes that you know the promise is now handled and so there is no reason to trigger the <code class="highlighter-rouge">rejectionhandled</code> event.</p>
+
+<h3 id="eliminating-the-console-warning">Eliminating the console warning</h3>
+
+<p>As mentioned previously, the browser will output a warning to the console whenever an unhandled promise rejection occurs. This console warning occurs after the <code class="highlighter-rouge">unhandledrejection</code> event is fired, which gives you the opportunity to prevent the warning altogether. You can cancel the console warning by calling the <code class="highlighter-rouge">preventDefault()</code> method on the <code class="highlighter-rouge">event</code> object, like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">globalThis</span><span class="p">.</span><span class="nx">onunhandledrejection</span> <span class="o">=</span> <span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">event</span><span class="p">.</span><span class="nx">preventDefault</span><span class="p">();</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>This event handler ensures that the console warning for the unhandled rejection will not happen. Suppressing the console warning is helpful in production where you don’t want to litter the console with additional information once you already know a promise was missing a rejection handler.</p>
+
+<p>With that overview out of the way, it’s now time to discuss how to implement the same browser unhandled rejection tracking from scratch.</p>
+
+<h2 id="implementing-unhandled-rejection-tracking">Implementing unhandled rejection tracking</h2>
+
+<p>The design for rejection tracking in the Pledge library closely follows the web browser approach. Because I didn’t want to mess with the <code class="highlighter-rouge">globalThis</code> object, I decided to add two static methods to the <code class="highlighter-rouge">Pledge</code> class to act as event handlers:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// other methods omitted for space</span>
+
+    <span class="kd">static</span> <span class="nx">onUnhandledRejection</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// noop</span>
+    <span class="p">}</span>
+    
+    <span class="kd">static</span> <span class="nx">onRejectionHandled</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// noop</span>
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">event</code> object is an instance of <code class="highlighter-rouge">PledgeRejectionEvent</code>, which is defined like this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">PledgeRejectionEvent</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">pledge</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">reason</span> <span class="o">=</span> <span class="nx">reason</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">returnValue</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">preventDefault</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">returnValue</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>I’ve included the <code class="highlighter-rouge">preventDefault()</code> method as well as the <code class="highlighter-rouge">returnValue</code> legacy property so either way of canceling the event will work.</p>
+
+<p>Last, I created a <code class="highlighter-rouge">RejectionTracker</code> class to encapsulate most of the functionality. While this class isn’t described in any specification, I found it easier to wrap all of the functionality in this class. I then attached an instance of <code class="highlighter-rouge">RejectionTracker</code> to <code class="highlighter-rouge">Pledge</code> via a symbol property:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectionTracker</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">RejectionTracker</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>In this way, I can always reach the rejection tracker from any instance of <code class="highlighter-rouge">Pledge</code> through <code class="highlighter-rouge">this.constructor[PledgeSymbol.rejectionTracker]</code>. It will become more apparent why this is important later in this post.</p>
+
+<h3 id="what-does-it-mean-for-a-promise-to-be-handled">What does it mean for a promise to be handled?</h3>
+
+<p>ECMA-262 considers a promise to be handled if the promise’s <code class="highlighter-rouge">then()</code> method has been called (which includes <code class="highlighter-rouge">catch()</code> and <code class="highlighter-rouge">finally()</code>, both of which call <code class="highlighter-rouge">then()</code> behind the scenes). It actually doesn’t matter if you’ve attached a fulfillment handler, a rejection handler, or neither, so long as <code class="highlighter-rouge">then()</code> was called. Each call to <code class="highlighter-rouge">then()</code> creates a new promise which then becomes responsible for dealing with any fulfillment or rejection. Consider this example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise1</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Promise</span><span class="p">((</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">promise2</span> <span class="o">=</span> <span class="nx">promise1</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Here, <code class="highlighter-rouge">promise1</code> is considered handled because <code class="highlighter-rouge">then()</code> is called and a fulfillment handler is attached. When <code class="highlighter-rouge">promise1</code> is rejected, that rejection is passed on to <code class="highlighter-rouge">promise2</code>, which is not handled. A browser would report the unhandled rejection from <code class="highlighter-rouge">promise2</code> and disregard <code class="highlighter-rouge">promise1</code>. So, the browser isn’t really tracking all unhandled rejections, but rather, it’s tracking whether the last promise in a chain has any handlers attached.</p>
+
+<h3 id="how-do-you-know-if-a-promise-is-handled">How do you know if a promise is handled?</h3>
+
+<p>ECMA-262 describes two key features that enable rejection tracking:</p>
+
+<ol>
+  <li>The <code class="highlighter-rouge">[[PromiseIsHandled]]</code> internal property<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fn:2" class="footnote">2</a></sup> of every promise. This is a Boolean value indicating if the promise is handled. It starts out as <code class="highlighter-rouge">false</code> and is changed to <code class="highlighter-rouge">true</code> after <code class="highlighter-rouge">then()</code> is called.</li>
+  <li>The <code class="highlighter-rouge">HostPromiseRejectionTracker()</code> operation<sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fn:3" class="footnote">3</a></sup> is an abstract representation of a promise rejection tracker. ECMA-262 itself does not specify an algorithm for this operation; instead, it defers that to host environments to decide (host environments meaning browsers, Node.js, Deno, etc.).</li>
+</ol>
+
+<p>The majority of the functionality related to these two features is contained the <code class="highlighter-rouge">PerformPromiseThen()</code> operation<sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fn:4" class="footnote">4</a></sup> (discussed in part 3), which I’ve implemented as <code class="highlighter-rouge">performPledgeThen()</code>:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">performPledgeThen</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">onFulfilled</span><span class="p">,</span> <span class="nx">onRejected</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">assertIsPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">onFulfilled</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">onFulfilled</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">onRejected</span><span class="p">))</span> <span class="p">{</span>
+        <span class="nx">onRejected</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">fulfillReaction</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeReaction</span><span class="p">(</span><span class="nx">resultCapability</span><span class="p">,</span> <span class="dl">"</span><span class="s2">fulfill</span><span class="dl">"</span><span class="p">,</span> <span class="nx">onFulfilled</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">rejectReaction</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeReaction</span><span class="p">(</span><span class="nx">resultCapability</span><span class="p">,</span> <span class="dl">"</span><span class="s2">reject</span><span class="dl">"</span><span class="p">,</span> <span class="nx">onRejected</span><span class="p">);</span>
+
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">])</span> <span class="p">{</span>
+
+        <span class="k">case</span> <span class="dl">"</span><span class="s2">pending</span><span class="dl">"</span><span class="p">:</span>
+            <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">fulfillReactions</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">fulfillReaction</span><span class="p">);</span>
+            <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectReactions</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">rejectReaction</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="k">case</span> <span class="dl">"</span><span class="s2">fulfilled</span><span class="dl">"</span><span class="p">:</span> 
+            <span class="p">{</span>
+                <span class="kd">const</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">];</span>
+                <span class="kd">const</span> <span class="nx">fulfillJob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeReactionJob</span><span class="p">(</span><span class="nx">fulfillReaction</span><span class="p">,</span> <span class="nx">value</span><span class="p">);</span>
+                <span class="nx">hostEnqueuePledgeJob</span><span class="p">(</span><span class="nx">fulfillJob</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="k">case</span> <span class="dl">"</span><span class="s2">rejected</span><span class="dl">"</span><span class="p">:</span>
+            <span class="p">{</span>
+                <span class="kd">const</span> <span class="nx">reason</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">];</span>
+
+                <span class="c1">// if the pledge isn't handled, track it with the tracker</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">isHandled</span><span class="p">]</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="nx">hostPledgeRejectionTracker</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="dl">"</span><span class="s2">handle</span><span class="dl">"</span><span class="p">);</span>
+                <span class="p">}</span>
+
+                <span class="kd">const</span> <span class="nx">rejectJob</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeReactionJob</span><span class="p">(</span><span class="nx">rejectReaction</span><span class="p">,</span> <span class="nx">reason</span><span class="p">);</span>
+                <span class="nx">hostEnqueuePledgeJob</span><span class="p">(</span><span class="nx">rejectJob</span><span class="p">);</span>
+            <span class="p">}</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="nl">default</span><span class="p">:</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="s2">`Invalid pledge state: </span><span class="p">${</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]}</span><span class="s2">.`</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// mark the pledge as handled</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">isHandled</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">resultCapability</span> <span class="p">?</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span> <span class="p">:</span> <span class="kc">undefined</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Regardless of what happens during the course of called <code class="highlighter-rouge">performPledgeThen()</code>, the pledge is always marked as handled before the end of the function. If the pledge is rejected, then <code class="highlighter-rouge">hostPledgeRejectionTracker()</code> is called with the pledge and a second argument of <code class="highlighter-rouge">"handle"</code>. That second argument indicates that the rejection was handled and shouldn’t be tracked as an unhandled rejection.</p>
+
+<p>The <code class="highlighter-rouge">HostPromiseRejectionTracker()</code> is also called by the <code class="highlighter-rouge">RejectPromise()</code> operation<sup id="fnref:5"><a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fn:5" class="footnote">5</a></sup> (also discussed in part 3), which I’ve implemented as <code class="highlighter-rouge">rejectPledge()</code>:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">rejectPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">reason</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">pending</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">"</span><span class="s2">Pledge is already settled.</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">reactions</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectReactions</span><span class="p">];</span>
+
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">]</span> <span class="o">=</span> <span class="nx">reason</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">fulfillReactions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectReactions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
+    <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">state</span><span class="p">]</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">rejected</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="c1">// global rejection tracking</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">isHandled</span><span class="p">]</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">hostPledgeRejectionTracker</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="dl">"</span><span class="s2">reject</span><span class="dl">"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="nx">triggerPledgeReactions</span><span class="p">(</span><span class="nx">reactions</span><span class="p">,</span> <span class="nx">reason</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Here, the <code class="highlighter-rouge">rejectPledge()</code> function called <code class="highlighter-rouge">hostPledgeRejectionTracker()</code> with a second argument of <code class="highlighter-rouge">"reject"</code>, indicating that the pledge was rejected and not handled. Remember, <code class="highlighter-rouge">rejectPledge()</code> is the function that is called by the <code class="highlighter-rouge">reject</code> argument that is passed in to executor function when creating a new promise, so at that point in time, the promise hasn’t had any handlers assigned. So, <code class="highlighter-rouge">rejectPledge()</code> is marking the pledge as unhandled, and if <code class="highlighter-rouge">then()</code> is later called to assign a handler, then it will bemarked as handled.</p>
+
+<p>I’ve implemented <code class="highlighter-rouge">hostPledgeRejectionTracker()</code> as follows:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">hostPledgeRejectionTracker</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">operation</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">rejectionTracker</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">.</span><span class="kd">constructor</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">rejectionTracker</span><span class="p">];</span>
+    <span class="nx">rejectionTracker</span><span class="p">.</span><span class="nx">track</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">operation</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This is where attaching the rejection handler to the <code class="highlighter-rouge">Pledge</code> constructor is helpful. I’m able to get to the <code class="highlighter-rouge">RejectionTracker</code> instance and call the <code class="highlighter-rouge">track()</code> method to keep this function simple.</p>
+
+<h3 id="the-rejectiontracker-class">The <code class="highlighter-rouge">RejectionTracker</code> class</h3>
+
+<p>The <code class="highlighter-rouge">RejectionTracker</code> class is designed to encapsulate all of the rejection tracking functionality described in the HTML specification:</p>
+
+<blockquote>
+  <p>An environment settings object also has an outstanding rejected promises weak set and an about-to-be-notified rejected promises list, used to track unhandled promise rejections. The outstanding rejected promises weak set must not create strong references to any of its members, and implementations are free to limit its size, e.g. by removing old entries from it when new ones are added.</p>
+</blockquote>
+
+<p>This description is a little bit confusing, so let me explain it. There are two different collections used to track rejections:</p>
+
+<ul>
+  <li>The <em>“about-to-be-notified” rejected promises list</em> is a list of promises that have been rejected and will trigger the <code class="highlighter-rouge">unhandledrejection</code> event.</li>
+  <li>The <em>outstanding rejected promises weak set</em> is a collection of promises that had unhandled rejections and triggered the <code class="highlighter-rouge">unhandledrejection</code> event. These promises are tracked just in case they have a rejection handler added later, in which case the <code class="highlighter-rouge">rejectionhandled</code> event is triggered.</li>
+</ul>
+
+<p>So these are the two collections the <code class="highlighter-rouge">RejectionTracker</code> needs to manage. Additionally, it manages a logger (typically <code class="highlighter-rouge">console</code> but can be overwritten for testing) and a timeout ID (which I’ll explain later in this post). Here’s what the class and constructor look like:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">RejectionTracker</span> <span class="p">{</span>
+
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">logger</span> <span class="o">=</span> <span class="nx">console</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">aboutToBeNotified</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Set</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">outstandingRejections</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">WeakSet</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">logger</span> <span class="o">=</span> <span class="nx">logger</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">timeoutId</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">track</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">operation</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// TODO</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>I chose to use a set for the “about-to-be-notified” promises list because it will prevent duplicates while allowing me to iterate through all of the promises contained within it. The outstanding rejections collection is implemented as a weak set, per the specification, which means there’s no way to iterate over the contents. That’s not a problem for how this collection is used in algorithm, however.</p>
+
+<h4 id="implementing-hostpromiserejectiontracker">Implementing <code class="highlighter-rouge">HostPromiseRejectionTracker()</code></h4>
+
+<p>The primary method is <code class="highlighter-rouge">track()</code>, and that implements the functionality described in the HTML specification for <code class="highlighter-rouge">HostPromiseRejectionTracker()</code><sup id="fnref:6"><a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fn:6" class="footnote">6</a></sup>, which is as follows:</p>
+
+<ol>
+  <li>Let <em>script</em> be the running script.</li>
+  <li>If <em>script</em>’s muted errors is true, terminate these steps.</li>
+  <li>Let <em>settings object</em> be <em>script</em>’s settings object.</li>
+  <li>If <em>operation</em> is <code class="highlighter-rouge">"reject"</code>,
+    <ol>
+      <li>Add <em>promise</em> to <em>settings object</em>’s about-to-be-notified rejected promises list.</li>
+    </ol>
+  </li>
+  <li>If <em>operation</em> is <code class="highlighter-rouge">"handle"</code>,
+    <ol>
+      <li>If <em>settings object</em>’s about-to-be-notified rejected promises list contains <em>promise</em>, then remove <em>promise</em> from that list and return.</li>
+      <li>If <em>settings object</em>’s outstanding rejected promises weak set does not contain <em>promise</em>, then return.</li>
+      <li>Remove <em>promise</em> from settings object’s outstanding rejected promises weak set.</li>
+      <li>Let <em>global</em> be <em>settings object</em>’s global object.</li>
+      <li>Queue a global task on the DOM manipulation task source given <em>global</em> to fire an event named <code class="highlighter-rouge">rejectionhandled</code> at <em>global</em>, using <code class="highlighter-rouge">PromiseRejectionEvent</code>, with the <code class="highlighter-rouge">promise</code> attribute initialized to <em>promise</em>, and the <code class="highlighter-rouge">reason</code> attribute initialized to the value of <em>promise</em>’s <code class="highlighter-rouge">[[PromiseResult]]</code> internal slot.</li>
+    </ol>
+  </li>
+</ol>
+
+<p>The first three steps can be ignored for our purposes because they are just setting up variables. The fourth steps occurs when <code class="highlighter-rouge">operation</code> is <code class="highlighter-rouge">"reject"</code>, at which point the promise that was rejected is added to the about-to-be-notified rejected promises list. That’s all that needs to happen at this point because a recurring check will later read that list to determine if any events need to be fired. The more interesting part is what happens when <code class="highlighter-rouge">operation</code> is <code class="highlighter-rouge">"handle"</code>, meaning that a previously rejected promise now has a rejection handler added. Here are the steps using clearer language:</p>
+
+<ol>
+  <li>If <code class="highlighter-rouge">promise</code> is in the about-to-be-notified rejected promises list, that means the promise was rejected without a rejection handler but the <code class="highlighter-rouge">unhandledrejection</code> event has not yet been fired for that promise. Because of that, you can just remove <code class="highlighter-rouge">promise</code> from the list to ensure the event is never fired, and therefore, you’ll never need to fire a <code class="highlighter-rouge">rejectionhandled</code> event. Your work here is done.</li>
+  <li>If the outstanding rejected promises weak set doesn’t contain <code class="highlighter-rouge">promise</code>, then there’s also nothing else to do here. The <code class="highlighter-rouge">unhandledrejection</code> event was never fired for <code class="highlighter-rouge">promise</code> so the <code class="highlighter-rouge">rejectionhandled</code> event should also never fire. There’s no more tracking necessary.</li>
+  <li>If <code class="highlighter-rouge">promise</code> is in the outstanding rejected promises weak set, that means it has previously triggered the <code class="highlighter-rouge">unhandledrejection</code> event and you are now being notified that it is handled. That means you need to trigger the <code class="highlighter-rouge">rejectionhandled</code> event. For simplicity, you can read “queue a global task” as “run this code with <code class="highlighter-rouge">setTimeout()</code>.”</li>
+</ol>
+
+<p>After all of that explanation, here’s what it looks like in code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">RejectionTracker</span> <span class="p">{</span>
+
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">logger</span> <span class="o">=</span> <span class="nx">console</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">aboutToBeNotified</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Set</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">outstandingRejections</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">WeakSet</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">logger</span> <span class="o">=</span> <span class="nx">logger</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">timeoutId</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">track</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">operation</span><span class="p">)</span> <span class="p">{</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="nx">operation</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">reject</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">aboutToBeNotified</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">pledge</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">operation</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">handle</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">aboutToBeNotified</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">pledge</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">aboutToBeNotified</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="nx">pledge</span><span class="p">);</span>
+                <span class="k">return</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">outstandingRejections</span><span class="p">.</span><span class="nx">has</span><span class="p">(</span><span class="nx">pledge</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">return</span><span class="p">;</span>
+            <span class="p">}</span>
+            
+            <span class="k">this</span><span class="p">.</span><span class="nx">outstandingRejections</span><span class="p">.</span><span class="k">delete</span><span class="p">(</span><span class="nx">pledge</span><span class="p">);</span>
+
+            <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+                <span class="kd">const</span> <span class="nx">event</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeRejectionEvent</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">pledge</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">]);</span>
+                <span class="nx">pledge</span><span class="p">.</span><span class="kd">constructor</span><span class="p">.</span><span class="nx">onRejectionHandled</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+            <span class="p">},</span> <span class="mi">0</span><span class="p">);</span>            
+        <span class="p">}</span>
+
+        <span class="c1">// not part of spec, need to toggle monitoring</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">aboutToBeNotified</span><span class="p">.</span><span class="nx">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">startMonitor</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="k">this</span><span class="p">.</span><span class="nx">stopMonitor</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The code closely mirrors the specification algorithm, ultimately resulting in the <code class="highlighter-rouge">onRejectionHandled</code> method being called on the <code class="highlighter-rouge">Pledge</code> constructor with an instance of <code class="highlighter-rouge">PledgeReactionEvent</code>. This event can’t be cancelled, so there’s no reason to check the <code class="highlighter-rouge">returnValue</code> property.</p>
+
+<p>I did need to add a little bit of extra code at the end to toggle the monitoring of rejected promises. You only need to monitor the about-to-be-notified rejected promises list to know when to trigger the <code class="highlighter-rouge">unhandledrejection</code> event. (The outstanding promise rejections weak set doesn’t need to be monitored.) To account for that, and to save resources, I turn on the monitor when there is at least one item in the about-to-be-notified rejected promises list and turn it off otherwise.</p>
+
+<p>The actual monitoring process is described in the HTML specification, as well, and is implemented as the <code class="highlighter-rouge">startMonitor()</code> method.</p>
+
+<h4 id="monitoring-for-promise-rejections">Monitoring for promise rejections</h4>
+
+<p>The HTML specification<sup id="fnref:1:1"><a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fn:1" class="footnote">1</a></sup> says that the following steps should be taken to notify users of unhandled promise rejections:</p>
+
+<ol>
+  <li>Let <em>list</em> be a copy of <em>settings object</em>’s about-to-be-notified rejected promises <em>list</em>.</li>
+  <li>If <em>list</em> is empty, return.</li>
+  <li>Clear <em>settings object</em>’s about-to-be-notified rejected promises list.</li>
+  <li>Let <em>global</em> be <em>settings object</em>’s global object.</li>
+  <li>Queue a global task on the DOM manipulation task source given <em>global</em> to run the following substep:
+    <ol>
+      <li>For each promise <em>p</em> in <em>list</em>:
+        <ol>
+          <li>If <em>p</em>’s <code class="highlighter-rouge">[[PromiseIsHandled]]</code> internal slot is true, continue to the next iteration of the loop.</li>
+          <li>Let <em>notHandled</em> be the result of firing an event named <code class="highlighter-rouge">unhandledrejection</code> at <em>global</em>, using <code class="highlighter-rouge">PromiseRejectionEvent</code>, with the <code class="highlighter-rouge">cancelable</code> attribute initialized to true, the <code class="highlighter-rouge">promise</code> attribute initialized to <em>p</em>, and the <code class="highlighter-rouge">reason</code> attribute initialized to the value of <em>p</em>’s <code class="highlighter-rouge">[[PromiseResult]]</code> internal slot.</li>
+          <li>If <em>notHandled</em> is false, then the promise rejection is handled. Otherwise, the promise rejection is not handled.</li>
+          <li>If <em>p</em>’s <code class="highlighter-rouge">[[PromiseIsHandled]]</code> internal slot is false, add <em>p</em> to <em>settings object</em>’s outstanding rejected promises weak set.</li>
+        </ol>
+      </li>
+    </ol>
+  </li>
+</ol>
+
+<p>The specification further says:</p>
+
+<blockquote>
+  <p>This algorithm results in promise rejections being marked as <strong>handled</strong> or <strong>not handled</strong>. These concepts parallel handled and not handled script errors. If a rejection is still <strong>not handled</strong> after this, then the rejection may be reported to a developer console.</p>
+</blockquote>
+
+<p>So this part of the specification describes exactly how to determine when an <code class="highlighter-rouge">unhandledrejection</code> event should be fired and what effect, if any, it has on a warning being output to the console. However, the specification doesn’t say when this should take place, so browsers are free to implement it in the way they want. For the purposes of this post, I decided to use <code class="highlighter-rouge">setInterval()</code> to periodically check the about-to-be-notified rejected promises list. This code is encapsulated in the <code class="highlighter-rouge">startMonitor()</code> method, which you can see here:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">RejectionTracker</span> <span class="p">{</span>
+
+    <span class="c1">// other methods omitted for space</span>
+
+    <span class="nx">startMonitor</span><span class="p">()</span> <span class="p">{</span>
+
+        <span class="c1">// only start monitor once</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">timeoutId</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nx">timeoutId</span> <span class="o">=</span> <span class="nx">setInterval</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+            <span class="kd">const</span> <span class="nx">list</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">aboutToBeNotified</span><span class="p">;</span>
+
+            <span class="k">this</span><span class="p">.</span><span class="nx">aboutToBeNotified</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Set</span><span class="p">();</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="nx">list</span><span class="p">.</span><span class="nx">size</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">this</span><span class="p">.</span><span class="nx">stopMonitor</span><span class="p">();</span>
+                <span class="k">return</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">p</span> <span class="k">of</span> <span class="nx">list</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">p</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">isHandled</span><span class="p">])</span> <span class="p">{</span>
+                    <span class="k">continue</span><span class="p">;</span>
+                <span class="p">}</span>
+
+                <span class="kd">const</span> <span class="nx">event</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeRejectionEvent</span><span class="p">(</span><span class="nx">p</span><span class="p">,</span> <span class="nx">p</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">]);</span>
+                <span class="nx">p</span><span class="p">.</span><span class="kd">constructor</span><span class="p">.</span><span class="nx">onUnhandledRejection</span><span class="p">(</span><span class="nx">event</span><span class="p">);</span>
+                <span class="kd">const</span> <span class="nx">notHandled</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">returnValue</span><span class="p">;</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="nx">p</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">isHandled</span><span class="p">]</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">this</span><span class="p">.</span><span class="nx">outstandingRejections</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">p</span><span class="p">);</span>
+                <span class="p">}</span>
+                
+                <span class="k">if</span> <span class="p">(</span><span class="nx">notHandled</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">this</span><span class="p">.</span><span class="nx">logger</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s2">`Pledge rejection was not caught: </span><span class="p">${</span> <span class="nx">p</span><span class="p">[</span><span class="nx">PledgeSymbol</span><span class="p">.</span><span class="nx">result</span><span class="p">]</span> <span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="nx">stopMonitor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">clearInterval</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">timeoutId</span><span class="p">);</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">timeoutId</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The first step in <code class="highlighter-rouge">stopMonitor()</code> is to ensure that only one timer is ever used, so I check to make sure that <code class="highlighter-rouge">timeoutId</code> is <code class="highlighter-rouge">0</code> before proceeding. Next, <code class="highlighter-rouge">list</code> stores a reference to the current about-to-be-notified rejected promises list and then the property is overwritten with a new instance of <code class="highlighter-rouge">Set</code> to ensure that the same promises aren’t processed by this check more than once. If there are no promises to process then the monitor is stopped and the function exits (this is not a part of the specification).</p>
+
+<p>Next, each pledge in <code class="highlighter-rouge">list</code> is evaluated. Remember that the <code class="highlighter-rouge">PledgeSymbol.isHandled</code> property indicates if there’s a rejection handler attached to the pledge, so if that is <code class="highlighter-rouge">true</code>, then you can safely skip processing that pledge. Otherwise, the <code class="highlighter-rouge">Pledge.onUnhandledRejection()</code> method is called with an event object. Unlike with <code class="highlighter-rouge">Pledge.onRejectionHandled()</code>, in this case you care about whether or not the event was cancelled, so <code class="highlighter-rouge">notHandled</code> is set to the event’s return value.</p>
+
+<p>After that, the function checks <code class="highlighter-rouge">PledgeSymbol.isHandled</code> again because it’s possible that the code inside of <code class="highlighter-rouge">Pledge.onUnhandledRejection()</code> might have added a rejection handler. If this property is still <code class="highlighter-rouge">false</code>, then the pledge is added to the outstanding rejections weak set to track for any future rejection handler additions.</p>
+
+<p>To finish up the algorithm, if <code class="highlighter-rouge">notHandled</code> is <code class="highlighter-rouge">true</code>, that’s when an error is output to the console. Keep in mind that the <code class="highlighter-rouge">notHandled</code> variable is the sole determinant of whether or not a console error is output; the <code class="highlighter-rouge">PledgeSymbol.isHandled</code> property is a completely separate value that only indicates if a rejection handler is present.</p>
+
+<p>The <code class="highlighter-rouge">stopMonitor()</code> method simply cancels the timer and resets the <code class="highlighter-rouge">timeoutId</code> to <code class="highlighter-rouge">0</code>.</p>
+
+<p>With that, the <code class="highlighter-rouge">RejectionTracker</code> class is complete and all of the unhandled rejection tracking from browser implementations are now part of the Pledge library.</p>
+
+<h2 id="wrapping-up">Wrapping Up</h2>
+
+<p>This post covered how browsers track unhandled promise rejections, which is a bit different than how Node.js tracks them. The browser triggers an <code class="highlighter-rouge">unhandledrejection</code> event when a rejected promise is missing a rejection handler as well as outputting a message to the console. If the promise later has a rejection handler assigned, then a <code class="highlighter-rouge">rejectionhandled</code> event is triggered.</p>
+
+<p>The description of how this functionality works is spread across both the ECMA-262 and HTML specifications, with the former defining only a small, abstract API while the latter provides explicit instructions to browsers on how to track unhandled rejections.</p>
+
+<p>All of the code from this series is available in the <a href="https://github.com/humanwhocodes/pledge">Pledge</a> on GitHub. I hope you’ll download it and try it out to get a better understanding of promises.</p>
+
+<p>And thank you to my <a href="https://github.com/sponsors/nzakas">sponsors</a>, whose donations supported parts 5 through 7 of this series. If you enjoyed this series and would like to see more in-depth blog posts, please consider <a href="https://github.com/sponsors/nzakas">sponsoring me</a>. Your support allows independent software developers like me to continue our work.</p>
+
+<h2 id="references">References</h2>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://html.spec.whatwg.org/multipage/webappapis.html#unhandled-promise-rejections">Unhandled promise rejections</a> <a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fnref:1" class="reversefootnote">&#8617;</a> <a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fnref:1:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
+    </li>
+    <li id="fn:2">
+      <p><a href="https://tc39.es/ecma262/#sec-properties-of-promise-instances">Properties of Promise Instances</a> <a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p><a href="https://tc39.es/ecma262/#sec-host-promise-rejection-tracker">HostPromiseRejectionTracker ( promise, operation )</a> <a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:4">
+      <p><a href="https://tc39.es/ecma262/#sec-performpromisethen">PerformPromiseThen ( promise, onFulfilled, onRejected [ , resultCapability ] )</a> <a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:5">
+      <p><a href="https://tc39.es/ecma262/#sec-rejectpromise">RejectPromise ( promise, reason )</a> <a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:6">
+      <p><a href="https://html.spec.whatwg.org/multipage/webappapis.html#the-hostpromiserejectiontracker-implementation">HostPromiseRejectionTracker(promise, operation)</a> <a href="https://humanwhocodes.com/blog/2021/01/creating-javascript-promise-from-scratch-unhandled-rejection-tracking/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="https://humanwhocodes.com/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='../../index.html'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

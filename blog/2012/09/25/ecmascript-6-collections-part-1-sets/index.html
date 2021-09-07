@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>ECMAScript 6 collections, Part 1: Sets - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/09/25/ecmascript-6-collections-part-1-sets/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="ECMAScript 6 collections, Part 1: Sets">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/09/25/ecmascript-6-collections-part-1-sets/" />
+<meta name="og:title" content="ECMAScript 6 collections, Part 1: Sets">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="For most of JavaScript’s history, there has been only one type of collection represented by the Array type. Arrays are used in JavaScript just like arrays and other languages but pull double and...">
+<meta name="keywords" content="Arrays,ECMAScript 6,JavaScript,Set,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">ECMAScript 6 collections, Part 1: Sets</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-09-25T00:00:00+00:00" itemprop="datePublished">September 25, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/arrays" rel="tag">Arrays</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ecmascript-6" rel="tag">ECMAScript 6</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/set" rel="tag">Set</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>For most of JavaScript’s history, there has been only one type of collection represented by the <code class="highlighter-rouge">Array</code> type. Arrays are used in JavaScript just like arrays and other languages but pull double and triple duty mimicking queues and stacks as well. Since arrays only use numeric indices, developers had to use objects whenever a non-numeric index was necessary. ECMAScript 6 introduces several new types of collections to allow better and more efficient storing of order data.</p>
+
+<h2 id="sets">Sets</h2>
+
+<p>Sets are nothing new if you come from languages such as Java, Ruby, or Python but have been missing from JavaScript. A set is in an ordered list of values that cannot contain duplicates. You typically don’t access items in the set like you would items in an array, instead it’s much more common to check the set to see if a value is present.</p>
+
+<p>ECMAScript 6 introduces the <code class="highlighter-rouge">Set</code> type<sup><a href="http://wiki.ecmascript.org/doku.php?id=harmony:simple_maps_and_sets">1</a></sup> as a set implementation for JavaScript. You can add values to a set by using the <code class="highlighter-rouge">add()</code> method and see how many items are in the set using <code class="highlighter-rouge">size</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var items = new Set();
+items.add(5);
+items.add("5");
+
+console.log(items.size);    // 2
+</code></pre></div></div>
+
+<p>ECMAScript 6 sets do not coerce values in determining whether or not to values are the same. So, a set can contain both the number <code class="highlighter-rouge">5</code> and the string <code class="highlighter-rouge">"5"</code> (internally, the comparison is done using <code class="highlighter-rouge">===</code>). If the <code class="highlighter-rouge">add()</code> method is called more than once with the same value, all calls after the first one are effectively ignored:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var items = new Set();
+items.add(5);
+items.add("5");
+items.add(5);     // oops, duplicate - this is ignored
+
+console.log(items.size);    // 2
+</code></pre></div></div>
+
+<p>You can initialize the set using an array, and the <code class="highlighter-rouge">Set</code> constructor will ensure that only unique values are used:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var items = new Set([1, 2, 3, 4, 5, 5, 5, 5]);
+console.log(items.size);    // 5
+</code></pre></div></div>
+
+<p>In this example, an array with feed items is used to initialize the set. The number <code class="highlighter-rouge">5</code> Only appears once in the set even though it appears four times in the array. This functionality makes it easy to convert existing code or JSON structures to use sets.</p>
+
+<p>You can test to see which items are in the set using the <code class="highlighter-rouge">has()</code> method:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var items = new Set();
+items.add(5);
+items.add("5");
+
+console.log(items.has(5));    // true
+console.log(items.has(6));    // false
+</code></pre></div></div>
+
+<p>Last, you can remove an item from the set by using the <code class="highlighter-rouge">delete()</code> method:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var items = new Set();
+items.add(5);
+items.add("5");
+
+console.log(items.has(5));    // true
+
+items.delete(5)
+
+console.log(items.has(5));    // false
+</code></pre></div></div>
+
+<p>Or, if you want to remove all items from the set, you can call <code class="highlighter-rouge">clear()</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var items = new Set();
+items.add(5);
+items.add("5");
+
+console.log(items.has(5));    // true
+
+items.clear()
+
+console.log(items.has(5));    // false
+</code></pre></div></div>
+
+<p>All of this amounts to a very easy mechanism for tracking unique unordered values.</p>
+
+<h2 id="iteration">Iteration</h2>
+
+<p>Even though there is no random access to items in a set, it still possible to iterate over all of the sets values by using the new ECMAScript 6 <code class="highlighter-rouge">for-of</code> statement<sup><a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Statements/for...of">2</a></sup>. The <code class="highlighter-rouge">for-of</code> statement is a loop that iterates over values of a collection, including arrays and array-like structures. you can output values in a set like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var items = new Set([1, 2, 3, 4, 5]);
+
+for (let num of items) {
+    console.log(num);
+}
+</code></pre></div></div>
+
+<p>This code outputs each item in the set to the console in the order in which they were added to the set.</p>
+
+<h2 id="example">Example</h2>
+
+<p>Currently, if you want to keep track of unique values, the most common approach is to use an object and assign the unique values as properties with some truthy value. For example, there is a CSS Lint<sup><a href="https://csslint.net">3</a></sup> rule that looks for duplicate properties. Right now, an object is used to keep track of CSS properties such as this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var properties = {
+    "width": 1,
+    "height": 1
+};
+
+if (properties[someName]) {
+    // do something
+}
+</code></pre></div></div>
+
+<p>Using an object for this purpose means always assigning a truthy value to a property so that the <code class="highlighter-rouge">if</code> statement works correctly (the other option is to use the <code class="highlighter-rouge">in</code> operator, but developers rarely do). This whole process can be made easier by using a set:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var properties = new Set();
+properties.add("width");
+properties.add("height");
+
+if (properties.has(someName)) {
+    // do something
+}
+</code></pre></div></div>
+
+<p>Since it only matters if the property was used before and not how many times it was used (there is no extra metadata associated), it actually makes more sense to use a set.</p>
+
+<p>Another downside of using object properties for this type of operation is that property names are always converted to strings. So you can’t have an object with the property name of <code class="highlighter-rouge">5</code>, you can only have one with the property name of <code class="highlighter-rouge">"5"</code>. That also means you can’t easily keep track of objects in the same manner because the objects get converted to strings when assigned as a property name. Sets, on the other hand, can contain any type of data without fear of conversion into another type.</p>
+
+<h2 id="browser-support">Browser Support</h2>
+
+<p>Both Firefox and Chrome have implemented <code class="highlighter-rouge">Set</code>, however, in Chrome you need to manually enable ECMAScript 6 features: go to <code class="highlighter-rouge">chrome://flags</code> and enable “Experimental JavaScript Features”. Both implementations are incomplete. Neither browser implements set iteration using <code class="highlighter-rouge">for-of</code>.</p>
+
+<h2 id="summary">Summary</h2>
+
+<p>ECMAScript 6 sets are a welcome addition to the language. They allow you to easily create a collection of unique values without worrying about type coercion. You can add and remove items very easily from a set even though there is no direct access to items in the set. It’s still possible, if necessary, to iterate over items in the set by using the ECMAScript 6 <code class="highlighter-rouge">for-of</code> statement.</p>
+
+<p>Since ECMAScript 6 is not yet complete, it’s also possible that the implementation and specification might change before other browsers start to include <code class="highlighter-rouge">Set</code>. At this point in time, it is still considered experimental API and shouldn’t be used in production code. This post, and other posts about ECMAScript 6, are only intended to be a preview of functionality that is to come.</p>
+
+<h2 id="updates">Updates</h2>
+
+<ul>
+  <li><strong>05-Jan-2014</strong> – changed reference to <code class="highlighter-rouge">size()</code> method to <code class="highlighter-rouge">size</code> property to reflect the change in spec.</li>
+</ul>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://wiki.ecmascript.org/doku.php?id=harmony:simple_maps_and_sets">Simple Maps and Sets</a> (ES6 Wiki)</li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Statements/for...of">for…of</a> (MDN)</li>
+  <li><a href="https://csslint.net">CSS Lint</a></li>
+  <li><a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Set">Set</a> (MDN)</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/09/25/ecmascript-6-collections-part-1-sets/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

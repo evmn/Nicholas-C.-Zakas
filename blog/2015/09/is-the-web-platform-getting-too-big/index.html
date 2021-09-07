@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Is the web platform getting too big? - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2015/09/is-the-web-platform-getting-too-big/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Is the web platform getting too big?">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2015/09/is-the-web-platform-getting-too-big/" />
+<meta name="og:title" content="Is the web platform getting too big?">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Peter-Paul Koch recently wrote a blog post entitled, “Stop pushing the web forward” [1], in which he argued for a one-year moratorium on adding new features to the web platform. By new features,...">
+<meta name="keywords" content="Web,Internet,API,Platform,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Is the web platform getting too big?</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2015-09-08T00:49:57+00:00" itemprop="datePublished">September 8, 2015</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/web" rel="tag">Web</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/internet" rel="tag">Internet</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/api" rel="tag">API</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/platform" rel="tag">Platform</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Peter-Paul Koch recently wrote a blog post entitled, “Stop pushing the web forward” [1], in which he argued for a one-year moratorium on adding new features to the web platform. By new features, he means new APIs and capabilities in HTML, CSS, and JavaScript, arguing:</p>
+
+<blockquote>
+  <p>We’re pushing the web forward to emulate native more and more, but we can’t out-native native. We are weighed down by the millstone of an ever-expanding set of tools that polyfill everything we don’t understand - and that’s most of a browser’s features nowadays. This is not the future that I want to push the web forward to.</p>
+</blockquote>
+
+<p>The one-year moratorium, he argued, would give us all time to catch up on all the new features that have already been added. This, he continued, is really important because the pace at which new features are added is difficult for developers to deal with.</p>
+
+<p>A lot of the responses to his post were disappointingly dismissive to the point of being rude (he was frequently publicly called a “grumpy old man” to rationalize his perceives wrongness), and I thought that was a shame because I think PPK hit on an issue that we’re all facing: innovation fatigue.</p>
+
+<h2 id="innovation-fatigue">Innovation fatigue</h2>
+
+<p>When I speak with more junior engineers, one of the most frequent questions I am asked looks like this:</p>
+
+<blockquote>
+  <p>How do you keep up with everything? Things are changing so fast, I feel like I’m always missing something, and then I get frustrated and think I should quit because everyone else seems to be on top of all the new stuff.</p>
+</blockquote>
+
+<p>My response is usually something along the lines of this:</p>
+
+<blockquote>
+  <p>I don’t. It’s impossible to keep up with everything new that’s coming out. Your goal should be only to be aware of things at a high-level until you need them. Skim over headlines or links shared by people on Twitter so you’re aware of what’s going on, but don’t waste time trying to master everything. Wait until you need it.</p>
+</blockquote>
+
+<p>Truth be told, I hate giving this advice. I remember a time when I felt like I knew everything about every browser (there were only two!). My first book, <em>Professional JavaScript</em> [2], I intended to contain everything you’d need to know about JavaScript and browser-based APIs. For the most part, I succeeded…until the third edition. That’s when I realized that there was no way I could include everything anymore. And that made me sad.</p>
+
+<p>So I think PPK was also channeling a bit of this sentiment in his post. As someone who spent an enormous amount of his personal time testing and documenting browser features and bugs, he must share my frustrations that the web isn’t completely knowable by one person anymore. In fact, he said as much in his followup post [3]:</p>
+
+<blockquote>
+  <p>…part of my resistance to this idea is that I remember the old days when I could actually enumerate the features of each of the three browsers. (OLD days, I said.)</p>
+</blockquote>
+
+<p>I’ll admit it was nice to know everything for a while, though we were probably all too naive to realize that this wasn’t a sustainable model. All occupations have an associated body of knowledge that practitioners dip into when they need to complete certain tasks. Visit any lawyer’s or accountant’s office and you’ll find shelves filled with books that they use for reference. In the tech world, talk to any Java developer about how to deal with an exploding number of options for completing the same task, and you’ll see that web developers have had it easy for a long time.</p>
+
+<h2 id="a-moratorium">A moratorium?</h2>
+
+<p>I’m willing to bet that PPK didn’t think his blog post would result in an actual moratorium, but it is worth looking at what happened during the forced moratorium that occurred when Internet Explorer 6 ruled the web. Once IE6 had effectively crushed Netscape, the Internet Explorer team was disbanded. Microsoft had won the web and there was no more work to do. At that point in time, IE6 was all the web there was and that meant no more new features.</p>
+
+<p>The period of 2001-2006, five years of stagnation, actually turned out to be a good thing. As Douglas Crockford has mentioned in several of his talks, the stagnation gave developers some time to catch up to what already existed. To that point, the innovation had been rapid and the incompatible changes in Internet Explorer and Netscape meant you always had to learn two different ways of doing the same thing. It was exhausting and frustrating to make pages and applications that worked across both browsers because there just wasn’t enough information about what to use in which situations. When all of a sudden there were no more features being added, we all could take a breather.</p>
+
+<p>You’ll note that the first edition of <em>Professional JavaScript</em> came out in 2005, towards the end of the stagnation period. I spent most of 2003 and 2004 writing that book, and felt like it encapsulated every important piece of JavaScript information that existed in the world. I wasn’t alone, either, as blogs began to pop up and people started publishing their experiments with JavaScript and their understanding of how it worked.</p>
+
+<p>That stagnation period is what gave Mozilla time to catch up with Firefox, it’s what led to the Ajax revolution, and it’s what ultimately unseated Microsoft as king of the web. So it’s not a big jump to say that stagnation alone isn’t a bad thing for the web. Maybe this stagnation period was an exception, but we can’t know that for sure.</p>
+
+<h2 id="is-the-web-losing">Is the web losing?</h2>
+
+<p>So what if we started a moratorium now? The main opponents to PPK’s suggestion predict dire consequences in the form of lament that is now all too familiar to me: if we stop innovating, the web will lose. I’ve heard this refrain in many different forms over the years, “we need the web to win” or “we don’t want the web to lose.” What game are we playing? Who are the opponents? What are we doing that they aren’t doing?</p>
+
+<p>When you ask these questions enough, inevitably someone answers: native will destroy the web if we stop innovating. Now, I have no data suggesting that this isn’t true, but I also have no data suggesting that it is. I’m also not convinced that this is really a native vs. web battle where there can only be one winner. However, if you hold this position, then I can understand why you’d fear a moratorium: stopping means falling behind while the opponent continues to innovate.</p>
+
+<p>I’m not sure if such battle is ongoing, or if some are imagining a foe and a battle in order to push for new features. To me, the thought that native will overtake the web seems like a theoretical impossibility, especially as we see more native capabilities that are mirroring what’s found in the web (i.e., React Native) and how hybrid mobile apps don’t seem to be going away anytime soon.</p>
+
+<p>Is native doing some cool stuff that would be great to have in web applications? Absolutely. But I hardly see this as a one-way street. More and more, it seems like native is trying to emulate the web development experience because it’s faster, there’s a built-in set of people with HTML, CSS, and JavaScript knowledge, and there are some great tools.</p>
+
+<p>So, I’m not convinced the web is losing to anything, and I’m not convinced that between native and the web that there can be only one. I harken back to what Steve Jobs said when he returned to Apple in 1997:</p>
+
+<blockquote>
+  <p>If we want to move forward and see Apple healthy and prospering again, we have to let go of this notion that for Apple to win, Microsoft has to lose.</p>
+</blockquote>
+
+<p>I feel the same about the web and native.</p>
+
+<p>(If you have any research related to this topic, please post a link in the comments. I haven’t been able to find any numbers to back up either that there’s a war between the web and native or that one or the other is winning.)</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I really appreciated PPK’s willingness to stick his neck out and say something controversial to get people thinking and talking. In my heart, I’d love to see a moratorium, but that’s mostly a selfish desire to stop trying to keep up with every new thing as it comes out. That’s a path I’ve paved for myself and asking the world to change so I can stop walking that path isn’t rational or realistic. Yet, I understand where PPK is coming from, as it’s a sentiment that many developers share.</p>
+
+<p>The rapid pace of web platform development is dizzying and it can, at times, be overwhelming. Imagine just starting out in the industry and discovering that you can never get ahead of the learning. Every six weeks (when new browsers are released), we need to augment how we do our work in some way. That’s a pretty crazy roller coaster that I’m sure we’d all like a break from.</p>
+
+<p>Yet at the same time, the innovation that we’re experiencing means that solutions to our complex problems are more close than they are far away. We no longer have to go through years of experimentation, trying to find ways to work around the limitations of the browser. In some cases, if we can just wait a few months, the solution will be there.</p>
+
+<p>In the meantime, I’ll echo a point PPK made in his second article: what we really need is a single source of truth for the ongoing development of the web platform. I had hoped that webplatform.org [4] would fill this role, but it’s not even close. What we really need is a home for the status of all web platform features, including standards work, browser implementations, and progress. If we could achieve this as a community, we could help the next generation of web developers tremendously. Instead of going to Edge’s status page, Chrome’s status page, searching GitHub, etc., we could go to one place and get all the information we need. That is a future worth fighting for.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://www.quirksmode.org/blog/archives/2015/07/stop_pushing_th.html">Stop pushing the web forward</a> by Peter-Paul Koch (quirksmode.org)</li>
+  <li><a href="http://www.amazon.com/Professional-JavaScript-Developers-Nicholas-Zakas/dp/1118026691/ref=sr_1_13?tag=nczonline-20">Professional JavaScript for Web Developers</a> by me (amazon.com)</li>
+  <li><a href="http://www.quirksmode.org/blog/archives/2015/08/stop_pushing_re.html">Stop pushing redux</a> by Peter-Paul Koch (quirksmode.org)</li>
+  <li><a href="https://www.webplatform.org/">WebPlatform.org</a></li>
+</ol>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2015/09/is-the-web-platform-getting-too-big/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

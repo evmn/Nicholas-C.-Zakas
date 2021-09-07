@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Answering Baranovskiy&#8217;s JavaScript quiz - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2010/01/26/answering-baranovskiys-javascript-quiz/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Answering Baranovskiy&#8217;s JavaScript quiz">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2010/01/26/answering-baranovskiys-javascript-quiz/" />
+<meta name="og:title" content="Answering Baranovskiy&#8217;s JavaScript quiz">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Last week, I tweeted about a JavaScript quiz I came across on Dmitry Baranovskiyâ€™s blog entitled, So you think you know JavaScript? As with other quizzes of this type, there is only one...">
+<meta name="keywords" content="Hoisting,JavaScript,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Answering Baranovskiy&#8217;s JavaScript quiz</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2010-01-26T00:00:00+00:00" itemprop="datePublished">January 26, 2010</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/hoisting" rel="tag">Hoisting</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Last week, I <a href="http://twitter.com/slicknet/status/8057003813">tweeted</a> about a JavaScript quiz I came across on Dmitry Baranovskiyâ€™s blog entitled, <a href="http://dmitry.baranovskiy.com/post/91403200">So you think you know JavaScript?</a> As with other quizzes of this type, there is only one question to answer for five different pieces of example code: what is the result? The example code tests some of the quirkier attributes of JavaScript engine behavior. I’ve seen similar quizzes in the past, sometimes by people saying that they use it as a test during job interviews. I think doing so is both disrespectful to the candidate as well as generally useless. You don’t encounter this type of quirk every day, so making that the minimum to get a job is about as useful as asking flight attendant candidate to explain jet propulsion.</p>
+
+<p>Still, I liked some of the example code in this post because it can be used to explain some interesting things about JavaScript as a language. The following is an in-depth explanation of what is happening in each of those examples.</p>
+
+<h2 id="example-1">Example #1</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (!("a" in window)) {
+    var a = 1;
+}
+alert(a);
+</code></pre></div></div>
+
+<p>This strange looking piece of code seems to say, “if window doesn’t have a property ‘a’, define a variable ‘a’ and assign it the value of 1.” You would then expect the alert to display the number 1. In reality, the alert displays “undefined”. To understand why this happens, you need to know three things about JavaScript.</p>
+
+<p>First, all global variables are properties of <code class="highlighter-rouge">window</code>. Writing <code class="highlighter-rouge">var a = 1</code> is functionally equivalent to writing <code class="highlighter-rouge">window.a = 1</code>. You can check to see if a global variable is declared, therefore, by using the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"variable-name" in window
+</code></pre></div></div>
+
+<p>Second, all variable declarations are <em>hoisted</em> to the top of the containing scope. Consider this simpler example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alert("a" in window);
+var a;
+</code></pre></div></div>
+
+<p>The alert in this case outputs “true” even though the variable declaration comes after the test. This is because the JavaScript engine first scans for variable declarations and moves them to the top. The engine ends up executing the code like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var a;
+alert("a" in window);
+</code></pre></div></div>
+
+<p>Reading this code, it makes far more sense as to why the alert would display “true”.</p>
+
+<p>The third thing you need to understand to make sense of this example is that while variable <em>declarations</em> are hoisted, variable <em>initializations</em> are not. This line is both a declaration and an initialization:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var a = 1;
+</code></pre></div></div>
+
+<p>You can separate out the declaration and the initialization like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var a;    //declaration
+a = 1;    //initialization
+</code></pre></div></div>
+
+<p>When the JavaScript engines comes across a combination of declaration and initialization, it does this split automatically so that the declaration can be hoisted. Why isn’t the initialization hoisted? Because that could affect the value of the variable during code execution and lead to unexpected results.</p>
+
+<p>So, knowing these three aspects of JavaScript, re-examine the original code. The code actually gets executed as if it were the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var a;
+if (!("a" in window)) {
+    a = 1;
+}
+alert(a);
+</code></pre></div></div>
+
+<p>Looking at this code should make the solution obvious. The variable <code class="highlighter-rouge">a</code> is declared first, and then the <code class="highlighter-rouge">if</code> statement says, “if <code class="highlighter-rouge">a</code> isn’t declared, then initialize <code class="highlighter-rouge">a</code> to have a value of 1.” Of course, this condition can never be true and so the variable a remains with its default value, <code class="highlighter-rouge">undefined</code>.</p>
+
+<h2 id="example-2">Example #2</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var a = 1,
+    b = function a(x) {
+        x &amp;&amp; a(--x);
+    };
+alert(a);
+</code></pre></div></div>
+
+<p>This code looks far more complex than it actually is. The result is that the alert displays the number 1, the value to which a was initialized. But why is that? Once again, this example relies on knowledge of three key aspects of JavaScript.</p>
+
+<p>The first concept is that of variable declaration hoisting, which example #1 also relied upon. The second concept is that of <em>function</em> declaration hoisting. All function declarations are hoisted to the top of the containing scope along with variable declarations. Just to be clear, a function declaration looks like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function functionName(arg1, arg2){
+    //function body
+}
+</code></pre></div></div>
+
+<p>This is opposed to a function expression, which is a variable assignment:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var functionName = function(arg1, arg2){
+    //function body
+};
+</code></pre></div></div>
+
+<p>To be clear, function expressions <em>are not</em> hoisted. This should make sense to you now, as just with variable initialization, moving the assignment of a value from one spot in code to another can alter the execution significantly.</p>
+
+<p>The third concept that you must know to both understand and get confused by this example is that function declarations override variable declarations but not variable initializations. To understand this, consider the following</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function value(){
+    return 1;
+}
+var value;
+alert(typeof value);    //"function"
+</code></pre></div></div>
+
+<p>The variable <code class="highlighter-rouge">value</code> ends up as a function even though the variable declaration appears after the function declaration. The function declaration is given priority in this situation. However, throw in variable initialization and you get a different result:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function value(){
+    return 1;
+}
+var value = 1;
+alert(typeof value);    //"number"
+</code></pre></div></div>
+
+<p>Now the variable <code class="highlighter-rouge">value</code> is set to 1. The variable initialization overrides the function declaration.</p>
+
+<p>Back to the example code, the function is actually a function expression despite the name. Named function expressions are not considered function declarations and therefore don’t get overridden by variable declarations. However, you’ll note that the variable containing the function expression is <code class="highlighter-rouge">b</code> while the function expression’s name is <code class="highlighter-rouge">a</code>. Browsers handle that a differently. Internet Explorer treats it as a function declaration, so it gets overridden by the variable initialization, meaning that the call to <code class="highlighter-rouge">a(--x)</code> causes an error. All other browsers allow the call to <code class="highlighter-rouge">a(--x)</code> inside of the function while a is still a number outside of the function. Basically, calling <code class="highlighter-rouge">b(2)</code> in Internet Explorer throws a JavaScript error but returns <code class="highlighter-rouge">undefined</code> in others.</p>
+
+<p>All of that being said, a more correct and easier to understand version of the code would be:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var a = 1,
+    b = function(x) {
+        x &amp;&amp; b(--x);
+    };
+alert(a);
+</code></pre></div></div>
+
+<p>Looking at this code, it should be clear that <code class="highlighter-rouge">a</code> will always be 1.</p>
+
+<h2 id="example-3">Example #3</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function a(x) {
+    return x * 2;
+}
+var a;
+alert(a);
+</code></pre></div></div>
+
+<p>If you were able to understand the previous example, then this one should be pretty simple. The only thing you need to understand is that function declarations trump variable declarations unless there’s an initialization. There’s no initialization here, so the alert displays the source code of the function.</p>
+
+<h2 id="example-4">Example #4</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function b(x, y, a) {
+    arguments[2] = 10;
+    alert(a);
+}
+b(1, 2, 3);
+</code></pre></div></div>
+
+<p>This code is a bit easier to understand as the only real question you must answer is whether the alert displays 3 or 10. The answer is 10 in all browsers. There’s only one concept you need to know to figure out this code. ECMA-262, 3rd Edition, section 10.1.8 says about an <code class="highlighter-rouge">arguments</code> object:</p>
+
+<blockquote>
+  <p>For each non-negative integer, <code class="highlighter-rouge">arg</code>, less than the value of the <code class="highlighter-rouge">length</code> property, a property is created with name <code class="highlighter-rouge">ToString(arg)</code> and property attributes <code class="highlighter-rouge">{ DontEnum }</code>. The initial value of this property is the value of the corresponding actual parameter supplied by the caller. The first actual parameter value corresponds to <code class="highlighter-rouge">arg</code> = 0, the second to <code class="highlighter-rouge">arg</code> = 1, and so on. In the case when <code class="highlighter-rouge">arg</code> is less than the number of formal parameters for the <code class="highlighter-rouge">Function</code> object, this property shares its value with the corresponding property of the activation object. <em>This means that changing this property changes the corresponding property of the activation object and vice versa.</em></p>
+</blockquote>
+
+<p>In short, each entry in the <code class="highlighter-rouge">arguments</code> object is a duplicate of each named argument. Note that the values are shared, but not the memory space. The two memory spaces are kept synchronized by the JavaScript engine, which means that both <code class="highlighter-rouge">arguments[2]</code> and <code class="highlighter-rouge">a</code> contain the same value at all times. That value ends up being 10.</p>
+
+<h2 id="example-5">Example #5</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function a() {
+    alert(this);
+}
+a.call(null);
+</code></pre></div></div>
+
+<p>I actually considered this to be the easiest of the five examples in this quiz. It relies on understanding two JavaScript concepts.</p>
+
+<p>First, you must understand how the value of the <code class="highlighter-rouge">this</code> object is determined. When a method is called on an object, <code class="highlighter-rouge">this</code> points to the object on which the method resides. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var object = {
+    method: function() {
+        alert(this === object);    //true
+    }
+}
+object.method(); 
+</code></pre></div></div>
+
+<p>In this code, <code class="highlighter-rouge">this</code> ends up pointing to <code class="highlighter-rouge">object</code> when <code class="highlighter-rouge">object.method()</code> is called. In the global scope, <code class="highlighter-rouge">this</code> is equivalent to <code class="highlighter-rouge">window</code> (in browsers, in non-browser environments it’s the <code class="highlighter-rouge">global</code> object equivalent), so <code class="highlighter-rouge">this</code> is also equal to <code class="highlighter-rouge">window</code> inside of a function that isn’t an object property. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function method() {
+    alert(this === window);    //true
+}
+method(); 
+</code></pre></div></div>
+
+<p>Here, <code class="highlighter-rouge">this</code> ends up pointing to the global object, <code class="highlighter-rouge">window</code>.</p>
+
+<p>Armed with this knowledge, you can now tackle the second important concept: what <code class="highlighter-rouge">call()</code> does. The <code class="highlighter-rouge">call()</code> method executes a function as if it were a method of another object. The first argument becomes <code class="highlighter-rouge">this</code> inside the method, and each subsequent argument is passed as an argument to the function. Consider the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function method() {
+    alert(this === window);
+}
+method();    //true
+method.call(document);   //false
+</code></pre></div></div>
+
+<p>Here, the <code class="highlighter-rouge">method()</code> function is called such that <code class="highlighter-rouge">this</code> will be <code class="highlighter-rouge">document</code>. Therefore, the alert displays “false”.</p>
+
+<p>An interesting part of ECMA-262, 3rd edition describes what should happen when <code class="highlighter-rouge">null</code> is passed in as the first argument to <code class="highlighter-rouge">call()</code>:</p>
+
+<blockquote>
+  <p>If <code class="highlighter-rouge">thisArg</code> is <code class="highlighter-rouge">null</code> or <code class="highlighter-rouge">undefined</code>, <em>the called function is passed the global object as the this value</em>. Otherwise, the called function is passed <code class="highlighter-rouge">ToObject(thisArg)</code> as the this value.</p>
+</blockquote>
+
+<p>So whenever <code class="highlighter-rouge">null</code> is passed to <code class="highlighter-rouge">call()</code> (or its sibling, <code class="highlighter-rouge">apply()</code>), it defaults to the global object, which is <code class="highlighter-rouge">window</code>. Given that, the example code can be rewritten in a more understandable way as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function a() {
+    alert(this);
+}
+a.call(window);
+</code></pre></div></div>
+
+<p>This code makes it obvious that the alert will be displaying the string equivalent of the <code class="highlighter-rouge">window</code> object.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Dmitry put together an interesting quiz from which you can actually learn some of the strange quirks of JavaScript. I hope that this writeup has helped everyone understand the details necessary to figure out what each piece of code is doing, and more importantly, why it’s doing so. Again, I caution against using these sort of quizzes for job interviews as I don’t think they serve any practical use in that realm (if you’d like to know my take on interviewing front-end engineers, see my <a href="../../05/interviewing-the-front-end-engineer/index.html">previous post</a>).</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2010/01/26/answering-baranovskiys-javascript-quiz/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

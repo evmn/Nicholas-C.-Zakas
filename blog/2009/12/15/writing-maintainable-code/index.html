@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Writing maintainable code - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/12/15/writing-maintainable-code/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Writing maintainable code">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/12/15/writing-maintainable-code/" />
+<meta name="og:title" content="Writing maintainable code">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Three years ago, I gave my first talk at Yahoo! entitled, Maintainable JavaScript (slides). The point of the talk was to encourage people to use more rigor in their JavaScript coding. A lot...">
+<meta name="keywords" content="CSS,JavaScript,Programming,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Writing maintainable code</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-12-15T00:00:00+00:00" itemprop="datePublished">December 15, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/css" rel="tag">CSS</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/programming" rel="tag">Programming</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Three years ago, I gave my first talk at Yahoo! entitled, <a href="http://video.yahoo.com/video/play?vid=568351">Maintainable JavaScript</a> (<a href="http://www.slideshare.net/nzakas/maintainable-javascript-1071179">slides</a>). The point of the talk was to encourage people to use more rigor in their JavaScript coding. A lot of people who write JavaScript for a living began as hobbyists and hackers, including myself. All of the best front end engineers are self-taught, of course, because this stuff hasn’t been taught in colleges and universities. I took the opportunity to simply point out that the same coding practices that are taught in traditional software engineering programs can also be applied to JavaScript. And of course, I threw in some of my own personal findings gathered through years of web development.</p>
+
+<h2 id="what-is-maintainable-code">What is maintainable code?</h2>
+
+<p>In the presentation, I said that maintainable code has the following qualities:</p>
+
+<ul>
+  <li>Understandable</li>
+  <li>Intuitive</li>
+  <li>Adaptable</li>
+  <li>Extendable</li>
+  <li>Debuggable</li>
+</ul>
+
+<p>I’d also now like to add “Testable” as a sixth quality of maintainable code. As I thought about this more recently, I realized that all six of these qualities really boil down to a single concept: don’t be confusing.</p>
+
+<p>Confusing code doesn’t embody these qualities and makes everyone’s job harder. Over the years, we’ve become better at identifying bad code. Bad code causes runtime problems, whether they be actual thrown errors, performance bottlenecks, or accessibility issues. Bad code is typically identified by bugs that require spot changes to code for a remedy. Confusing code is more insidious.</p>
+
+<p>It’s hard to uncover confusing code without context. Any single line or series of lines of code, when examined in a vacuum, is confusing. Context is what determines if that code is confusing or not. That necessarily means that the only way to uncover confusing code is by thorough review.</p>
+
+<p>Anyone who’s worked with me knows my passion for code reviews, as I believe they are the best way to not only catch more esoteric issues but also as a way to socialize best practices within a group. Code reviews are never at the top of anyone’s “to do” list, but they are vitally important. When confusing code is shown in the light of day, it’s much easier to identify and fix. What’s more, when a group of people are looking at confusing code, they can all agree that it’s confusing and come up with a common way to fix it.</p>
+
+<h2 id="confusing-javascript">Confusing JavaScript</h2>
+
+<p>Confusing code comes in many forms but has an overriding quality: it’s hard to tell if it’s intentional or a mistake. JavaScript is the easiest of the three (JavaScript, CSS, and HTML) within which confusing code exists. A classic example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>switch(type){
+    case "string":
+        handleString(value);
+    case "number":
+        handleNumber(value);
+    default:
+        handleValue(value)
+}
+</code></pre></div></div>
+
+<p>This code looks innocuous enough. Decent engineers will look at this code and say, “hey, each case statement is missing a break.” If you were fixing code in the same file, you might even be inclined to help out and just add a <code class="highlighter-rouge">break</code> after each case. But are you sure there’s an error here? How do you know that the developer didn’t intentionally omit the <code class="highlighter-rouge">break</code> in each case? There’s really no way to tell, so you could be <em>creating</em> a bug by fixing this code, but for all you know, this code could be already causing a bug that you could fix. This is confusing code.</p>
+
+<p>How do you make it into good code? By providing context. In this case, the surrounding code doesn’t provide enough context, so adding a comment is the best way to go. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>switch(type){
+    case "string":
+        handleString(value);
+        /*falls through*/
+    case "number":
+        handleNumber(value);
+        /*falls through*/
+    default:
+        handleValue(value)
+}
+</code></pre></div></div>
+
+<p>This code is much less confusing. You know that the intent is for each case to fall through to the next, so you won’t accidentally fix this code when you come across it. Further, if your team agrees that this is the pattern to use in these situations, then you know that each case statement must be terminated by a <code class="highlighter-rouge">break</code>, <code class="highlighter-rouge">return</code>, <code class="highlighter-rouge">throw</code>, or a <code class="highlighter-rouge">/*falls through*/</code> comment. If a <code class="highlighter-rouge">case</code> statement doesn’t end with one of those, then it’s likely an error and should be filed as a defect.</p>
+
+<h3 id="jslint">JSLint</h3>
+
+<p>In case you somehow haven’t heard, <a href="http://www.jslint.com/">JSLint</a> is a tool created by Douglas Crockford to validate JavaScript code. It’s described as a tool to help identify bad code, which it does, but it also identifies confusing code. In fact, it identifies more types of confusing code than it does bad code. What exactly qualifies as confusing code is subjective, and Crockford and I are not in agreement on 100% of the things that JSLint points out, but this is still the best tool available to help identify potentially confusing code in additional to bad code.</p>
+
+<h2 id="confusing-css">Confusing CSS</h2>
+
+<p>Don’t be fooled, confusing code can exist in the other layers of a web application as well. CSS has some interesting syntactic issues that could lead to confusion. For example, the padding property can have one, two, three, or four parts to its value:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/*same padding all around*/
+padding: 10px;
+
+/*padding for top/bottom, different padding for left/right*/
+padding: 10px 20px;
+
+/*padding for top, different padding for left/right, different padding for bottom*/
+padding: 10px 20px 15px;
+
+/*different padding for top, right, bottom, and left*/
+padding: 10px 20px 15px 25px;
+</code></pre></div></div>
+
+<p>Some will say that all of these are fine and not confusing. Personally, I find the third option quite confusing, as it’s not clear that you intended for a different bottom padding. You might have meant to use two or four parts. This form is also the least intuitive of all the options. There’s a couple of easy ways to disambiguate. The first is to agree to always use one, two, or four parts for properties such as <code class="highlighter-rouge">padding</code>. This has the pleasant side effect of really making you stop and think if you need just one dimension to be different. Here’s how this looks:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/*Don't use*/
+padding: 10px 20px 15px;
+
+/*Better*/
+padding: 10px 20px 15px 20px;
+</code></pre></div></div>
+
+<p>Even though you end up using the same value for the right and left parts, I’d argue that it’s easier to tell that the result is intended. Another option is to always use the specific padding property for the one-off dimension, such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/*Don't use*/
+padding: 10px 20px 15px;
+
+/*Better*/
+padding: 10px 20px;
+padding-bottom: 15px;
+</code></pre></div></div>
+
+<p>Both this and previous example have the advantage of making this decision explicit: you <em>meant</em> to change just one dimension of padding and therefore, it must be correct.</p>
+
+<h2 id="beware-of-confusing-code">Beware of confusing code</h2>
+
+<p>Confusing code is the second-worst (next to bad code) type of code to have in your source because it can introduce subtle errors that can go unnoticed for long periods of time. I like to say that code is like rabbits: it multiplies when you’re not looking. If there’s one instance of confusing code in your system, it doesn’t take very long before there are two. That’s because of the natural flow of a software project. Someone is looking for an example of how to do something new and they come across the confusing code. The confusing code gets copied and now there are two instances in the source. The next time someone goes looking for an example, they’re twice as likely to find the confusing code as an example (and of course, finding two examples of the same approach validates the approach in the seeker’s mind).</p>
+
+<p>The same is true with good, maintainable code. The more examples of good code that are in source, the more likely that others will copy it. And that’s what you want.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/12/15/writing-maintainable-code/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

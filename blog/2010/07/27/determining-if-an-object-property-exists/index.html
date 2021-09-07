@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Determining if an object property exists - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2010/07/27/determining-if-an-object-property-exists/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Determining if an object property exists">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2010/07/27/determining-if-an-object-property-exists/" />
+<meta name="og:title" content="Determining if an object property exists">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="One of the most basic tests developers perform in JavaScript is whether or not a particular property exists on an object. Since feature detection is the preferred method of code forking, developers are...">
+<meta name="keywords" content="Feature Detection,JavaScript,Objects,Properties,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Determining if an object property exists</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2010-07-27T00:00:00+00:00" itemprop="datePublished">July 27, 2010</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/feature-detection" rel="tag">Feature Detection</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/objects" rel="tag">Objects</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/properties" rel="tag">Properties</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>One of the most basic tests developers perform in JavaScript is whether or not a particular property exists on an object. Since feature detection is the preferred method of code forking, developers are encouraged to test for the existence of properties before using them. There is a lot of buggy JavaScript code out there as inexperienced developers try to use feature detection. A lot of the problems reside with a lack of understanding as to the nature of object properties in JavaScript.</p>
+
+<h2 id="where-do-properties-come-from">Where do properties come from?</h2>
+
+<p>Before attempting to detect properties, it’s important to understand from where they originate. There are two basic types of properties in JavaScript: those that exist on the object (also known as “own” properties) and those that are inherited through the prototype chain (often called “prototype” properties). Consider the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var person = {
+    name: "Nicholas"
+};
+
+alert(person.name);        //"Nicholas"
+alert(person.toString());  //"[object Object]"
+</code></pre></div></div>
+
+<p>In this code, the object <code class="highlighter-rouge">person</code> has only one own property, which is <code class="highlighter-rouge">name</code>. You can still access other methods on the object such as <code class="highlighter-rouge">toString()</code>, but these are inherited through the prototype chain. Object literals inherit from the <code class="highlighter-rouge">Object</code> type, so all of the basic methods of <code class="highlighter-rouge">Object</code> are accessible on the instance.</p>
+
+<p>The big difference between own properties and prototype properties is the difference between unique and shared values. Own properties belong to that single object instance and can’t be affected by other instances of the same type; prototype properties belong to the prototype of the object, and since the prototype can be shared amongst multiple instances, these properties are also shared amongst multiple instances. Here’s another example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var person2 = Object.create(person);
+var person3 = Object.create(person);
+
+alert(person2.name);   //"Nicholas"
+alert(person3.name);   //"Nicholas"
+
+person.name = "Adam";
+
+alert(person2.name);    //"Adam"
+alert(person3.name);    //"Adam"
+</code></pre></div></div>
+
+<p>This example uses the <code class="highlighter-rouge">&lt;a href="http://javascript.crockford.com/prototypal.html"&gt;Object.create()&lt;/a&gt;</code> method from ECMAScript 5 to create two objects, <code class="highlighter-rouge">person2</code> and <code class="highlighter-rouge">person3</code>, that inherit from <code class="highlighter-rouge">person</code>. The prototype for both <code class="highlighter-rouge">person2</code> and <code class="highlighter-rouge">person3</code> is <code class="highlighter-rouge">person</code>, and so <code class="highlighter-rouge">name</code> is actually a prototype property that is accessible through <code class="highlighter-rouge">person2</code> and <code class="highlighter-rouge">person3</code>. This is why displaying the values of name on both objects results in the same value: they are both sharing the prototype property <code class="highlighter-rouge">name</code>. That means when <code class="highlighter-rouge">person.name</code> is changed directly, the change is accessible from the instances.</p>
+
+<p>It’s important to understand that <code class="highlighter-rouge">name</code> is a prototype property for both <code class="highlighter-rouge">person2</code> and <code class="highlighter-rouge">person3</code>, but it’s an own property for <code class="highlighter-rouge">person</code>. You can only assign values to own properties, so attempting to assign a value to a prototype property actually causes a new own property of the same name to be created. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alert(person2.name);    //"Nicholas"
+alert(person3.name);    //"Nicholas"
+
+person2.name = "Adam";
+
+alert(person2.name);    //"Adam"
+alert(person3.name);    //"Nicholas"
+</code></pre></div></div>
+
+<p>Since you can’t assign to prototype properties, assigning a new value to <code class="highlighter-rouge">person2.name</code> actually creates a new own property on <code class="highlighter-rouge">person2</code> called <code class="highlighter-rouge">name</code>. Own properties always shadow prototype properties, so the next time you access <code class="highlighter-rouge">person2.name</code>, you’re accessing the own property instead of the prototype property. That will continue until the own property is removed using <code class="highlighter-rouge">delete</code>, such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>delete person2.name;
+
+alert(person2.name);    //"Nicholas"
+</code></pre></div></div>
+
+<p>You can only call <code class="highlighter-rouge">delete</code> on an own property to remove it (calling on a prototype property does nothing). Once the own property <code class="highlighter-rouge">name</code> is removed, there is nothing shadowing the prototype property <code class="highlighter-rouge">name</code> and so <code class="highlighter-rouge">person2.name</code> now refers to the prototype property.</p>
+
+<p>Note: While all native object types (<code class="highlighter-rouge">Array</code>, <code class="highlighter-rouge">Boolean</code>, <code class="highlighter-rouge">Date</code>, all <code class="highlighter-rouge">Error</code> variants, <code class="highlighter-rouge">Function</code>, <code class="highlighter-rouge">Number</code>, <code class="highlighter-rouge">RegExp</code>, and <code class="highlighter-rouge">String</code>) inherit from <code class="highlighter-rouge">Object</code>, non-native object types, such as those that represent the DOM in browsers, don’t necessarily inherit from <code class="highlighter-rouge">Object</code> in all browsers.</p>
+
+<h2 id="detecting-properties">Detecting properties</h2>
+
+<p>Let’s say you want to determine if a given object has a property of name. In experienced developers tend to write code like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//doesn't accurately test for existence
+if (person.name){
+    //yay! property exists!
+}
+</code></pre></div></div>
+
+<p>At first glance, this seems okay. However, understanding how JavaScript works reveals some problems with this approach. First, this will only succeed if the value of <code class="highlighter-rouge">person.name</code> is <a href="http://11heavens.com/falsy-and-truthy-in-javascript">truthy</a>, meaning it’s an object, a non-empty string, a non-zero number that’s not <code class="highlighter-rouge">NaN</code>, <code class="highlighter-rouge">true</code>, and not <code class="highlighter-rouge">null</code> or <code class="highlighter-rouge">undefined</code>. That means if <code class="highlighter-rouge">person.name</code> is the empty string (“”), this check will fail. Failing, in this case, doesn’t mean that the property doesn’t exist. In fact, the property does exist and contains a value, but the value is falsy and so doesn’t pass this test.</p>
+
+<h3 id="detecting-own-properties">Detecting own properties</h3>
+
+<p>Keeping in mind that this is about testing for the <em>existence</em> of the property and not for the usability or data type, there are a couple of options. The first option is to detect own properties, and it comes via a method on the <code class="highlighter-rouge">Object</code> type called <code class="highlighter-rouge">hasOwnProperty()</code>. Since native objects inherit from <code class="highlighter-rouge">Object</code>, this property is inherited by these objects and can be used to detect the existence of own properties:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>alert(person.hasOwnProperty("name"));   //true
+alert(person2.hasOwnProperty("name"));    //false
+
+person2.name = "Adam";
+
+alert(person2.hasOwnProperty("name"));    //true
+
+delete person2.name;
+
+alert(person2.hasOwnProperty("name"));    //false
+</code></pre></div></div>
+
+<p>Initially, <code class="highlighter-rouge">person2</code> has a prototype property <code class="highlighter-rouge">name</code>, so <code class="highlighter-rouge">hasOwnProperty()</code> returns false. Once an own property is created, calling <code class="highlighter-rouge">hasOwnProperty()</code> returns true. And after the property is removed via <code class="highlighter-rouge">delete</code>, this method again returns false.</p>
+
+<p>JSON serialization works only for own properties, and non-native JSON serialization utilities used <code class="highlighter-rouge">hasOwnProperty()</code> to ensure that only the properties defined on object literals were included in the resulting string.</p>
+
+<h3 id="detecting-all-properties">Detecting all properties</h3>
+
+<p>If you only care that the object has a property and don’t care whether it’s an own property or a prototype property, you can use the <code class="highlighter-rouge">in</code> operator to determine the existence of the property. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if ("name" in person){
+    //property exists
+}
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">in</code> operator returns true when the named property exists on the object. In many cases, the <code class="highlighter-rouge">in</code> operator is all that you’ll need (especially when dealing with DOM objects). In fact, Mark Pilgrim’s <a href="http://diveintohtml5.info/everything.html">All-In-One Almost-Alphabetical No-Bullshit Guide to Detecting Everything</a> for HTML5 makes extensive use of <code class="highlighter-rouge">in</code> for detecting the new HTML5 features on DOM objects.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>If you just want to check for the existence of properties, and not necessarily what their value might be, then you have two safe options: <code class="highlighter-rouge">hasOwnProperty()</code> and the <code class="highlighter-rouge">in</code> operator. The <code class="highlighter-rouge">hasOwnProperty()</code> property method should be used if you want to detect own properties only. If you want to test property existence and don’t care if it’s an own property or an object property, then the <code class="highlighter-rouge">in</code> operator is the one to use.</p>
+
+<p><strong>Update (27 July 2010):</strong> Added <code class="highlighter-rouge">false</code> and <code class="highlighter-rouge">NaN</code> to list of falsy values.<em>**</em></p>
+
+<p><strong>Update (29 July 2010):</strong> Fixed description of truthy/falsy values.</p>
+
+<p><strong>Update (22 December 2012):</strong> Fixed link to Mark Pilgrim’s list.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2010/07/27/determining-if-an-object-property-exists/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Separating JavaScript download and execution - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2011/02/14/separating-javascript-download-and-execution/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Separating JavaScript download and execution">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2011/02/14/separating-javascript-download-and-execution/" />
+<meta name="og:title" content="Separating JavaScript download and execution">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Not too long ago, I wrote  a post entitled, Thoughts on script loaders1, in which I discussed my thoughts on the continuing introduction of script loaders such as LABjs and ControlJS. In that...">
+<meta name="keywords" content="Feature Detection,JavaScript,Performance,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Separating JavaScript download and execution</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2011-02-14T00:00:00+00:00" itemprop="datePublished">February 14, 2011</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/feature-detection" rel="tag">Feature Detection</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/performance" rel="tag">Performance</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Not too long ago, I wrote  a post entitled, Thoughts on script loaders<sup><a href="../../../../2010/12/21/thoughts-on-script-loaders/index.html">1</a></sup>, in which I discussed my thoughts on the continuing introduction of script loaders such as LABjs and ControlJS. In that post I also mentioned what I thought was the main problem that led to existence of these libraries. That problem is the inability of the developer to control the download of JavaScript files as separate from its execution.</p>
+
+<p>After a conversation with Steve Souders about ControlJS, I put together a proposal for a delayed script execution model in browsers<sup><a href="https://docs.google.com/document/d/1s8_iRr1TcwcDtShgfuGThapwZtVXItymw5zc16D0Pz8/edit?hl=en&amp;authkey=CNbDlo8J">2</a></sup>. I reviewed this with Jonas Sicking and Boris Zbarsky from Mozilla as well as Tony Gentilcore from WebKit, where we had a nice go-around about actual use cases and possible solutions aside from mine. Ultimately, the consensus was that the issue should be brought up on the WHAT-WG mailing list to get a wider group of opinions, and so I initiated  that thread<sup><a href="http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-February/030161.html">3</a></sup>. But before diving into that discussion, it’s helpful to understand the problem.</p>
+
+<h2 id="background">Background</h2>
+
+<p>Traditionally, JavaScript execution immediately followed download of the external JavaScript file. This is exactly how the <code class="highlighter-rouge">&lt;script&gt;</code> element works in markup. There’s also the unfortunate side effect that <code class="highlighter-rouge">&lt;script&gt;</code> in markup causes the browser to block rendering (and other resource downloads in older browsers). Because most JavaScript isn’t necessary until at least the entire HTML page has been downloaded, the addition of the <code class="highlighter-rouge">defer</code> attribute was the first attempt to separate JavaScript download from execution.</p>
+
+<p>As a recap, adding <code class="highlighter-rouge">defer to a </code><code class="highlighter-rouge">&lt;script&gt;</code> causes JavaScript to download immediately but hold off on executing until the entire DOM has been loaded (before <code class="highlighter-rouge">DOMContentLoaded</code>). Multiple scripts marked with <code class="highlighter-rouge">defer</code> preserve the order of execution. The most important part of <code class="highlighter-rouge">defer</code> is that downloading of external JavaScript doesn’t block rendering or downloading of additional resources. Since <code class="highlighter-rouge">defer</code> was only supported in Internet Explorer, it was rarely used.</p>
+
+<p>Developers discovered that creating a script element dynamically using JavaScript caused a different behavior. Downloading of an external JavaScript using this pattern did not block rendering or other downloads, and then the script executed immediately upon download. Multiple scripts loaded in this manner may or may not retain their order of execution across browsers (most did not retain order, Firefox did).</p>
+
+<p>HTML5 introduced the <code class="highlighter-rouge">async</code> attribute on <code class="highlighter-rouge">&lt;script&gt;</code> to enable the same usage pattern as dynamic script elements. The behavior was the same: start to download immediately, don’t block rendering or other downloads, and then execute as soon as download is complete. The order of execution is explicitly <em>not</em> maintained.</p>
+
+<p>So there are already three different designations for how scripts should be loaded: regular, <code class="highlighter-rouge">defer</code>, and <code class="highlighter-rouge">async</code>. All three simply alter the timing and behavior of download and execution of the external JavaScript file. These cover the use case of initiating downloads very well but fail at allowing you to determine when the script should be executed.</p>
+
+<h2 id="the-problem">The problem</h2>
+
+<p>Despite the various options for loading JavaScript, there is still no way to download a JavaScript file and set it to execute at an arbitrary time. You can say execute immediately, or you can defer until the DOM document is complete, but you can’t specify any other point in time to execute the code. This has resulted in developers coming up with hack after hack to try and create this ability:</p>
+
+<ul>
+  <li>Kyle Simpson uses a <code class="highlighter-rouge">type</code> attribute of “script/cache” to force IE to download but not execute scripts in Internet Explorer. Once in the cache, a dynamic script element is created with the same URL. This offers the potential of a double download if cache headers are not set appropriately on the JavaScript file.</li>
+  <li>Stoyan Stefanov investigated how to pre-cache both JavaScript and CSS using images<sup><a href="http://www.phpied.com/preload-cssjavascript-without-execution/">4</a></sup>. ControlJS makes use of this technique. Once in the cache, a dynamic script element is created with the same URL. This has the same potential downside involving double downloading.</li>
+  <li>The Gmail mobile team introduced  a technique to provide JavaScript in script comments, and then only evaluate the code when necessary<sup><a href="http://googlecode.blogspot.com/2009/09/gmail-for-mobile-html5-series-reducing.html">5</a></sup>. The only downside to this is that you must format the code as comments inline to the HTML and then eval later, which is a bit of work.</li>
+</ul>
+
+<p>The reason why so many engineers are trying to come up with ways to separately download and execute JavaScript is because of the performance implications related to the blocking of rendering and other downloads. We need to get JavaScript onto the page, but we need to do it in such a way that it doesn’t affect the user experience.</p>
+
+<p>Bear in mind: this isn’t just a mobile issue, nor is it just a desktop issue, it’s an overall issue dealing with the level of control developers have over loading JavaScript into a web page. In my time at Yahoo!, my team has investigated many different ways of loading JavaScript, and the research continues.</p>
+
+<p>It’s with all this in mind that I decided to put forth a proposal to improve this situation. A lot of things get talked about hypothetically, but it’s only when a concrete proposal appears that things tend to move, and that was my intention from the start.</p>
+
+<h2 id="requirements">Requirements</h2>
+
+<p>One of the most helpful things that Steve and I did was to outline a few basic requirements for any solution that could solve this problem:</p>
+
+<ol>
+  <li>The functionality must be exposed to feature detection techniques.</li>
+  <li>No double download of JavaScript files as a guarantee.</li>
+  <li>Don’t inhibit the parallel downloading of JavaScript files.</li>
+</ol>
+
+<p>With these requirements in mind, I set out on my first proposal.</p>
+
+<h2 id="the-original-proposal">The original proposal</h2>
+
+<p>My original proposal<sup><a href="https://docs.google.com/document/d/1s8_iRr1TcwcDtShgfuGThapwZtVXItymw5zc16D0Pz8/edit?hl=en&amp;authkey=CNbDlo8J">2</a></sup> was based on adding a <code class="highlighter-rouge">noexecute</code> attribute to a <code class="highlighter-rouge">&lt;script&gt;</code> element, which informed the browser not to execute the external file but to download it. You could later execute the code by calling a new <code class="highlighter-rouge">execute()</code> method. Simple example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var script = document.createElement("script");
+script.noexecute = true;
+script.src = "foo.js";
+document.body.appendChild(script);
+
+//later
+script.execute();
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">noexecute</code> attribute could also be specified in HTML markup, allowing you to later get a reference to that element and called <code class="highlighter-rouge">execute()</code> on it as well. There were a large amount of additional details surrounding this proposal in terms of changes to events, formalization of <code class="highlighter-rouge">readyState</code>, and how to deal with the various states of the script itself.</p>
+
+<h2 id="reactions-and-alternatives">Reactions and alternatives</h2>
+
+<p>The reactions I received from this proposal ranged from “interesting” to “too complicated.” No one outright hated it, which is always a good sign, but the number of people who loved it wasn’t high enough to continue on without rethinking. In the meantime, there were two other proposals being floated around:</p>
+
+<ul>
+  <li>Make all of the browsers behave like Internet Explorer in the way they handle dynamic scripts. Download begins as soon as the <code class="highlighter-rouge">src</code> property is assigned but the code isn’t executed until the script node is added to the document. I pointed out the major issue with this is that there is no way to feature detect this functionality to differentiate browser behaviors. It was brought up that Internet Explorer is the only browser that supports <code class="highlighter-rouge">readyState </code>on script nodes and its value starts at “uninitialized”, so the functionality can be inferred. As many people I know, I hate feature inference.</li>
+  <li>Use some version of <code class="highlighter-rouge">&lt;link rel="prefetch"&gt;</code> to download JavaScript files. I pointed out a couple of issues with this approach, the first being that prefetching happens during user idle time, and the developer doesn’t know when that will happen. The second issue is that you’d still need to create a new script node and assign its <code class="highlighter-rouge">src</code> property. This relies on correct caching behavior and could result in a double download.</li>
+</ul>
+
+<p>To be fair, there were significant criticisms on my proposal as well. The major list of dislikes in my proposal were:</p>
+
+<ul>
+  <li>Broken backwards compatibility when using <code class="highlighter-rouge">noexecute</code> in markup.</li>
+  <li>Requires defining <code class="highlighter-rouge">readyState</code> and <code class="highlighter-rouge">onreadystatechange</code> on <code class="highlighter-rouge">HTMLScriptElement</code>.</li>
+  <li>Changing how the load event works for <code class="highlighter-rouge">noexecute</code> scripts only.</li>
+  <li>Adding the <code class="highlighter-rouge">execute()</code> method to <code class="highlighter-rouge">HTMLScriptElement</code>. This brought up many questions as to what should happen when this method was called in different situations.</li>
+</ul>
+
+<p>The overall feeling on the WHAT-WG mailing list was that the proposal was too complicated even though the general direction seemed okay.</p>
+
+<h2 id="proposal-v21">Proposal v2.1</h2>
+
+<p>After doing some soul searching, I decided to focus on what seemed like the simplest solution: making other browsers behave like Internet Explorer. As Kyle pointed out, this was already proven to work and the HTML5 specification allows this behavior. I set out to redefine my proposal as a way to codify this behavior in a way that allowed the developer to decide to turn this feature on as well as a way to feature detect. The results is a proposal I’ve called v2.1 (since I made some major edits after v2).</p>
+
+<p>This proposal simplifies the list of enhancements to:</p>
+
+<ol>
+  <li>Create a <code class="highlighter-rouge">preload</code> property on <code class="highlighter-rouge">HTMLScriptElement</code>. This works only when used in JavaScript and has no effect when put in markup.</li>
+  <li>When <code class="highlighter-rouge">preload</code> is set to true, download begins as soon as <code class="highlighter-rouge">src</code> is assigned to.</li>
+  <li>An <code class="highlighter-rouge">onpreload</code> event handler is called when the file is successfully downloaded and is ready for execution.</li>
+  <li>The script is executed when the script node is added to the document.</li>
+</ol>
+
+<p>A basic example of how this would be used:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var script = document.createElement("script");
+script.preload = true;
+script.src = "foo.js";    //download begins here
+script.onpreload = function(){
+    //script is now ready, if I want to execute, the following should be used:
+    document.body.appendChild(script);
+};
+</code></pre></div></div>
+
+<p>The reason why I like this solution is that the feature detection is obvious and corresponds directly to the behavior that will occur:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var isPreloadSupported = (typeof script.preload == "boolean");
+</code></pre></div></div>
+
+<p>I like this much better than the feature inference currently used in LABjs to detect Internet Explorer:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var isPreloadSupported = (script.readyState == "uninitialized");
+</code></pre></div></div>
+
+<p>To me, this doesn’t at all indicate that the preloading functionality is present. It only indicates that the <code class="highlighter-rouge">readyState </code>property is present and has  a value of “uninitialized”. This is exactly the type of code that I seek to avoid with my proposal, so that script loaders can stop trying to infer what the browser will do and instead actually know what the browser will do.</p>
+
+<p>This proposal also keeps the changes to <code class="highlighter-rouge">HTMLScriptElement</code> small and self-contained,  without affecting existing definitions.</p>
+
+<p>Note: There’s also the possibility that the default value of <code class="highlighter-rouge">preload </code>could be true instead of false, making Internet Explorer’s behavior the default amongst browsers that support this functionality. I could go either way on this issue, but the possibility should be mentioned.</p>
+
+<h2 id="and-so-on">And so on</h2>
+
+<p>The conversation is still ongoing on the WHAT-WG mailing list. As I’ve said on the list, I really don’t care what the final solution is, whether it be mine or not, so long as it fulfills the three requirements I laid out earlier. I think it’s pretty clear that this capability is important for finishing the work started with the introduction of the <code class="highlighter-rouge">async</code> attribute. Once we have better control over when JavaScript can download and execute, we’ll be able to create multiple variations of script loading techniques. It’s my hope that we’ll soon reach a conclusion on how best to move forward.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="../../../../2010/12/21/thoughts-on-script-loaders/index.html">Thoughts on script loaders</a>, by Nicholas C. Zakas</li>
+  <li><a href="https://docs.google.com/document/d/1s8_iRr1TcwcDtShgfuGThapwZtVXItymw5zc16D0Pz8/edit?hl=en&amp;authkey=CNbDlo8J">Proposal for Delayed Script Execution</a>, by Nicholas C. Zakas</li>
+  <li><a href="http://lists.whatwg.org/htdig.cgi/whatwg-whatwg.org/2011-February/030161.html">WHAT-WG: Proposal for separating script downloads and execution</a></li>
+  <li><a href="http://www.phpied.com/preload-cssjavascript-without-execution/">Preload JavaScript/CSS without execution</a>, by Stoyan Stefanov</li>
+  <li><a href="http://googlecode.blogspot.com/2009/09/gmail-for-mobile-html5-series-reducing.html">Gmail for Mobile HTML5 Series: Reducing Startup Latency</a>, by Bikin Chiu</li>
+  <li><a href="https://docs.google.com/document/d/1EGM9xmQXbJ_rI0IFhbnACiDaaBPTSb7T3RynwD-naJg/edit?hl=en&amp;authkey=CO7aqZAO">Proposal for Delayed Script Execution v2.1</a>, by Nicholas C. Zakas</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2011/02/14/separating-javascript-download-and-execution/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

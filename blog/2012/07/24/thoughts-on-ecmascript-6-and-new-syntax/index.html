@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Thoughts on ECMAScript 6 and new syntax - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/07/24/thoughts-on-ecmascript-6-and-new-syntax/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Thoughts on ECMAScript 6 and new syntax">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/07/24/thoughts-on-ecmascript-6-and-new-syntax/" />
+<meta name="og:title" content="Thoughts on ECMAScript 6 and new syntax">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="I am, just like many in the JavaScript world, watching anxiously as ECMAScript undergoes its next evolution in the form of ECMAScript 6. The anxiety is a product of the past, when we...">
+<meta name="keywords" content="ECMAScript 6,JavaScript,Syntax,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Thoughts on ECMAScript 6 and new syntax</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-07-24T00:00:00+00:00" itemprop="datePublished">July 24, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/ecmascript-6" rel="tag">ECMAScript 6</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/syntax" rel="tag">Syntax</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>I am, just like many in the JavaScript world, watching anxiously as ECMAScript undergoes its next evolution in the form of ECMAScript 6. The anxiety is a product of the past, when we were all waiting for ECMAScript 4 to evolve. The ECMAScript 4 initiative seemed more like changing JavaScript into a completely different language that was part Java, part Python, and part Ruby. Then along came the dissenting crowd, including Douglas Crockford, who brought some sanity to the proceedings by suggesting a more deliberate approach. The result was ECMAScript 5, which introduced several new capabilities to the language without introducing a large amount of new syntax. The focus seemed to be on defining the so-called “magical” parts of JavaScript such as read-only properties and non-enumerable properties while setting the path forward to remove “the bad parts” with strict mode. The agreement was that TC39 would reconvene to address some of the larger language issues that were being solved in ECMAScript 4 and punted on in ECMAScript 5. That process began to create the next version of the language code-named “Harmony”.</p>
+
+<p>We are now quite a bit further along the development of ECMAScript 6 so it’s a good time to stop and take a look at what’s been happening. Obviously, the evolution of any language focuses around adding new capabilities. New capabilities are added in ECMAScript 5 and I fully expected that to continue in ECMAScript 6. What I didn’t expect was how new capabilities would end up tied to new syntax.</p>
+
+<h2 id="good-new-syntax">Good new syntax</h2>
+
+<p>I’ve had several conversations with people about various ECMAScript 6 features and many have the mistaken belief that I’m against having new syntax. That’s not at all the case. I like new syntax when it does two things: simplifies an already existing pattern and makes logical sense given the rest of the syntax. For example, I think the addition of <code class="highlighter-rouge">let</code> for the creation of block-scoped variables and <code class="highlighter-rouge">const</code> for defining constants make sense. The syntax is identical to using <code class="highlighter-rouge">var</code>, so it’s easy for me to make that adjustment in my code if necessary:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var SOMETHING = "boo!";
+const SOMETHING = "boo!";
+let SOMETHING = "boo!";
+</code></pre></div></div>
+
+<p>The cognitive overhead of using new keywords with the familiar syntax is pretty low, so it’s unlikely that developers would get confused about their usage.</p>
+
+<p>Likewise, the addition of the <code class="highlighter-rouge">for-of</code> loop is some syntactic sugar around <code class="highlighter-rouge">Array.prototype.forEach()</code>, plus some compatibility for Array-like items (making it syntactic sugar for Firefox’s generic <code class="highlighter-rouge">Array.forEach()</code>). So you could easily change this code:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var values = [1, 2, 3, 4, 5, 6];
+values.forEach(function(value) {
+    console.log(value);
+});
+</code></pre></div></div>
+
+<p>Into this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var values = [1, 2, 3, 4, 5, 6];
+for (let value of values) {
+    console.log(value);
+}
+</code></pre></div></div>
+
+<p>This makes complete sense to me. The syntax is very similar to the already existing <code class="highlighter-rouge">for</code> and <code class="highlighter-rouge">for-in</code> loops and mimics what’s already available with <code class="highlighter-rouge">Array.prototype.forEach()</code>. I look at this code, and it still looks like JavaScript, and that makes me happy. Even if I choose not to use the new syntax, I can still pretty much accomplish the same thing.</p>
+
+<h2 id="bad-new-syntax">Bad new syntax</h2>
+
+<p>One of the features of ECMAScript 6 that has received a lot of attention by the so-called “fat arrow” functions<sup><a href="http://wiki.ecmascript.org/doku.php?id=harmony:arrow_function_syntax">1</a></sup>. This appears to be an attempt to solve several problems:</p>
+
+<ul>
+  <li><strong><code class="highlighter-rouge">this</code> binding</strong> – The desire to more easily specify the value of <code class="highlighter-rouge">this</code> Within a function. This is the problem that <code class="highlighter-rouge">Function.prototype.bind()</code> solves.</li>
+  <li><strong>Avoid typing “function”</strong> – For some reason, people seem to hate typing the word “function”. Brendan Eich himself has said that he regrets using such a long word. I’ve never really had a problem with it or understood people’s frustration with having to type those characters.</li>
+  <li><strong>Avoid typing parentheses, braces</strong> – Once again, the syntax seems to be the issue. And once again, I just don’t get it.</li>
+</ul>
+
+<p>So essentially this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function getName() {
+     return this.name;
+}
+
+var getWindowName = getName.bind(window);
+</code></pre></div></div>
+
+<p>Becomes this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var getWindowName = () =&gt; this.name;
+</code></pre></div></div>
+
+<p>And this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function getName(myName) {
+     return this.name + myName;
+}
+
+var getWindowName = getName.bind(window);
+</code></pre></div></div>
+
+<p>Becomes this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var getWindowName = myName =&gt; this.name + myName;
+</code></pre></div></div>
+
+<p>I know I’m probably alone on this, but I don’t think the syntax is clear. If there are no arguments to the function, then you need to provide parentheses; also, if there is more than one argument, you need parentheses. If there’s just one argument, then you don’t need the parentheses. With me so far?</p>
+
+<p>If you want to return an object literal from one of these functions, then you must enclose the object literal and parentheses:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let key_maker = val =&gt; ({key: val});
+</code></pre></div></div>
+
+<p>Then if you want to do more than one thing in the function body, you need to wrap it in braces and use a <code class="highlighter-rouge">return</code> Like you would in a regular function:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let sumIt = (val1, val2) =&gt; {
+    var sum = val1 + val2;
+    return sum;
+};
+</code></pre></div></div>
+
+<p>And don’t be confused into thinking these functions act like all other functions. There are several important differences between functions declared using the fat arrow syntax and functions declared in the more traditional way:</p>
+
+<ul>
+  <li>As mentioned previously, the value of <code class="highlighter-rouge">this</code> is static. It always takes the value of <code class="highlighter-rouge">this</code> for the enclosing function or global scope.</li>
+  <li>You can’t use <code class="highlighter-rouge">new</code> with a fat arrow function, it throws an error.</li>
+  <li>Fat arrow functions do not have a <code class="highlighter-rouge">prototype</code> property.</li>
+</ul>
+
+<p>So not only are arrow functions trying to solve a bunch of problems, they also introduce a bunch of side effects that aren’t immediately apparent from the syntax. This is the type of new syntax that I don’t like. There’s a lot that goes on with arrow functions that is unexpected if you think that this is just a shorthand way of writing functions.</p>
+
+<p>What’s more, I don’t know how to read this out loud. One of the things I’ve always liked about JavaScript is that it says what it does so I can actually read the code out loud and it makes sense. I have no idea how to pronounce that arrow function. “Let variable equal to a group of arguments that executes some statements?” It just doesn’t work for me. In some ways, this is the sort of problem you end up with when you try to solve multiple problems with one solution. There are a lot of rules to remember with this syntax and a lot of side effects to consider.</p>
+
+<p>Just for argument sake, if someone asked me what sort of new syntax I would suggest for sugaring <code class="highlighter-rouge">Function.prototype.bind()</code>, I would choose something along the lines of this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// My own attempt at sugaring Function.prototype.bind() - not ES6
+function&lt;window&gt; getName() {
+    return this.name;
+}
+</code></pre></div></div>
+
+<p>This sort of syntax looks familiar to me while actually being new. I would read it as, “define a function in the scope of window called getName.” The idea is that <code class="highlighter-rouge">this</code> would always end up equal to <code class="highlighter-rouge">window</code>. Granted, the solves only one of the problems that arrow functions try to solve, but at least it says what it does.</p>
+
+<h2 id="ugly-new-syntax">Ugly new syntax</h2>
+
+<p>There are other features in ECMAScript 6 that make me feel like JavaScript is becoming an ASCII art language. For some reason, instead of adding new capabilities with already existing syntax, the specification adds new capabilities only with new syntax. What puzzles me the most about this is that these capabilities are those that already exist in other languages in some form.</p>
+
+<p>Case in point: quasis (aka quasi-literals)<sup><a href="http://wiki.ecmascript.org/doku.php?id=harmony:quasis">2</a></sup>. Quasis seem to be a solution for many different problems in JavaScript. As best I can tell, quasis are supposed to solve all of these problems:</p>
+
+<ul>
+  <li><strong>String formatting</strong> – JavaScript has been missing this for a long time. Languages such as C# and Java have a method called <code class="highlighter-rouge">String.format()</code> that allows simple symbol substitution in strings. Quite honestly, an implementation of that in JavaScript would make me incredibly happy (Crockford has actually proposed something along those lines<sup><a href="http://wiki.ecmascript.org/doku.php?id=strawman:string_format">3</a></sup>).</li>
+  <li><strong>Multiline strings</strong> – For some reason, people feel like there needs to be a standard way of doing multiline strings that isn’t what’s already implemented using a backslash before a newline character.</li>
+  <li><strong>HTML escaping</strong> – This is also something JavaScript has been missing for a long time. While it has shipped with URL escaping for quite a while now, HTML escaping has been noticeably missing.</li>
+</ul>
+
+<p>Quasis use the backtick symbol (<code class="highlighter-rouge">`</code>) to indicate a section of code that requires variable substitution. Inside of the backticks, anything contained within <code class="highlighter-rouge">${...}</code> will be interpreted as JavaScript in the current context. The basic syntax is as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>someFunc`Some string ${value}`;
+</code></pre></div></div>
+
+<p>The idea is that <code class="highlighter-rouge">someFunc</code> is the name of a function (a quasi handler) that interprets the value enclosed in the backticks. There are several use cases in the proposal, such as the creation of a <code class="highlighter-rouge">safehtml</code> quasi handler for doing HTML escaping and a <code class="highlighter-rouge">msg</code> quasi handler for performing localization substitutions. The <code class="highlighter-rouge">${value}</code> is interpreted as the value of a variable named <code class="highlighter-rouge">value</code>. You can also have multiple lines within the backticks:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>someFunc`Some string ${value}.
+And another line.`;
+</code></pre></div></div>
+
+<p>I’m not going to go into all of the ins and outs of quasis, for that you should see Axel Rauschmayer’s writeup<sup><a href="http://www.2ality.com/2011/09/quasi-literals.html">4</a></sup>. If you read through his post, you’ll see that this is a fairly involved solution to the already-solved problems I mentioned earlier. What’s more, it doesn’t even look like JavaScript to me. With the exception of multiline strings, the problems can be solved using regular JavaScript syntax. Once again, if it were up to me, this is how I would solve them:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// My take at string formatting - not in ES6
+var result = String.format("Hi %s, nice day we're having.", name);
+
+// My take at HTML escaping - not in ES6
+var result = String.escapeHtml("Does it cost &lt; $5?");&lt;/code&gt;
+</code></pre></div></div>
+
+<p>In these cases, it seems like a bazooka is being used when a water gun would suffice. Adding the capability to format strings and escape HTML is certainly important for the future of JavaScript, I just don’t see why there has to be a new syntax to solve these problems. Of everything in ECMAScript 6, quasis is the feature I hope dies a horrible, painful death.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I’m admittedly a bit of a JavaScript purist, but I’m willing to accept new syntax when it makes sense. I would prefer that new capabilities be added using existing syntax and then layer syntactic sugar on top of that for those who choose to use it. Providing new capabilities only with new syntax, as is the case with quasis, doesn’t make sense to me especially when the problems are both well-defined and previously solved in other languages using much simpler solutions. Further, only using new syntax for new capabilities means that feature detection is impossible.</p>
+
+<p>It seems like in some cases, TC 39 ends up creating the most complicated solution to a problem or tries to solve a bunch of problems all at once, resulting in Frankenstein features like arrow functions and quasis. I believe that the intent is always good, which is to avoid problems that other languages have seen. However, the result seems to make JavaScript much more complicated and the syntax much more foreign. I don’t want JavaScript to be Python or Ruby or anything else other than JavaScript.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://wiki.ecmascript.org/doku.php?id=harmony:arrow_function_syntax">Arrow function syntax</a> by Brendan Eich</li>
+  <li><a href="http://wiki.ecmascript.org/doku.php?id=harmony:quasis">Quasi-Literals</a></li>
+  <li><a href="http://wiki.ecmascript.org/doku.php?id=strawman:string_format">String.prototype.format()</a> by Douglas Crockford</li>
+  <li><a href="http://www.2ality.com/2011/09/quasi-literals.html">Quasi-literals: embedded DSLs in ECMAScript.next</a> by Dr. Axel Rauschmayer</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/07/24/thoughts-on-ecmascript-6-and-new-syntax/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

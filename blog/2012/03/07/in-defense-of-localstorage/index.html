@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>In defense of localStorage - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/03/07/in-defense-of-localstorage/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="In defense of localStorage">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/03/07/in-defense-of-localstorage/" />
+<meta name="og:title" content="In defense of localStorage">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Earlier this week, Chris Heilmann wrote a blog post entitled, There is no simple solution for localStorage1 in which he decried localStorage as slow and encouraged everyone to stop using it. Surprisingly, in...">
+<meta name="keywords" content="JavaScript,localStorage,Performance,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">In defense of localStorage</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-03-07T00:00:00+00:00" itemprop="datePublished">March 7, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/localstorage" rel="tag">localStorage</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/performance" rel="tag">Performance</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Earlier this week, Chris Heilmann wrote a blog post entitled, <cite>There is no simple solution for localStorage</cite><sup><a href="http://hacks.mozilla.org/2012/03/there-is-no-simple-solution-for-local-storage/">1</a></sup> in which he decried <code class="highlighter-rouge">localStorage</code> as slow and encouraged everyone to stop using it. Surprisingly, in a post about performance, there was no mention of what “slow” or “terrible performance” actually meant. Performance can’t be discussed in a vacuum, which is part of what made my reaction to his post one of confusion more than anything else.</p>
+
+<h2 id="what-is-slow">What is slow?</h2>
+
+<p>So does <code class="highlighter-rouge">localStorage</code> have a performance problem? Quite simply, I don’t know. Is storing and retrieving data from <code class="highlighter-rouge">localStorage</code> slower than that of a regular, in-memory object? Yes. I wrote a post about this for 2011 Performance advent calendar<sup><a href="http://jsperf.com/localstorage-vs-objects/19">2</a></sup>. In fact, it’s quite a bit slower when reading data out. My conclusion was that you should try to limit reads by storing multiple pieces of data in the same key. But as with most performance metrics, this really only matters when you’re performing the same operation multiple times in a row. If you’re only ever reading one value or writing one value, you’ll likely never run into a performance issue regardless of the data size or what’s going on with your system.</p>
+
+<p>So <code class="highlighter-rouge">localStorage</code> is slower than using an in-memory object. Cars are slower than airplanes. What does that tell us? Not a whole lot.</p>
+
+<h2 id="pain-points">Pain points</h2>
+
+<p>The fact of the matter is that <code class="highlighter-rouge">localStorage</code> reads from and writes to disk, which is always slower than an in-memory operation because there’s hardware involved. That’s the first problem. The second problem is the per-origin nature of <code class="highlighter-rouge">localStorage</code>. This characteristic means that two browser windows or tabs open to the same origin can both be reading from or writing to the same <code class="highlighter-rouge">localStorage</code> at the same time. That, in turn, means the browser needs to be incredibly smart about how it performs each operation. If tab A is writing to <code class="highlighter-rouge">localStorage</code> around the same time that tab B is reading from <code class="highlighter-rouge">localStorage</code>, which operation should happen first?</p>
+
+<p>Each operation, read and write, then needs to lock <code class="highlighter-rouge">localStorage</code> to ensure data integrity. This is actually a big issue. Interacting with files is also dicey since another system process might also be working the same file. Consider a simple write operation:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>localStorage.setItem("foo", "bar");
+</code></pre></div></div>
+
+<p>This operation is synchronous, meaning that the UI thread is blocked in the browser until the write is complete. No further JavaScript will execute and no further UI updates drawn. During this one method call, several things happen:</p>
+
+<ol>
+  <li>If <code class="highlighter-rouge">localStorage</code> is busy with another window or tab, then wait. This is problematic since there’s no way to know how long this will be.</li>
+  <li>If the file is busy, then wait. The files may be scanned by antivirus, be included in a backup job, etc., and may therefore be unavailable until such operations complete. This is also problematic because it’s unpredictable.</li>
+  <li>Open the file for writing.</li>
+  <li>Seek the right spot to write to the file.</li>
+  <li>Write to the file.</li>
+  <li>Close the file.</li>
+</ol>
+
+<p>Only after all of that completes can the browser continue on to execute other statements. So really, the issue isn’t that <code class="highlighter-rouge">localStorage</code> is slow, it’s that <code class="highlighter-rouge">localStorage</code> must necessarily block on each operation to maintain data integrity.</p>
+
+<h2 id="compared-to-cookies">Compared to cookies</h2>
+
+<p>The closest comparable API for JavaScript is the cookie API (though calling <code class="highlighter-rouge">document.cookie</code> an API is incredibly generous). Cookies are also name-value pairs, albeit with some additional metadata, which uses files as storage and must be synchronized across browser windows and tabs. I was surprised that Chris didn’t compare <code class="highlighter-rouge">localStorage</code> to cookies since the API was clearly meant to move us from storing client-only data in cookies to storing it in <code class="highlighter-rouge">localStorage</code>. It’s no accident that the <code class="highlighter-rouge">localStorage</code> API looks a lot like various cookie APIs.</p>
+
+<p>When I created a benchmark<sup><a href="http://msdn.microsoft.com/en-us/library/cc197062(v=vs.85).aspx">3</a></sup> to test <code class="highlighter-rouge">localStorage</code> against cookies for reading and writing, the results were quite interesting. Internet Explorer, Chrome, and Safari (including iOS), reading cookies was slower than reading from  <code class="highlighter-rouge">localStorage</code> and writing to cookies was much slower than writing to <code class="highlighter-rouge">localStorage</code>. Firefox and Opera exhibit the same performance characteristics on writes as the others (with cookies being slower), but reading from a cookie is faster. So in many cases across browsers, <code class="highlighter-rouge">localStorage</code> is actually a <em>performance improvement</em> over using cookies with JavaScript.</p>
+
+<h2 id="apis">APIs</h2>
+
+<p>The reason <code class="highlighter-rouge">localStorage</code> is popular is partly due to its simplicity. That simplicity is by design and was first designed and implemented by browser vendors, which is why it seems strange that a browser vendor would now lead the charge against an API it had a hand in creating. Yes, humans create browsers and humans can make mistakes, but I don’t think the design of <code class="highlighter-rouge">localStorage</code> is a mistake.</p>
+
+<p>As I was reading over Chris’ plea to look for alternatives, my engineer brain kept repeating to myself, “this is an implementation issue, not an interface issue”. Firefox is choosing to preload the <code class="highlighter-rouge">localStorage</code> data to improve read performance later, but that’s an implementation issue. Likewise, the need to read and write synchronously is an implementation issue – many forget that Internet Explorer 8′s implementation of <code class="highlighter-rouge">localStorage</code> actually wrote asynchronously. That an implementation-specific detail. Why not make all writes happen asynchronously and just keep a copy of the data in memory so it can always be read correctly regardless of the write state?</p>
+
+<p>I’m not saying that this is necessarily an easy problem to solve; what I am saying is that the API design works well for developers, and for that reason it’s worth looking at the implementation details to figure out if there’s an efficient way to hide the warts of the system from web developers.</p>
+
+<p>The proposed alternative, IndexedDB, is perhaps one of the worst API designs I’ve ever seen. To read and write a single piece of data requires way too many lines of code, ensuring that the API won’t be used by most developers until someone comes up with a library to abstract away the horribleness. I understand the rationale behind providing such a low-level, asynchronous API (I was even part of the discussions held at Mozilla around web databases), but this absolutely stinks of browser developers creating an API that’s easy to implement rather than creating an API that’s easy to consume. This is the opposite of how good APIs are made. IndexedDB will never be a replacement for <code class="highlighter-rouge">localStorage</code>, it’s just too complicated for most uses.</p>
+
+<h2 id="non-blocking-localstorage">Non-blocking localStorage</h2>
+
+<p>As discussed previously, the real issue is that <code class="highlighter-rouge">localStorage</code> blocks on reads and writes, and the amount of time it blocks can’t be determined ahead of time. If this turns out to be a concern for you (after benchmarking, of course), then the solution is to use a non-blocking  <code class="highlighter-rouge">localStorage </code>mechanism. When you hear the term “non-blocking” these days, you should immediately be thinking about Web Workers.</p>
+
+<p>In the near future, I believe that client-side architectures that perform I/O should perform all of that I/O in Web Workers. That means all of your <code class="highlighter-rouge">localStorage</code>, XMLHttpRequest, Web Socket, etc., I/O should be done inside of a worker. Basically, you should be able to do something like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var worker = new Worker("io.js"); 
+
+worker.postMessage({ 
+    type: "write", 
+    src: "localStorage", 
+    key: "foo", 
+    value: "bar"  
+}); 
+
+worker.postMessage({ 
+    type: "read", 
+    src: "localStorage", 
+    key: "foo" 
+}); 
+
+worker.onmessage = function(event) { 
+    alert(event.data.value); 
+};
+</code></pre></div></div>
+
+<p>All of the reading and writing would be done off of the UI thread, so blocking really doesn’t matter. I know I’m not alone in thinking this is the way of the future as the IndexedDB spec has a whole section on synchronous APIs available in workers<sup><a href="../../../../2010/09/07/learning-from-xauth-cross-domain-localstorage/index.html">5</a></sup>. Having synchronous APIs for IndexedDB makes it less horrible to deal with, but you need to use them in a worker. This hasn’t been implemented by all browsers yet, but should be coming soon. Add to that the concept of shared workers, web workers that are shared amongst all tabs with pages from the same origin, and you have a great recipe for resolving a lot of I/O issues.</p>
+
+<p>Workers currently have access to <code class="highlighter-rouge">XMLHttpRequest</code>, Web Sockets, File Readers, and the such…and yet no access to <code class="highlighter-rouge">localStorage</code>. Why? This is really the solution to the problem: don’t throw away a great API because in some cases it will cause issues. Instead, make it available in workers so that we have an option for moving the reading/writing off of the UI thread.</p>
+
+<p>Note: It’s possible that the cross-domain <code class="highlighter-rouge">localStorage</code> approach I wrote about previously<sup>[6]</sup> might provide some non-blocking benefits. The cross-frame postMessage() API is asynchronous, but I’ve not figured out a good way to test if the containing page freezes if an iframe from the same domain accesses <code class="highlighter-rouge">localStorage</code> .</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Asking web developers to give up <code class="highlighter-rouge">localStorage</code> is ridiculous. Are there problems with the API? Yes, indeed there are. Are they bad enough to abandon using it altogether? Absolutely not. Claims of terrible performance haven’t been substantiated. Despite the complaints of browser developers as to the technical difficulties, there are no good alternatives to <code class="highlighter-rouge">localStorage</code>. We could always go back to using cookies, but as the previous benchmark shows, that doesn’t necessarily guarantee better performance. And IndexedDB is a non-starter because the API is too complex for most use cases.</p>
+
+<p>So to Mozilla, and the other browser vendors out there, you’re a victim of your own success. You wanted to create an API that could be used in place of cookies for storing client-side data, and you created something great. The interface is friendly to web developers and that’s why it’s had such rapid adoption. You’re all quite smart, capable people and I’m sure you can come up with better ways to implement the API than what we have today. And also, make <code class="highlighter-rouge">localStorage</code> accessible in Web Workers, please.</p>
+
+<p><strong>Update (8 March 2012):</strong> Fixed typos and added shared worker reference.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://hacks.mozilla.org/2012/03/there-is-no-simple-solution-for-local-storage/">There is no simple solution for localStorage</a> by Chris Heilmann</li>
+  <li><a title="Permanent Link to localStorage Read Performance" href="http://calendar.perfplanet.com/2011/localstorage-read-performance/" rel="bookmark">localStorage Read Performance</a> by Nicholas C. Zakas</li>
+  <li><a href="http://jsperf.com/localstorage-vs-objects/19">localStorage vs. cookies</a> by Nicholas C. Zakas</li>
+  <li><a href="http://msdn.microsoft.com/en-us/library/cc197062(v=vs.85).aspx">Introduction to Web Storage</a> by MSDN</li>
+  <li><a href="http://www.w3.org/TR/IndexedDB/#sync-database">Indexed Database – Synchronous APIs</a></li>
+  <li><a href="../../../../2010/09/07/learning-from-xauth-cross-domain-localstorage/index.html">Learning from XAuth: Cross-Domain localStorage</a> by Nicholas C. Zakas</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/03/07/in-defense-of-localstorage/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

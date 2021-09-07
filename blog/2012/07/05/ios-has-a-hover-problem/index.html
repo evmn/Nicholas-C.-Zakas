@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>iOS has a :hover problem - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/07/05/ios-has-a-hover-problem/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="iOS has a :hover problem">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/07/05/ios-has-a-hover-problem/" />
+<meta name="og:title" content="iOS has a :hover problem">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Recently, I got my first iPad. I’ve had an iPhone since last year, and had gotten used to viewing the mobile specific view of most websites. When I got the iPad, it was...">
+<meta name="keywords" content="CSS,Hover,iOS,Mobile,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">iOS has a :hover problem</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-07-05T00:00:00+00:00" itemprop="datePublished">July 5, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/css" rel="tag">CSS</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/hover" rel="tag">Hover</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ios" rel="tag">iOS</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/mobile" rel="tag">Mobile</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Recently, I got my first iPad. I’ve had an iPhone since last year, and had gotten used to viewing the mobile specific view of most websites. When I got the iPad, it was my first time experiencing desktop webpages using a touch interface. Generally, the transition was easy. I just tapped on links I wanted to navigate to. Although sometimes they hit target seemed a little bit too small, I would just zoom in and tap away. Then I started noticing something: on certain links it was taking two taps instead of one to navigate. Most worrisome to me, personally, was that I noticed this on the WellFurnished home page. Of course, I had to dig in and figure out what was happening.</p>
+
+<h2 id="hover-exists-everywhere">:hover exists everywhere</h2>
+
+<p>One of the things we’ve been told and I’ve repeated over and over again is that touch devices have no concept of hover. On a desktop with a mouse, you can move the pointer over an area of the screen and it can detect that to create a visual cue. That doesn’t mean you have activated that particular part of the screen, it’s just a visual indication that this part of the screen is “alive”.</p>
+
+<p>Naturally, with a touch device, there really isn’t a lingering pointer. Designers who have relied on hover states to show functionality all of a sudden had unusable interfaces. This was one of the trends I fought hard against while I was at Yahoo: making sure that important functionality wasn’t displayed only on hover. It’s a clear accessibility issue for people who are not using a mouse.</p>
+
+<p>So it goes without saying that most developers expect touch devices to simply ignore CSS rules containing <code class="highlighter-rouge">:hover</code>. That’s a logical assumption to make because, once again, there’s no such thing as a hover on a touch device. Except when there is.</p>
+
+<p>This is where the people at Apple might have been a bit too smart. They realized that there was a lot of functionality on the web relying on hover states and so they figured out a way to deal with that in Safari for iOS. When you touch an item on a webpage, it first triggers a hover state and then triggers the “click”. The end result is that you end up seeing styles applied using <code class="highlighter-rouge">:hover</code> for a second before the click interaction happens. It’s a little startling, but it does work. So Safari on iOS very much cares about your styles that have <code class="highlighter-rouge">:hover</code> in the selector. They aren’t simply ignored.</p>
+
+<h2 id="no-double-taps">No double taps</h2>
+
+<p>When I started experiencing the double tap behavior, I was noticing what appeared to be a hover state being shown after the first. Immediately I started looking at all the rules containing <code class="highlighter-rouge">:hover</code>. If I removed those rules, then the link worked with one tap. As soon as I added the rules back in, I was back to having the double tap. Clearly, this had something to do with how <code class="highlighter-rouge">:hover</code> is handled by Safari in iOS.</p>
+
+<p>My first step was to create a simple example to see if I could reproduce it. I started out with a link that had a hover state:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;style&gt;
+a:hover {
+    color: red;
+}
+&lt;/style&gt;
+&lt;p&gt;&lt;a href="/"&gt;Test me&lt;/a&gt;&lt;/p&gt;
+</code></pre></div></div>
+
+<p>When I tried that, the link worked with one tap and I saw the color change briefly before navigating.</p>
+
+<p>My next idea was that it might be a link inside of a container that had a <code class="highlighter-rouge">:hover</code> rule and came up with another example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;style&gt;
+p:hover a {
+    color: red;
+}
+&lt;/style&gt;
+&lt;p&gt;&lt;a href="/"&gt;Test me&lt;/a&gt;&lt;/p&gt;
+</code></pre></div></div>
+
+<p>Once again, the link navigated with a single tap after displaying the change in color. I decided to go back to my original code and look at it more carefully. That’s when I noticed a slight difference between my test cases and the real world use case.</p>
+
+<h2 id="double-tap">Double tap!</h2>
+
+<p>The culprit, as it turns out, is a combination of two factors. It’s not simply a <code class="highlighter-rouge">:hover</code> rule that triggers the double tap behavior. It’s a <code class="highlighter-rouge">:hover</code> Rule that either hides or shows another element using <code class="highlighter-rouge">visibility</code> or <code class="highlighter-rouge">display</code>. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;style&gt;
+    p span {
+        display: none;
+    }
+    
+    p:hover span {
+        display: inline;
+    }
+&lt;/style&gt;
+&lt;p&gt;&lt;a href="/"&gt;Tap me&lt;/a&gt;&lt;span&gt;You tapped!&lt;/span&gt;&lt;/p&gt;
+</code></pre></div></div>
+
+<p>It seems that the good people at Apple were very concerned about controls being hidden and only displayed on hover in webpages. Whenever you run into this situation, where an element is initially hidden and then displayed on hover, you will run into the double tap issue. The first tab will display the change in element and the second tap will navigate. If you then tap somewhere else on the screen, the <code class="highlighter-rouge">:hover</code> rule is no longer applied and you need to start the sequence over again.</p>
+
+<p>You can try this all for yourself using <a href="http://nczonline.net/experiments/mobile/ioshover.htm">this test page</a>.</p>
+
+<p>I went on and tried several other CSS properties and the only ones to trigger this behavior are <code class="highlighter-rouge">visibility</code> and <code class="highlighter-rouge">display</code>.</p>
+
+<h2 id="possible-workarounds">Possible workarounds</h2>
+
+<p>Shortly after originally posting this article, a couple of people on twitter gave some good suggestions for working around this issue area. Jacob Smartwood pointed out<sup><a href="http://nczonline.net/experiments/mobile/ioshover.htm">1</a></sup> that Modernizr provides a <code class="highlighter-rouge">no-touch</code> CSS class that indicates the browser doesn’t support touch. In that case, you can just make sure that all of your <code class="highlighter-rouge">:hover</code> rules are preceded by <code class="highlighter-rouge">.no-touch</code>, such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;style&gt;
+    p span {
+        display: none;
+    }
+    
+    .no-touch p:hover span {
+        display: inline;
+    }
+&lt;/style&gt;
+&lt;p&gt;&lt;a href="/"&gt;Tap me&lt;/a&gt;&lt;span&gt;You tapped!&lt;/span&gt;&lt;/p&gt;
+</code></pre></div></div>
+
+<p>This works although it has the side effect of changing the specificity of the rule. In some cases this might not matter, but in others it might be important.</p>
+
+<p>Oscar Godson pointed out<sup><a href="https://twitter.com/jswartwood/status/221005854240026627">2</a></sup> that touch can be detected in JavaScript with a simple piece of code, allowing you to implement your own Modernizr-like solution:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>if (!("ontouchstart" in document.documentElement)) {
+    document.documentElement.className += " no-touch";
+}
+</code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The mysterious double tap issue is caused by a <code class="highlighter-rouge">:hover</code> rule that changes the <code class="highlighter-rouge">visibility</code> or <code class="highlighter-rouge">display</code> properties of an element on the page. Changing any other property still allows a single tap to navigate to a link. I was only able to test this on iOS 5, as both my iPhone and iPad have it installed. Mobile Safari as well as any apps using the UIWebView (including Chrome) are affected. The Kindle Fire doesn’t exhibit this behavior at all. I would love to hear from others using other devices to see if any other browsers exhibit this behavior.</p>
+
+<p>So don’t believe people when they tell you that hover doesn’t exist on touch devices. At least on iOS, hover does exist and needs to be planned for accordingly. If you are using a <code class="highlighter-rouge">:hover</code> rule to show something in your interface, you may want to hide that rule when serving your page to a touch device. It might be a good idea to just completely remove all <code class="highlighter-rouge">:hover</code> rules for any experience that’s going to be served to a touch device. The touch-based world doesn’t need hover, so be careful not to inject it accidentally.</p>
+
+<p><strong>Update (5-July-2012)</strong> – added possible workarounds that were mentioned on Twitter.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="https://twitter.com/jswartwood/status/221005854240026627">Jacob Smartwood’s tweet</a></li>
+  <li><a href="https://twitter.com/oscargodson/status/221013516008689664">Oscar Godson’s tweet</a></li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/07/05/ios-has-a-hover-problem/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

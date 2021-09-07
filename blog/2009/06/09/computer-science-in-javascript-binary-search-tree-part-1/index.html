@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Computer science in JavaScript: Binary search tree, Part 1 - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/06/09/computer-science-in-javascript-binary-search-tree-part-1/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Computer science in JavaScript: Binary search tree, Part 1">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/06/09/computer-science-in-javascript-binary-search-tree-part-1/" />
+<meta name="og:title" content="Computer science in JavaScript: Binary search tree, Part 1">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Perhaps one of the most frequently used and discussed data structures in computer science classes is the binary search tree. This is typically the first data structure introduced that has a non-linear insertion...">
+<meta name="keywords" content="Binary Search Tree,Computer Science,Data Structures,JavaScript,Programming,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Computer science in JavaScript: Binary search tree, Part 1</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-06-09T00:00:00+00:00" itemprop="datePublished">June 9, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/binary-search-tree" rel="tag">Binary Search Tree</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/computer-science" rel="tag">Computer Science</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/data-structures" rel="tag">Data Structures</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/programming" rel="tag">Programming</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Perhaps one of the most frequently used and discussed data structures in computer science classes is the <a href="http://en.wikipedia.org/wiki/Binary_search_tree">binary search tree</a>. This is typically the first data structure introduced that has a non-linear insertion algorithm. A binary search tree is similiar to a doubly linked list in that each node contains some data as well as two pointers to other nodes; they differ in the way that those nodes relate to one another. A binary search tree node’s pointers are typically called “left” and “right” to indicate subtrees of values relating to the current value. A simple JavaScript implementation of such a node is as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var node = {
+    value: 125,
+    left: null,
+    right: null
+};
+</code></pre></div></div>
+
+<p>As can be discerned from the name, a binary search tree is organized into a hierarchical tree structure. The first item becomes the root node and each additional value is added into the tree as an ancestor of that root. The unique part of a binary search tree, however, is that the nodes are ordered based on the value they contain: any values that are part of a node’s left subtree are always less than the node’s value and any values in the right subtree are always greater than the node’s value. In this way, finding a value in a binary search tree becomes quite simple, go left whenever the value you’re looking for is less than the node you’re processing or go right if the value is greater. There can be no duplicates in a binary search tree because duplicates would destroy this relationship. The following diagram represents a simple binary search tree.</p>
+
+<p style="text-align: center;">
+  <a href="http://en.wikipedia.org/wiki/File:Binary_search_tree.svg">&lt;img src=”/images/wp-content/uploads/2009/06/500px-Binary_search_tree.svg_-300x250.png” alt=”Binary search tree diagram” width=”300” height=”250”” /&gt;</a>
+</p>
+
+<p>This diagram represents a binary search tree whose root value is 8. When the value 3 was added, it became the left child of the root because 3 is less than 8. When the value 1 was added, it became the left child of 3 because 1 is less than 8 (so go left) and then 1 is less than 3 (go left again). When the value 10 was added, it became the right child of the root because 10 is greater than 8. This process continued with the values 6, 4, 7, 14, and 13. This binary search tree has a depth of 3, meaning that the farthest values from the root are three nodes away.</p>
+
+<p>Binary search trees naturally end up in a sorted order and are therefore useful for quickly looking up data because you immediately eliminate possibilities with each step. By limiting the number of nodes that need to be investigated, searching can be done more quickly. Suppose you want to find the value 6 in the tree above. Starting from the root, you determine that 6 is less than 8, so travel to the left child of the root. Since 6 is greater than 3, you travel to the right node. And there is the value you were looking for. So instead of visiting nine nodes to find this value, you only have to visit three.</p>
+
+<p>To build a binary search tree implementation in JavaScript, the first step is to define the basic interface:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function BinarySearchTree() {
+    this._root = null;
+}
+
+BinarySearchTree.prototype = {
+
+    //restore constructor
+    constructor: BinarySearchTree,
+
+    add: function (value){
+    },
+
+    contains: function(value){
+    },
+
+    remove: function(value){
+    },
+
+    size: function(){
+    },
+
+    toArray: function(){
+    },
+
+    toString: function(){
+    }
+
+};
+</code></pre></div></div>
+
+<p>The basic interface is similar to other data structures, with methods for adding and removing values. I’ve also added a few convenience methods, <code class="highlighter-rouge">size()</code>, <code class="highlighter-rouge">toArray()</code>, and <code class="highlighter-rouge">toString()</code>, that are useful for JavaScript.</p>
+
+<p>To get a handle on using a binary search tree, the best method to begin with is <code class="highlighter-rouge">contains()</code>. The <code class="highlighter-rouge">contains()</code> method accepts a value as an argument and returns <code class="highlighter-rouge">true</code> if the value is present in the tree or <code class="highlighter-rouge">false</code> if not. This method follows the basic binary search algorithm to determine whether or not the value is present:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BinarySearchTree.prototype = {
+
+    //more code
+
+    contains: function(value){
+        var found       = false,
+            current     = this._root
+
+        //make sure there's a node to search
+        while(!found &amp;&amp; current){
+
+            //if the value is less than the current node's, go left
+            if (value &lt; current.value){
+                current = current.left;
+
+            //if the value is greater than the current node's, go right
+            } else if (value &gt; current.value){
+                current = current.right;
+
+            //values are equal, found it!
+            } else {
+                found = true;
+            }
+        }
+
+        //only proceed if the node was found
+        return found;
+    },
+
+    //more code
+
+};
+</code></pre></div></div>
+
+<p>The search starts from the root of the tree. Since there may not be a root if no data has been added, this must be checked. Traversing the tree follows the simple algorithm discussed earlier: go left if the value to find is less than the current node, go right if the value is greater. The <code class="highlighter-rouge">current</code> pointer is overwritten each time through until either the value is found (in which case <code class="highlighter-rouge">found</code> is set to <code class="highlighter-rouge">true</code>) or there are no more nodes to search in that direction (in which case the value isn’t in the tree).</p>
+
+<p>The approach using in <code class="highlighter-rouge">contains()</code> can also be used to insert a new value into the tree. The primary difference is that you’ll be looking for the spot in which to place the new value instead of looking for the value in the tree:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BinarySearchTree.prototype = {
+
+    //more code
+
+    add: function(value){
+        //create a new item object, place data in
+        var node = {
+                value: value,
+                left: null,
+                right: null
+            },
+
+            //used to traverse the structure
+            current;
+
+        //special case: no items in the tree yet
+        if (this._root === null){
+            this._root = node;
+        } else {
+            current = this._root;
+
+            while(true){
+
+                //if the new value is less than this node's value, go left
+                if (value &lt; current.value){
+
+                    //if there's no left, then the new node belongs there
+                    if (current.left === null){
+                        current.left = node;
+                        break;
+                    } else {
+                        current = current.left;
+                    }
+
+                //if the new value is greater than this node's value, go right
+                } else if (value &gt; current.value){
+
+                    //if there's no right, then the new node belongs there
+                    if (current.right === null){
+                        current.right = node;
+                        break;
+                    } else {
+                        current = current.right;
+                    }       
+
+                //if the new value is equal to the current one, just ignore
+                } else {
+                    break;
+                }
+            }
+        }
+    },
+
+    //more code
+
+};
+</code></pre></div></div>
+
+<p>When adding a value into a binary search tree, the special case is when there is not already a root. In that case, the job is easy as you just set the root to the new value. For all other cases, the basic algorithm is exactly the same as the one used in <code class="highlighter-rouge">contains()</code>: go left is the new value is less than the current node or right if the value is greater. The primary difference is that when you can’t go any further, that is the spot for the new value. So, if you need to go left but there is no left node, the new value becomes the left node (same with the right). Since there can be no duplicates, the operation stops if a node with the same value is found.</p>
+
+<p>Before moving on to the <code class="highlighter-rouge">size()</code> method, I’d like to digress into a discussion of tree traversals. In order to calculate the size of a binary search tree, it’s necessary to visit each node in the tree. Binary search trees often bring with them the need to execute different types of traversals to retrieve information, and the most commonly used is an in-order traversal. In-order traversals are performed on each node by processing the left subtree, then the node itself, then the right subtree. Since binary search trees are ordered in this way, from left to right, the result is that the nodes are processed in their correct sorted order. For the <code class="highlighter-rouge">size()</code> method, it doesn’t actually matter what order the nodes are traversed in, but it does matter for the <code class="highlighter-rouge">toArray()</code> method. Since both methods need to perform a traversal, I decided to add a <code class="highlighter-rouge">traverse()</code> method that can be used generically:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BinarySearchTree.prototype = {
+
+    //more code
+
+    traverse: function(process){
+
+        //helper function
+        function inOrder(node){
+            if (node){
+
+                //traverse the left subtree
+                if (node.left !== null){
+                    inOrder(node.left);
+                }            
+
+                //call the process method on this node
+                process.call(this, node);
+
+                //traverse the right subtree
+                if (node.right !== null){
+                    inOrder(node.right);
+                }
+            }
+        }
+
+        //start with the root
+        inOrder(this._root);
+    },
+
+    //more code
+
+};
+</code></pre></div></div>
+
+<p>This method accepts a single argument, <code class="highlighter-rouge">process</code>, which is a function that should be run on each node in the tree. The method defines a helper function called <code class="highlighter-rouge">inOrder()</code> which is used to recursively traverse the tree. Note that the recursion only goes left and right if that node exists (to avoid processing <code class="highlighter-rouge">null</code> multiple times). The <code class="highlighter-rouge">traverse()</code> method then starts the in-order traversal from the root node and the <code class="highlighter-rouge">process()</code> function handles processing each node. This method can then be used to implement <code class="highlighter-rouge">size()</code>, <code class="highlighter-rouge">toArray()</code>, and transitively, <code class="highlighter-rouge">toString()</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>BinarySearchTree.prototype = {
+
+    //more code
+
+    size: function(){
+        var length = 0;
+
+        this.traverse(function(node){
+            length++;
+        });
+
+        return length;
+    },
+
+    toArray: function(){
+        var result = [];
+
+        this.traverse(function(node){
+            result.push(node.value);
+        });
+
+        return result;
+    },
+
+    toString: function(){
+        return this.toArray().toString();
+    },
+
+    //more code
+
+};
+</code></pre></div></div>
+
+<p>Both <code class="highlighter-rouge">size()</code> and <code class="highlighter-rouge">toArray()</code> call the <code class="highlighter-rouge">traverse()</code> method and pass in a function to run on each node. In the case of <code class="highlighter-rouge">size()</code>, the function simply increments the length variable while <code class="highlighter-rouge">toArray()</code> uses the function to add the node’s value into an array. The <code class="highlighter-rouge">toString()</code> method then calls <code class="highlighter-rouge">toArray()</code> before converting the returned array into a string and returning it.</p>
+
+<p>In part 2 of this article, the removal of nodes from a binary search tree will be discussed. Removal is a complex problem with a lot of cases to consider and so warrants its own writeup. In the meantime, you can get the full source code in my <a href="http://github.com/nzakas/computer-science-in-javascript">Computer Science in JavaScript GitHub project</a>.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/06/09/computer-science-in-javascript-binary-search-tree-part-1/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

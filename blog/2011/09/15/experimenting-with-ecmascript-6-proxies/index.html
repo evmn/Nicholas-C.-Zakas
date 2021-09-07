@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Experimenting with ECMAScript 6 proxies - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2011/09/15/experimenting-with-ecmascript-6-proxies/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Experimenting with ECMAScript 6 proxies">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2011/09/15/experimenting-with-ecmascript-6-proxies/" />
+<meta name="og:title" content="Experimenting with ECMAScript 6 proxies">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="ECMAScript 6, aka “Harmony”, introduces a new type of object called a proxy. Proxies are objects whose default behavior in common situations can be controlled, eliminated, or otherwise changed. This includes definition what...">
+<meta name="keywords" content="ECMAScript,Harmony,JavaScript,Proxy,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Experimenting with ECMAScript 6 proxies</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2011-09-15T00:00:00+00:00" itemprop="datePublished">September 15, 2011</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/ecmascript" rel="tag">ECMAScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/harmony" rel="tag">Harmony</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/proxy" rel="tag">Proxy</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>ECMAScript 6, aka “Harmony”, introduces a new type of object called a proxy. Proxies are objects whose default behavior in common situations can be controlled, eliminated, or otherwise changed. This includes definition what happens when the object is used in a <code class="highlighter-rouge">for-in</code> look, when its properties are used with <code class="highlighter-rouge">delete</code>, and so on.</p>
+
+<p>The behavior of proxies is defined through traps, which are simply functions that “trap” a specific behavior so you can respond appropriately. There are several different traps available, some that are fundamental and some that are derived. The fundamental traps define low-level behavior, such as what happens when calling <code class="highlighter-rouge">Object.defineProperty()</code> on the object, while derived traps define slightly higher-level behavior such as reading from and writing to properties. The fundamental traps are recommended to always be implemented while the derived traps are considered optional (when derived traps are undefined, the default implementation uses the fundamental traps to fill the gap).</p>
+
+<p>My experiments focused largely on the derived <code class="highlighter-rouge">get</code> trap. The <code class="highlighter-rouge">get</code> trap defines what happens when a property is read from the object. Think of the <code class="highlighter-rouge">get</code> trap as a global getter that is called for every property on the object. This made me realize that my <a href="../../../../2009/02/17/mozilla-javascript-extension-nosuchmethod/index.html">earlier experiments</a> with the proprietary <code class="highlighter-rouge">__noSuchMethod__()</code> might be applicable. After some tinkering, I ended up with the following HTML writer prototype:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/*
+ * The constructor name I want is HTMLWriter.
+ */
+var HTMLWriter = (function(){
+
+    /*
+     * Lazily-incomplete list of HTML tags.
+     */
+    var tags = [
+        "a", "abbr", "acronym", "address", "applet", "area",
+        "b", "base", "basefont", "bdo", "big", "blockquote",
+        "body", "br", "button",
+        "caption", "center", "cite", "code", "col", "colgroup",
+        "dd", "del", "dir", "div", "dfn", "dl", "dt",
+        "em",
+        "fieldset", "font", "form", "frame", "frameset",
+        "h1", "h2", "h3", "h4", "h5", "h6", "head", "hr", "html",
+        "i", "iframe", "img", "input", "ins", "isindex",
+        "kbd",
+        "label", "legend", "li", "link",
+        "map", "menu", "meta",
+        "noframes", "noscript",
+        "object", "ol", "optgroup", "option",
+        "p", "param", "pre",
+        "q",
+        "s", "samp", "script", "select", "small", "span", "strike",
+        "strong", "style", "sub", "sup",
+        "table", "tbody", "td", "textarea", "tfoot", "th", "thead",
+        "title", "tr", "tt",
+        "u", "ul",
+        "var"
+    ];
+
+    /* 
+     * Define an internal-only type. 
+     */
+    function InternalHTMLWriter(){
+        this._work = [];
+    }
+
+    InternalHTMLWriter.prototype = {
+
+        escape: function (text){
+            return text.replace(/[&gt;&lt; "&amp;#038;]/g, function(c){
+                switch(c){
+                    case "&gt;": return "&amp;gt;";
+                    case "&lt; ": return "&amp;lt;";
+                    case "\"": return "&amp;quot;";
+                    case "&amp;#038;": return "&amp;amp;";
+                }
+            });
+        },
+
+        startTag: function(tagName, attributes){
+            this._work.push("&lt;" + tagName);
+
+            if (attributes){
+                var name, value;
+                for (name in attributes){
+                    if (attributes.hasOwnProperty(name)){
+                        value = this.escape(attributes[name]);
+                        this._work.push(" " + name + "=\"" + value + "\"");
+                    }
+                }
+            }
+
+            this._work.push("&gt;");
+            return this;
+        },
+
+        text: function(text){
+            this._work.push(this.escape(text));
+            return this;
+        },
+
+        endTag: function(tagName){
+            this._work.push("&lt;/" + tagName + "&gt;");
+            return this;
+        },
+
+        toString: function(){
+            return this._work.join("");
+        }
+
+    };
+    
+    /*
+     * Output a pseudo-constructor. It's not a real constructor,
+     * since it just returns the proxy object, but I like the
+     * "new" pattern vs. factory functions.
+     */
+    return function(){
+        var writer = new InternalHTMLWriter(),    
+            proxy = Proxy.create({
+
+                /*
+                 * Only really need getter, don't want anything else going on.
+                 */
+                get: function(receiver, name){
+                    var tagName, 
+                        closeTag = false;
+                    
+                    if (name in writer){
+                        return writer[name];
+                    } else {
+                    
+                        if (tags.indexOf(name) &gt; -1){
+                            tagName = name;
+                        } else if (name.charAt(0) == "x" &amp;#038;&amp;#038; tags.indexOf(name.substring(1)) &gt; -1){
+                            tagName = name.substring(1);
+                            closeTag = true;
+                        }
+                        
+                        if (tagName){                
+                            return function(){
+                                if (!closeTag){
+                                    writer.startTag(tagName, arguments[0]);
+                                } else {
+                                    writer.endTag(tagName);
+                                }
+                                return receiver;                
+                            };
+                        }
+                    }
+                }
+            
+            });
+            
+        return proxy;
+    };
+})();
+</code></pre></div></div>
+
+<p>This uses the same basic approach as my earlier experiment, which is to define a getter that interprets property names as HTML tag names. When the property matches an HTML tag name, a function is returned that calls the <code class="highlighter-rouge">startTag()</code> method, likewise a property beginning with an “x” and followed by the tag name receives a function that calls <code class="highlighter-rouge">endTag()</code>. All other methods are passed through to the interal <code class="highlighter-rouge">writer</code> object.</p>
+
+<p>The <code class="highlighter-rouge">InternalHTMLWriter</code> type is defined inside of a function so it cannot be accessed outside; the <code class="highlighter-rouge">HTMLWriter</code> type is the preferred way to use this code, making the implementation transparent. Each called to <code class="highlighter-rouge">HTMLWriter</code> creates a new proxy which, in turn, has reference to its own internal <code class="highlighter-rouge">writer</code> object. Basic usage is:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var w = new HTMLWriter();
+
+w.html()
+    .head().title().text("Example &amp;#038; Test").xtitle().xhead()
+    .body().text("Hello world!").xbody()
+.xhtml();
+
+console.log(w);
+</code></pre></div></div>
+
+<p>Ugly method names aside, the prototype works as you’d expect. What I really like about this type of pattern is that the methods can be easily updated to support new HTML tags by modifying the <code class="highlighter-rouge">tags</code> array.</p>
+
+<p>The more I thought about proxies and the <code class="highlighter-rouge">get</code> trap, the more ideas I came up with. Developers have long tried to figure out ways to inherit from <code class="highlighter-rouge">Array</code> to create their own array-like structures, but we’ve also been unable to get there due to a number of issues. With proxies, implementing array-like data structures are trivial.</p>
+
+<p>I decided that I’d like to make a stack implementation in JavaScript that uses an array underneath it all. I wanted the stack to be old-school, just <code class="highlighter-rouge">push()</code>, <code class="highlighter-rouge">pop()</code>, and <code class="highlighter-rouge">length</code> members (no numeric index support). Basically, I would just need to filter the members being accessed in the <code class="highlighter-rouge">get</code> trap. Here’s the result:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var Stack = (function(){
+
+    var stack = [],
+        allowed = [ "push", "pop", "length" ];
+    
+    return Proxy.create({
+        get: function(receiver, name){;
+            if (allowed.indexOf(name) &gt; -1){
+                if(typeof stack[name] == "function"){
+                    return stack[name].bind(stack);
+                } else {
+                    return stack[name];
+                }
+            } else {
+                return undefined;
+            }
+        }
+    
+    });
+
+});
+
+var mystack = new Stack();
+
+mystack.push("hi");
+mystack.push("goodbye");
+
+console.log(mystack.length);    //1
+
+console.log(mystack[0]);        //undefined
+console.log(mystack.pop());     //"goodbye"
+</code></pre></div></div>
+
+<p>Here, I’m using a private <code class="highlighter-rouge">stack</code> array for each instance of my stack. Each instance also has a single proxy that is returned and used as the interface. So every method I want to allow ends up being executed on the array rather than the proxy object itself.</p>
+
+<p>This pattern of object member filtering allowed me to easily enable the members I wanted while disabling the ones I didn’t. The one tricky part was ensuring the methods were bound to the correct <code class="highlighter-rouge">this</code> value. In my first try, I simply returned the method from the array, but ended up with multiple errors because <code class="highlighter-rouge">this</code> was the proxy object instead of the array. I added the use of the ECMAScript 5 <code class="highlighter-rouge">bind()</code> method to ensure the <code class="highlighter-rouge">this</code> value remained correct for the methods and everything worked fine.</p>
+
+<p>A few caveats as you start playing with proxies. First, it’s only currently supported in Firefox 6+. Second, the specification is still in flux and the syntax, order of arguments, etc. may change in the future. Third, the patterns I’ve explained here are not and should not be considered best practices for using proxies. These are just some experiments I hacked together to explore the possibilities. Proxies aren’t ready for production use but are a lot of fun for experimentation.</p>
+
+<p><strong>Update (2011-Sept-18)</strong>: Fixed escaping issue in code.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2011/09/15/experimenting-with-ecmascript-6-proxies/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

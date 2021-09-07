@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Working with files in JavaScript, Part 3: Progress events and errors - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/05/22/working-with-files-in-javascript-part-3/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Working with files in JavaScript, Part 3: Progress events and errors">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/05/22/working-with-files-in-javascript-part-3/" />
+<meta name="og:title" content="Working with files in JavaScript, Part 3: Progress events and errors">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="The FileReader object is used to read data from files that are made accessible through the browser. In my previous post, you learned how to use a FileReader object to easily read data...">
+<meta name="keywords" content="File API,FileReader,Files,JavaScript,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Working with files in JavaScript, Part 3: Progress events and errors</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-05-22T00:00:00+00:00" itemprop="datePublished">May 22, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/file-api" rel="tag">File API</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/filereader" rel="tag">FileReader</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/files" rel="tag">Files</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>The <code class="highlighter-rouge">FileReader</code> object is used to read data from files that are made accessible through the browser. In my <a href="../../15/working-with-files-in-javascript-part-2/index.html">previous post</a>, you learned how to use a <code class="highlighter-rouge">FileReader</code> object to easily read data from a file in a variety of formats. The <code class="highlighter-rouge">FileReader</code> is very similar to <code class="highlighter-rouge">XMLHttpRequest</code> in many ways.</p>
+
+<h2 id="progress-events">Progress events</h2>
+
+<p>Progress events are becoming so common that they’re actually written up in a separate specification<sup><a href="../../15/working-with-files-in-javascript-part-2/index.html">1</a></sup>. These events are designed to generically indicate the progress of data transfers. Such transfers occur when requesting data from the server, but also when requesting data from disk, which is what <code class="highlighter-rouge">FileReader</code> does.</p>
+
+<p>There are six progress events:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">loadstart</code> – indicates that the process of loading data has begun. This event always fires first.</li>
+  <li><code class="highlighter-rouge">progress</code> – fires multiple times as data is being loaded, giving access to intermediate data.</li>
+  <li><code class="highlighter-rouge">error</code> – fires when loading has failed.</li>
+  <li><code class="highlighter-rouge">abort</code> – fires when data loading has been canceled by calling <code class="highlighter-rouge">abort()</code> (available on both <code class="highlighter-rouge">XMLHttpRequest</code> and <code class="highlighter-rouge">FileReader</code>).</li>
+  <li><code class="highlighter-rouge">load</code> – fires only when all data has been successfully read.</li>
+  <li><code class="highlighter-rouge">loadend</code> – fires when the object has finished transferring data. Always fires and will always fire after <code class="highlighter-rouge">error</code>, <code class="highlighter-rouge">abort</code>, or <code class="highlighter-rouge">load</code>.</li>
+</ul>
+
+<p>Two events, <code class="highlighter-rouge">error</code> and <code class="highlighter-rouge">load</code>, were discussed in my previous post. The other events give you more fine-grained control over data transfers.</p>
+
+<h3 id="tracking-progress">Tracking progress</h3>
+
+<p>When you want to track progress of a file reader, use the <code class="highlighter-rouge">progress</code> event. The <code class="highlighter-rouge">event</code> object for this event contains three properties to monitor the data being transferred:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">lengthComputable</code> – a boolean indicating if the browser can determine the complete size of the data.</li>
+  <li><code class="highlighter-rouge">loaded</code> – the number of bytes that have been read already.</li>
+  <li><code class="highlighter-rouge">total</code> – the total number of bytes to be read.</li>
+</ul>
+
+<p>The intent of this data is to allow for progress bars to be generated using the information from the <code class="highlighter-rouge">progress</code> event. For example, you may be using an HTML5 <code class="highlighter-rouge">&lt;progress&gt;</code> element to monitor the progress of reading a file. You can tie the progress value to the actual data using code like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var reader = new FileReader(),
+     progressNode = document.getElementById("my-progress");
+
+reader.onprogress = function(event) {
+    if (event.lengthComputable) {
+        progressNode.max = event.total;
+        progressNode.value = event.loaded;
+    }
+};
+
+reader.onloadend = function(event) {
+    var contents = event.target.result,
+        error    = event.target.error;
+ 
+    if (error != null) {
+        console.error("File could not be read! Code " + error.code);
+    } else {
+        progressNode.max = 1;
+        progressNode.value = 1;
+        console.log("Contents: " + contents);
+    }
+};
+
+reader.readAsText(file);
+</code></pre></div></div>
+
+<p>This is similar to the approach that Gmail uses for its drag and drop file upload implementation, where you see a progressbar immediately after dropping a file onto the email. That progressbar indicates how much of the files has been transferred to the server.</p>
+
+<h2 id="dealing-with-errors">Dealing with errors</h2>
+
+<p>Even though you’re reading a local file, it’s still possible for the read to fail. The <cite>File API specification</cite><sup><a href="http://www.w3.org/TR/progress-events/">2</a></sup> defines four types of errors:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">NotFoundError</code> – the file can’t be found.</li>
+  <li><code class="highlighter-rouge">SecurityError</code> – something about the file or the read is dangerous. The browser has some leeway as to when this occurs, but generally if the file is dangerous to load into the browser or the browser has been performing too many reads, you’ll see this error.</li>
+  <li><code class="highlighter-rouge">NotReadableError</code> – the file exists but can’t be read, most likely due to a permissions problem.</li>
+  <li><code class="highlighter-rouge">EncodingError</code> – primarily when trying to read as a data URI and the length of the resulting data URI is beyond the maximum length supported by the browser.</li>
+</ul>
+
+<p>When an error occurs during a file read, the <code class="highlighter-rouge">FileReader</code> object’s <code class="highlighter-rouge">error</code> property is assigned to be an instance of one of the above mentioned errors. At least, that’s how the spec is written. In reality, browsers implement this as a <code class="highlighter-rouge">FileError</code> object that has a <code class="highlighter-rouge">code</code> property indicating the type of error that has occurred. Each error type is represented by a numeric constant value:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">FileError.NOT_FOUND_ERR</code> for file not found errors.</li>
+  <li><code class="highlighter-rouge">FileError.SECURITY_ERR</code> for security errors.</li>
+  <li><code class="highlighter-rouge">FileError.NOT_READABLE_ERR</code> for not readable errors.</li>
+  <li><code class="highlighter-rouge">FileError.ENCODING_ERR</code> for encoding errors.</li>
+  <li><code class="highlighter-rouge">FileError.ABORT_ERR</code> when <code class="highlighter-rouge">abort()</code> is called while there is no read in progress.</li>
+</ul>
+
+<p>You can test for the type of error either during the <code class="highlighter-rouge">error</code> event or during <code class="highlighter-rouge">loadend</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var reader = new FileReader();
+
+reader.onloadend = function(event) {
+    var contents = event.target.result,
+        error    = event.target.error;
+ 
+    if (error != null) {
+        switch (error.code) {
+            case error.ENCODING_ERR:
+                console.error("Encoding error!");
+                break;
+
+            case error.NOT_FOUND_ERR:
+                console.error("File not found!");
+                break;
+
+            case error.NOT_READABLE_ERR:
+                console.error("File could not be read!");
+                break;
+
+            case error.SECURITY_ERR:
+                console.error("Security issue with file!");
+                break;
+
+            default:
+                console.error("I have no idea what's wrong!");
+        }
+    } else {
+        progressNode.max = 1;
+        progressNode.value = 1;
+        console.log("Contents: " + contents);
+    }
+};
+
+reader.readAsText(file);
+</code></pre></div></div>
+
+<h2 id="up-next">Up next</h2>
+
+<p>The <code class="highlighter-rouge">FileReader</code> object is a fully-featured object with a lot of functionality and a lot of similarities to <code class="highlighter-rouge">XMLHttpRequest</code>. By following these last three posts, you should now be able to read data from files using JavaScript and send that data back to the server if necessary. However, the <cite>File API</cite> ecosystem is quite a bit larger than has been already discussed in this series, and in the next part you’ll learn about a powerful new features designed to work with files.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://www.w3.org/TR/progress-events/">Progress Events</a></li>
+  <li><a href="http://www.w3.org/TR/FileAPI/">File API</a></li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/05/22/working-with-files-in-javascript-part-3/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

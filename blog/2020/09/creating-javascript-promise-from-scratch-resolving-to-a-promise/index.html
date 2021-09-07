@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Creating a JavaScript promise from scratch, Part 2: Resolving to a promise - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Creating a JavaScript promise from scratch, Part 2: Resolving to a promise">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/" />
+<meta name="og:title" content="Creating a JavaScript promise from scratch, Part 2: Resolving to a promise">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">
+
+
+
+<meta name="description" content="In my first post of this series, I explained how the Promise constructor works by recreating it as the Pledge constructor. I noted in that post that there is nothing asynchronous about the...">
+<meta name="keywords" content="JavaScript,Promises,ECMAScript 6,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Creating a JavaScript promise from scratch, Part 2: Resolving to a promise</h1>
+        <p itemprop="description" class="no-margin-top">Resolving promises to non-thenables is easy; resolving promises to other promises requires a bit of work.</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2020-09-29T00:00:00+00:00" itemprop="datePublished">September 29, 2020</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/promises" rel="tag">Promises</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ecmascript-6" rel="tag">ECMAScript 6</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>In my <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">first post</a> of this series, I explained how the <code class="highlighter-rouge">Promise</code> constructor works by recreating it as the <code class="highlighter-rouge">Pledge</code> constructor. I noted in that post that there is nothing asynchronous about the constructor, and that all of the asynchronous operations happen later. In this post, I’ll cover how to resolve one promise to another promise, which will trigger asynchronous operations.</p>
+
+<p>As a reminder, this series is based on my promise library, <a href="https://github.com/humanwhocodes/pledge">Pledge</a>. You can view and download all of the source code from GitHub.</p>
+
+<h2 id="jobs-and-microtasks">Jobs and microtasks</h2>
+
+<p>Before getting into the implementation, it’s helpful to talk about the mechanics of asynchronous operations in promises. Asynchronous promise operations are defined in ECMA-262 as <em>jobs</em><sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html#fn:1" class="footnote">1</a></sup>:</p>
+
+<blockquote>
+  <p>A <em>Job</em> is an abstract closure with no parameters that initiates an ECMAScript computation when no other ECMAScript computation is currently in progress.</p>
+</blockquote>
+
+<p>Put in simpler language, the specification says that a job is a function that executes when no other function is executing. But it’s the specifics of this process that are interesting. Here’s what the specification says<sup id="fnref:1:1"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html#fn:1" class="footnote">1</a></sup>:</p>
+
+<blockquote>
+  <ul>
+    <li>At some future point in time, when there is no running execution context and the execution context stack is empty, the implementation must:
+      <ol>
+        <li>Push an execution context onto the execution context stack.</li>
+        <li>Perform any implementation-defined preparation steps.</li>
+        <li>Call the abstract closure.</li>
+        <li>Perform any implementation-defined cleanup steps.</li>
+        <li>Pop the previously-pushed execution context from the execution context stack.&gt; &gt; * Only one Job may be actively undergoing evaluation at any point in time.</li>
+      </ol>
+    </li>
+    <li>Once evaluation of a Job starts, it must run to completion before evaluation of any other Job starts.</li>
+    <li>The abstract closure must return a normal completion, implementing its own handling of errors.</li>
+  </ul>
+</blockquote>
+
+<p>It’s easiest to think through this process by using an example. Suppose you have set up an <code class="highlighter-rouge">onclick</code> event handler on a button in a web page. When you click the button, a new execution context is pushed onto the execution context stack in order to run the event handler. Once the event handler has finished executing, the execution context is popped off the stack and the stack is now empty. This is the time when jobs are executed, before yielding back to the event loop that is waiting for more JavaScript to run.</p>
+
+<p>In JavaScript engines, the button’s event handler is considered a <em>task</em> while a job is a considered a <em>microtask</em>. Any microtasks that are queued during a task are executed in the order in which they were queued immediately after the task completes. Fortunately for you and I, browsers, Node.js, and Deno have the <code class="highlighter-rouge">queueMicrotask()</code> function that implements the queueing of microtasks.</p>
+
+<p>The <code class="highlighter-rouge">queueMicrotask()</code> function is defined in the HTML specification<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html#fn:2" class="footnote">2</a></sup> and accepts a single argument, which is the function to call as a microtask. For example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">queueMicrotask</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">"</span><span class="s2">Hi</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>This example will output <code class="highlighter-rouge">"Hi"</code> to the console once the current task has completed. Keep in mind that microtasks will always execute before <em>timers</em>, which are created using either <code class="highlighter-rouge">setTimeout()</code> or <code class="highlighter-rouge">setInterval()</code>. Timers are implemented using tasks, not microtasks, and so will yield back to the event loop before they execute their tasks.</p>
+
+<p>To make the code in Pledge look for like the specification, I’ve defined a <code class="highlighter-rouge">hostEnqueuePledgeJob()</code> function that simple calls <code class="highlighter-rouge">queueMicrotask()</code>:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">hostEnqueuePledgeJob</span><span class="p">(</span><span class="nx">job</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">queueMicrotask</span><span class="p">(</span><span class="nx">job</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="the-newpromiseresolvethenjob-job">The <code class="highlighter-rouge">NewPromiseResolveThenJob</code> job</h2>
+
+<p>In my previous post, I stopped short of showing how to resolve a promise when another promise was passed to <code class="highlighter-rouge">resolve</code>. As opposed to non-thenable values, calling <code class="highlighter-rouge">resolve</code> with another promise means the first promise cannot be resolved until the second promise has been resolved, and to do that, you need <code class="highlighter-rouge">NewPromiseResolveThenableJob()</code>.</p>
+
+<p>The <code class="highlighter-rouge">NewPromiseResolveThenableJob()</code> accepts three arguments: the promise to resolve, the thenable that was passed to <code class="highlighter-rouge">resolve</code>, and the <code class="highlighter-rouge">then()</code> function to call. The job then attaches the <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions for promise to resolve to the thenable’s <code class="highlighter-rouge">then()</code> method while catching any potential errors that might occur.</p>
+
+<p>To implement <code class="highlighter-rouge">NewPromiseResolveThenableJob()</code>, I decided to use a class with a constructor that returns a function. This looks a little strange but will allow the code to look like you are creating a new job using the <code class="highlighter-rouge">new</code> operator instead of creating a function whose name begins with <code class="highlighter-rouge">new</code> (which I find strange). Here’s my implementation:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">PledgeResolveThenableJob</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">pledgeToResolve</span><span class="p">,</span> <span class="nx">thenable</span><span class="p">,</span> <span class="nx">then</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="p">{</span> <span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">createResolvingFunctions</span><span class="p">(</span><span class="nx">pledgeToResolve</span><span class="p">);</span>
+            
+            <span class="k">try</span> <span class="p">{</span>
+                <span class="c1">// same as thenable.then(resolve, reject)</span>
+                <span class="nx">then</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="nx">thenable</span><span class="p">,</span> <span class="p">[</span><span class="nx">resolve</span><span class="p">,</span> <span class="nx">reject</span><span class="p">]);</span>
+            <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">thenError</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// same as reject(thenError)</span>
+                <span class="nx">reject</span><span class="p">.</span><span class="nx">apply</span><span class="p">(</span><span class="kc">undefined</span><span class="p">,</span> <span class="p">[</span><span class="nx">thenError</span><span class="p">]);</span>
+            <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You’ll note the use of <code class="highlighter-rouge">createResolvingFunctions()</code>, which was also used in the <code class="highlighter-rouge">Pledge</code> constructor. The call here creates a new set of <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions that are separate from the original ones used inside of the constructor. Then, an attempt is made to attach those functions as fulfillment and rejection handlers on the thenable. The code looks a bit weird because I tried to make it look as close to the spec as possible, but really all it’s doing is <code class="highlighter-rouge">thenable.then(resolve, reject)</code>. That code is wrapped in a <code class="highlighter-rouge">try-catch</code> just in case there’s an error that needs to be caught and passed to the <code class="highlighter-rouge">reject</code> function. Once again, the code looks a bit more complicated as I tried to capture the spirit of the specification, but ultimately all it’s doing is <code class="highlighter-rouge">reject(thenError)</code>.</p>
+
+<p>Now you can go back and complete the definition of the <code class="highlighter-rouge">resolve</code> function inside of <code class="highlighter-rouge">createResolvingFunctions()</code> to trigger a <code class="highlighter-rouge">PledgeResolveThenableJob</code> as the last step:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">createResolvingFunctions</span><span class="p">(</span><span class="nx">pledge</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">alreadyResolved</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="kc">false</span> <span class="p">};</span>
+
+    <span class="kd">const</span> <span class="nx">resolve</span> <span class="o">=</span> <span class="nx">resolution</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">alreadyResolved</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nx">alreadyResolved</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+        <span class="c1">// can't resolve to the same pledge</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">is</span><span class="p">(</span><span class="nx">resolution</span><span class="p">,</span> <span class="nx">pledge</span><span class="p">))</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">selfResolutionError</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TypeError</span><span class="p">(</span><span class="dl">"</span><span class="s2">Cannot resolve to self.</span><span class="dl">"</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">rejectPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">selfResolutionError</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// non-objects fulfill immediately</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isObject</span><span class="p">(</span><span class="nx">resolution</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">fulfillPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">resolution</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="kd">let</span> <span class="nx">thenAction</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">thenAction</span> <span class="o">=</span> <span class="nx">resolution</span><span class="p">.</span><span class="nx">then</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">thenError</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">rejectPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">thenError</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="c1">// if the thenAction isn't callable then fulfill the pledge</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">isCallable</span><span class="p">(</span><span class="nx">thenAction</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">fulfillPledge</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">resolution</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="cm">/*
+         * If `thenAction` is callable, then we need to wait for the thenable
+         * to resolve before we can resolve this pledge.
+         */</span>
+        <span class="kd">const</span> <span class="nx">job</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeResolveThenableJob</span><span class="p">(</span><span class="nx">pledge</span><span class="p">,</span> <span class="nx">resolution</span><span class="p">,</span> <span class="nx">thenAction</span><span class="p">);</span>
+        <span class="nx">hostEnqueuePledgeJob</span><span class="p">(</span><span class="nx">job</span><span class="p">);</span>
+    <span class="p">};</span>
+
+    <span class="c1">// attach the record of resolution and the original pledge</span>
+    <span class="nx">resolve</span><span class="p">.</span><span class="nx">alreadyResolved</span> <span class="o">=</span> <span class="nx">alreadyResolved</span><span class="p">;</span>
+    <span class="nx">resolve</span><span class="p">.</span><span class="nx">pledge</span> <span class="o">=</span> <span class="nx">pledge</span><span class="p">;</span>
+
+    <span class="c1">// reject function omitted for ease of reading</span>
+
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="nx">resolve</span><span class="p">,</span>
+        <span class="nx">reject</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If <code class="highlighter-rouge">resolution</code> is a thenable, then the <code class="highlighter-rouge">PledgeResolveThenableJob</code> is created and queued. That’s important, because anything a thenable is passed to <code class="highlighter-rouge">resolve</code>, it means that the promise isn’t resolved synchronously and you must wait for at least one microtask to complete.</p>
+
+<h2 id="wrapping-up">Wrapping Up</h2>
+
+<p>The most important concept to grasp in this post is how jobs work and how they relate to microtasks in JavaScript runtimes. Jobs are a central part of promise functionality and in this post you learned how to use a job to resolve a promise to another promise. With that background, you’re ready to move into implementing <code class="highlighter-rouge">then()</code>, <code class="highlighter-rouge">catch()</code>, and <code class="highlighter-rouge">finally()</code>, all of which rely on the same type of job to trigger their handlers. That’s coming up in the <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">next post</a> in this series.</p>
+
+<p>Remember: All of this code is available in the <a href="https://github.com/humanwhocodes/pledge">Pledge</a> on GitHub. I hope you’ll download it and try it out to get a better understanding of promises.</p>
+
+<h2 id="references">References</h2>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-jobs">Jobs and Host Operations to Enqueue Jobs</a> <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html#fnref:1" class="reversefootnote">&#8617;</a> <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html#fnref:1:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
+    </li>
+    <li id="fn:2">
+      <p><a href="https://html.spec.whatwg.org/multipage/timers-and-user-prompts.html#microtask-queuing">Microtask queueing</a> <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="https://humanwhocodes.com/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='../../index.html'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

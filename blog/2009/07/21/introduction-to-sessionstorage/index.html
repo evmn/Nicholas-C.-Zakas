@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Introduction to sessionStorage - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/07/21/introduction-to-sessionstorage/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Introduction to sessionStorage">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/07/21/introduction-to-sessionstorage/" />
+<meta name="og:title" content="Introduction to sessionStorage">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="One of the most interesting parts of the recent browser evolution has been the explosive growth in the number of options for client-side data storage. Prior to this past year, our only viable...">
+<meta name="keywords" content="HTML 5,JavaScript,sessionStorage,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Introduction to sessionStorage</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-07-21T00:00:00+00:00" itemprop="datePublished">July 21, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/html-5" rel="tag">HTML 5</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/sessionstorage" rel="tag">sessionStorage</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>One of the most interesting parts of the recent browser evolution has been the explosive growth in the number of options for client-side data storage. Prior to this past year, our only viable cross-browser method of storing data on the client was <a href="../../../05/05/http-cookies-explained/index.html">cookies</a>. Cookies have the downside of adding additional overhead to server requests and responses, but they do get the job done. HTML 5 introduced three new options for client-side data storage: <code class="highlighter-rouge">sessionStorage</code>, <code class="highlighter-rouge">localStorage</code>, and client-side databases. The first two, <code class="highlighter-rouge">sessionStorage</code> and <code class="highlighter-rouge">localStorage</code>, have since been split out into a separate <a href="http://dev.w3.org/html5/webstorage/">Web Storage</a> specification while client-side databases is covered in the <a href="http://dev.w3.org/html5/webdatabase/">Web Database</a> specification. Of these three new client-side data storage options, I find <code class="highlighter-rouge">sessionStorage</code> the most interesting.</p>
+
+<h2 id="what-is-sessionstorage">What is sessionStorage?</h2>
+
+<p>The <code class="highlighter-rouge">sessionStorage</code> object exists as a property of the <code class="highlighter-rouge">window</code> object in supporting browsers (currently Firefox 3+, Safari 4+, and Internet Explorer 8+). You can place data onto the <code class="highlighter-rouge">sessionStorage</code> object and that data persists for as long as that window (or tab) is open. Even if you navigate away from the page that stored the data and then navigate back, the data saved to <code class="highlighter-rouge">sessionStorage</code> is still available. Any data stored in <code class="highlighter-rouge">sessionStorage</code> is tied to the protocol, hostname, and port of the page that saved the information and only pages sharing the same protocol, hostname, and port can access that data later.</p>
+
+<p>Making things more interesting, <code class="highlighter-rouge">sessionStorage</code> is unique to a particular window or tab (what the specification refers to as a “top-level browsing context”). For instance, suppose you open <a href="http://mail.yahoo.com/">Yahoo! Mail</a> in two different tabs of your browser and the application saves some data in <code class="highlighter-rouge">sessionStorage</code>. The data from the first tab is not accessible to the second tab even though the protocol, hostname, and port are exactly the same.</p>
+
+<p>Data stored to <code class="highlighter-rouge">sessionStorage</code> is saved in key-value pairs where both the key and the value are strings. Non-string values are automatically converted into strings before being stored.</p>
+
+<p>The data in <code class="highlighter-rouge">sessionStorage</code> is deleted once the window or tab is closed, or if the user requests that the browser do so. This behavior, combined with tying the data to a particular window or tab, ensures that data doesn’t get accidentally exposed or stored indefinitely.</p>
+
+<h2 id="usage">Usage</h2>
+
+<p>The <code class="highlighter-rouge">sessionStorage</code> object has five methods:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">getItem(key)</code> – retrieves the value for the given key or null if the key doesn’t exist.</li>
+  <li><code class="highlighter-rouge">setItem(key, value)</code> – sets the value for the given key.</li>
+  <li><code class="highlighter-rouge">removeItem(key)</code> – removes the key completely.</li>
+  <li><code class="highlighter-rouge">key(position)</code> – returns the key for the value in the given numeric position.</li>
+  <li><code class="highlighter-rouge">clear()</code> – removes all key-value pairs.</li>
+</ul>
+
+<p>There is also a single property, <code class="highlighter-rouge">length</code>, which indicates how many key-value pairs are currently stored in <code class="highlighter-rouge">sessionStorage</code>. Some example usage:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//save a value
+sessionStorage.setItem("name", "Nicholas");
+
+//retrieve item
+var name = sessionStorage.getItem("name");
+
+//get the key name for the first item
+var key = sessionStorage.key(0);
+
+//remove the key
+sessionStorage.removeItem(key);
+
+//check how many key-value pairs are present
+var count = sessionStorage.length;
+</code></pre></div></div>
+
+<p>Additionally, proper implementations allow you to read, write, and remove values from <code class="highlighter-rouge">sessionStorage</code> as if it were a regular object. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//save a value
+sessionStorage.name = "Nicholas";
+
+//retrieve item
+var name = sessionStorage.name;
+
+//remove the key
+delete sessionStorage.name;
+</code></pre></div></div>
+
+<p>This syntax is logically supported as this is the way objects are typically accessed in JavaScript.</p>
+
+<p>When writing to <code class="highlighter-rouge">sessionStorage</code>, an error may be thrown to indicate that the write failed. The write may failed for any number of reasons but the most common being that the maximum data size has been hit. If you are saving large amounts of data to <code class="highlighter-rouge">sessionStorage</code>, it’s best to wrap any writes with a <code class="highlighter-rouge">try-catch</code> to handle this error.</p>
+
+<h2 id="the-storage-event">The storage event</h2>
+
+<p>Whenever a change is made to <code class="highlighter-rouge">sessionStorage</code>, a <code class="highlighter-rouge">storage</code> event is fired on the <code class="highlighter-rouge">document</code> object. The event object for this event contains the following properties:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">key</code> – the key that was changed.</li>
+  <li><code class="highlighter-rouge">oldValue</code> – the value before the operation.</li>
+  <li><code class="highlighter-rouge">newValue</code> – the value after the operation.</li>
+  <li><code class="highlighter-rouge">url</code> – the URL of the page that performed the operation.</li>
+  <li><code class="highlighter-rouge">source</code> – the window object representing the owner of the <code class="highlighter-rouge">sessionStorage</code> object.</li>
+</ul>
+
+<p>The specification is unclear as to whether this event should be fired for <code class="highlighter-rouge">sessionStorage</code> or not. My testing shows that Internet Explorer fires the event for <code class="highlighter-rouge">sessionStorage</code> but Firefox and Safari do not. If anyone has other details, please chime in.</p>
+
+<h2 id="browser-differences">Browser differences</h2>
+
+<p>Even though <code class="highlighter-rouge">sessionStorage</code> is reasonably well-supported in browsers, including Firefox 3, Safari 4, and Internet Explorer 8, there are some differences in implementations to be aware of:</p>
+
+<ul>
+  <li>Firefox 3 returns an object when reading a value from <code class="highlighter-rouge">sessionStorage</code>. The object has a property named <code class="highlighter-rouge">value</code> that contains the actual string value that was stored. Firefox 3.5 correctly returns a string when retrieving values.</li>
+  <li>Firefox 3 doesn’t implement the <code class="highlighter-rouge">clear()</code> method; Firefox 3.5 does.</li>
+  <li>Internet Explorer 8 doesn’t allow you to remove a key by using the <code class="highlighter-rouge">delete</code> operator.</li>
+  <li>Firefox 3.5 is the only browser that maintains <code class="highlighter-rouge">sessionStorage</code> data when the browser crashes and makes it available when the browser is restarted after a crash.</li>
+  <li>Internet Explorer 8 saves data to s asynchronously while the others do so synchronously. To force IE to write immediately, call the proprietary <code class="highlighter-rouge">begin()</code> method, then make your changes, then call the proprietary <code class="highlighter-rouge">commit()</code> method.</li>
+  <li>Firefox’s and Safari’s storage limit is 5MB per domain, Internet Explorer’s limit is 10 MB per domain.</li>
+  <li>Internet Explorer 8 only supports the <code class="highlighter-rouge">url</code> property of the <code class="highlighter-rouge">event</code> object.</li>
+  <li>Firefox 3 and 3.5 throw errors when you try to access <code class="highlighter-rouge">sessionStorage</code> if cookies are disabled on the browser (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=365772">bug</a>).</li>
+</ul>
+
+<h2 id="security-issues">Security issues</h2>
+
+<p>The reason I really like sessionStorage is that it keeps security in mind. By limiting data access to a single window or tab, tying that data to the protocol, domain, and port, and then deleting the data when the window or tab is closed, the implementation really makes sure that data can’t be accessed in harmful ways. Still, there’s one more security issue to worry about. To understand the issue, consider the following scenario.</p>
+
+<p>You log into a web site to view your mail and the mail application saves information about those emails in <code class="highlighter-rouge">sessionStorage</code>. Then, you switch tabs to another window where you log out of the account from which your email is being read. This is very possible when using single sign-on IDs such as a Yahoo! ID (but please note this is just an example, Yahoo! doesn’t actually do this). You then switch back to the email tab and your data is still present in <code class="highlighter-rouge">sessionStorage</code> even though you’ve logged out. Clicking on various email messages retrieves data from <code class="highlighter-rouge">sessionStorage</code> and displays it. You’re now looking at personal information while logged out.</p>
+
+<p>And even more dangerous situation occurs when you leave that computer without closing the browser and another user sits down in your place. With normal secure Ajax communication, your credentials are checked with each request and so this situation is avoided. If the data is in <code class="highlighter-rouge">sessionStorage</code>, there is no credential verification because there is no server request, which opens up this security issue.</p>
+
+<p>If you are using <code class="highlighter-rouge">sessionStorage</code> for storage of personalized data, you need to verify the user’s identity whenever the data is accessed for reading or writing. How do you do this? Most sign-in flows work by adding a specific cookie for the domain you’re accessing so that you don’t have to log in at each page. My recommendation is to take a snapshot of the cookie when the data is saved into <code class="highlighter-rouge">sessionStorage</code> and store that in <code class="highlighter-rouge">sessionStorage</code> along with the actual data. Then, every time you read to or write from <code class="highlighter-rouge">sessionStorage</code>, verify that the current value of the cookie is the same as the stored on. If there’s any difference, delete all of the values from <code class="highlighter-rouge">sessionStorage</code>. Since all windows and tabs shared the same cookies, cookies are dynamically updated and available through JavaScript immediately. Example using <a href="http://developer.yahoo.com/yui/3/">YUI 3</a>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function validateUser(){
+    var currentCookie = Y.Cookie.get("login");
+    if (currentCookie != sessionStorage.storedCookie){
+        sessionStorage.clear();
+        sessionStorage.storedCookie = currentCookie;  //reset
+    }
+}
+
+function saveData(key, value){
+    validateUser();
+    sessionStorage[key] = value;
+}
+
+function getData(key){
+    validateUser();
+    return sessionStorage[key];
+}
+</code></pre></div></div>
+
+<p>With this code, you would use <code class="highlighter-rouge">saveData()</code> and <code class="highlighter-rouge">getData()</code> instead of accessing <code class="highlighter-rouge">sessionStorage</code> directly. Each method calls <code class="highlighter-rouge">validateUser()</code>, which checks the cookie called “login”. This approach assumes that the “login” cookie contains a unique hash for each user and is removed when the user logs out.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The <code class="highlighter-rouge">sessionStorage</code> object is a really useful way to keep data on the client in a relatively secure way. Though there are some outstanding security issues as mentioned in the previous section, those are relatively easy to mitigate in comparison to the built-in protection that this system affords you. Especially in today’s Web 2.0/Ajax world where browsers are often left open for inordinate amounts of time, caching data on the client using <code class="highlighter-rouge">sessionStorage</code> can dramatically improve the user’s experience in browsers that support it.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/07/21/introduction-to-sessionstorage/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

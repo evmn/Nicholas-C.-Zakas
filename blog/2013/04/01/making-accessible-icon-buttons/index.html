@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Making accessible icon buttons - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2013/04/01/making-accessible-icon-buttons/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Making accessible icon buttons">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2013/04/01/making-accessible-icon-buttons/" />
+<meta name="og:title" content="Making accessible icon buttons">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Last week, Pamela Fox tweeted a question to me: @slicknet Do you know the best way to make a that just has an icon accessible? title, aria-label, hidden text? — Pamela Fox (@pamelafox)...">
+<meta name="keywords" content="Accessibility,ARIA,HTML,Screen Readers,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Making accessible icon buttons</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2013-04-01T00:00:00+00:00" itemprop="datePublished">April 1, 2013</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/accessibility" rel="tag">Accessibility</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/aria" rel="tag">ARIA</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/html" rel="tag">HTML</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/screen-readers" rel="tag">Screen Readers</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Last week, Pamela Fox tweeted a question to me:</p>
+
+<blockquote class="twitter-tweet">
+  <p>
+    @<a href="https://twitter.com/slicknet">slicknet</a> Do you know the best way to make a <button> that just has an icon accessible? title, aria-label, hidden text?
+  </button></p>
+
+  <p>
+    — Pamela Fox (@pamelafox) <a href="https://twitter.com/pamelafox/status/316692888538980353">March 26, 2013</a>
+  </p>
+</blockquote>
+
+<p> </p>
+
+<p>As tends to happen on Twitter, we fruitlessly exchanged 140 character messages trying to get some resolution before I finally offered to write a blog post explaining my view. Along the way, I discovered that I had misunderstood the original question (yay 140 character responses) and needed to do a little research. And so here it is.</p>
+
+<h2 id="simple-icon-buttons">Simple icon buttons</h2>
+
+<p>In the beginning, there <code class="highlighter-rouge">&lt;input type="image"&gt;</code>. Many seem to have forgotten this part of HTML. Early on, web developers wanted to use images as submit buttons rather than the plain submit button and <code class="highlighter-rouge">&lt;input type="image"&gt;</code> allowed you to create an image that actually works like a button. Further, this type of image actually announces itself as a button in screen readers. Anytime you want the user to click on something and <em>not</em> navigate to another page, you’re looking for a button, and <code class="highlighter-rouge">&lt;input type="image"&gt;</code> gives you a nice compact way of doing that while supporting the same attributes as <code class="highlighter-rouge">&lt;img&gt;</code>. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;input type="image" src="email.png" width="14" height="14" alt="Email"&gt;
+</code></pre></div></div>
+
+<p>In this case, the major screen readers (JAWS, NVDA, VoiceOver) announce “Email button” in all major browsers, reading the <code class="highlighter-rouge">alt</code> text and identifying the image as a button. Part of the reason this pattern isn’t used much anymore is due to the ubiquity of CSS sprites. However, it’s still my favorite pattern, and with a little adjusting, works fine with sprites:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;style&gt;
+    .email-btn {
+        width: 14px;
+        height: 14px;
+        background: url(activities.png) 0 -85px no-repeat;
+    }
+&lt;/style&gt;
+
+&lt;input type="image" src="pixel.gif" class="email-btn" alt="Email"&gt;
+</code></pre></div></div>
+
+<p>This example uses a single transparent GIF as the <code class="highlighter-rouge">src</code> of the image. Doing so allows a background image to be applied and show through via the “email-btn” class. If the thought of having an extra download for an icon button is unpalatable to you, you can also use a data URI representing a single transparent pixel:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==
+</code></pre></div></div>
+
+<p>In either case, the major screen readers still announce “Email button” when focus is set to the button, which is exactly what you want.</p>
+
+<h2 id="using-">Using <button></button></h2>
+
+<p>The <code class="highlighter-rouge">&lt;button&gt;</code> element has becomes the element of choice for making non-text buttons in HTML. This makes complete sense because you can put whatever HTML you desire inside and it renders as a button. However, the end result is not the same as with the more traditional approach. First, consider a really simple example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;button&gt;&lt;img src="email.png" width="14" height="14" alt="Email"&gt;&lt;/button&gt;
+</code></pre></div></div>
+
+<p>This button produces some very different results in different browsers and different screen readers:</p>
+
+<ul>
+  <li><strong>Chrome 25 (Win7/NVDA):</strong> “Button”</li>
+  <li><strong>Internet Explorer 9 (Win7/NVDA):</strong> “Button”</li>
+  <li><strong>Firefox 19 (Win7/NVDA):</strong> “Email graphic button”</li>
+  <li><strong>Chrome 25 (Win7/JAWS):</strong> “Email button”</li>
+  <li><strong>Internet Explorer 9 (Win7/JAWS):</strong> “Email button”</li>
+  <li><strong>Firefox 19 (Win7/JAWS):</strong> “Email button”</li>
+  <li><strong>Chrome 25 (Mac OS X/VoiceOver):</strong> “Email button”</li>
+  <li><strong>Safari 6 (Mac OS X/VoiceOver):</strong> “Button”</li>
+  <li><strong>Firefox 19 (Mac OS X/VoiceOver):</strong> “Email button”</li>
+  <li><strong>Mobile Safari (iOS 6/VoiceOver):</strong> “Button”</li>
+</ul>
+
+<p>So basically, using a <code class="highlighter-rouge">&lt;button&gt;</code> element introduces a barrier for most screen reader/browser combinations to figure out what the button is doing. It doesn’t matter if the <code class="highlighter-rouge">&lt;img&gt;</code> is used more traditionally or with a sprite, you don’t get much information in most places.</p>
+
+<p>You can give screen readers a hint by using the <code class="highlighter-rouge">aria-label</code> attribute on the <code class="highlighter-rouge">&lt;button&gt;</code> element. Doing so means providing a plain-text label for the button as a whole:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;button aria-label="Email"&gt;&lt;img src="email.png" width="14" height="14" alt="Email"&gt;&lt;/button&gt;
+</code></pre></div></div>
+
+<p>By adding an <code class="highlighter-rouge">aria-label</code>, the various screen readers and browsers respond as follows:</p>
+
+<ul>
+  <li><strong>Chrome 25 (Win7/NVDA):</strong> “Email button”</li>
+  <li><strong>Internet Explorer 9 (Win7/NVDA):</strong> “Email button”</li>
+  <li><strong>Firefox 19 (Win7/NVDA):</strong> “Email graphic button”</li>
+  <li><strong>Chrome 25 (Win7/JAWS):</strong> “Email Button”</li>
+  <li><strong>Internet Explorer 9 (Win7/JAWS):</strong> “Email Button”</li>
+  <li><strong>Firefox 19 (Win7/JAWS):</strong> “Email button”</li>
+  <li><strong>Chrome 25 (Mac OS X/VoiceOver):</strong> “Email button”</li>
+  <li><strong>Safari 6 (Mac OS X/VoiceOver):</strong> “Email button”</li>
+  <li><strong>Firefox 19 (Mac OS X/VoiceOver):</strong> “Email button”</li>
+  <li><strong>Mobile Safari (iOS 6/VoiceOver):</strong> “Email button”</li>
+</ul>
+
+<p>So now you actually have a nice response from all of the major browsers and screen readers. You can use this same technique regardless of what you place inside of the <code class="highlighter-rouge">&lt;button&gt;</code> element.</p>
+
+<h2 id="font-awesome">Font Awesome</h2>
+
+<p>Part of what I missed from my original Twitter discussion with Pamela was that she was using Font Awesome<sup><a href="http://fortawesome.github.com/Font-Awesome/">1</a></sup>. For the uninitiated, Font Awesome is an icon font that contains numerous common icons for use in HTML. Instead of using separate image files or a sprite that you have to manage, you can use an icon font and reference the relevant icon by using a class name. The icon is inserted via CSS, so it has no negative accessibility concerns. This example is similar to the one Pamela brought up:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;button&gt;&lt;span class="icon-envelope"&gt;&lt;/span&gt;&lt;/button&gt;
+</code></pre></div></div>
+
+<p>The question is, how do you add descriptive text to this? One way would be to add an <code class="highlighter-rouge">aria-label</code> attribute as in the previous section:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;button aria-label="Email"&gt;&lt;span class="icon-envelope"&gt;&lt;/span&gt;&lt;/button&gt;
+</code></pre></div></div>
+
+<p>Since that always works for <code class="highlighter-rouge">&lt;button&gt;</code> elements, that’s the fastest and easiest way forward. The result in various screen readers:</p>
+
+<ul>
+  <li><strong>Chrome 25 (Win7/NVDA):</strong> “Email button”</li>
+  <li><strong>Internet Explorer 9 (Win7/NVDA):</strong> “Email button”</li>
+  <li><strong>Firefox 19 (Win7/NVDA):</strong> “Email button”</li>
+  <li><strong>Chrome 25 (Win7/JAWS):</strong> “Email Button”</li>
+  <li><strong>Internet Explorer 9 (Win7/JAWS):</strong> “Email Button”</li>
+  <li><strong>Firefox 19 (Win7/JAWS):</strong> “Email button”</li>
+  <li><strong>Chrome 25 (Mac OS X/VoiceOver):</strong> “Email button”</li>
+  <li><strong>Safari 6 (Mac OS X/VoiceOver):</strong> “Email button”</li>
+  <li><strong>Firefox 19 (Mac OS X/VoiceOver):</strong> “Email button”</li>
+  <li><strong>Mobile Safari (iOS 6/VoiceOver):</strong> “Email button”</li>
+</ul>
+
+<p>I prefer this over the second (and often overused option) of hiding text off screen, in which case you would have code similar to this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;button&gt;&lt;span class="icon-envelope"&gt;&lt;/span&gt;&lt;span class="hide-offscreen"&gt;Email&lt;/span&gt;&lt;/button&gt;
+</code></pre></div></div>
+
+<p>The idea here is to position text far off in some direction such that it’s not visible to sighted users but is still read out for screen reader users. I’m not a huge fan of hiding text off screen, primarily because it feels very hacky…a bit like a sleight of hand trick. Additionally, each of the major ways of hiding text off screen comes with some sort of caveat. Using a big negative <code class="highlighter-rouge">text-indent</code> doesn’t work well with RTL languages, using a <code class="highlighter-rouge">height</code> of 0 means VoiceOver won’t announce the contents, and so on. Jonathan Snook put together a fantastic post<sup><a href="http://snook.ca/archives/html_and_css/hiding-content-for-accessibility">2</a></sup> outlining the different approaches and the caveats to each.</p>
+
+<p>The screen readers all end up announcing the same message as when using <code class="highlighter-rouge">aria-label</code>.</p>
+
+<p>Do I use hiding text off screen periodically? Yes, but only as a measure of last resort when I’ve exhausted all other possibilities. I would encourage you to do the same.</p>
+
+<p>One final note: don’t use <code class="highlighter-rouge">title</code> as your button label. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;button title="Email"&gt;&lt;span class="icon-envelope"&gt;&lt;/span&gt;&lt;/button&gt;
+</code></pre></div></div>
+
+<p>While it would be ideal if screen readers were able to use this value, the results are very uneven:</p>
+
+<ul>
+  <li><strong>Chrome 25 (Win7/NVDA):</strong> “Email button”</li>
+  <li><strong>Internet Explorer 9 (Win7/NVDA):</strong> “Email button”</li>
+  <li><strong>Firefox 19 (Win7/NVDA):</strong> “Button email”</li>
+  <li><strong>Chrome 25 (Win7/JAWS):</strong> “Email Button”</li>
+  <li><strong>Internet Explorer 9 (Win7/JAWS):</strong> “Email Button”</li>
+  <li><strong>Firefox 19 (Win7/JAWS):</strong> “Email button”</li>
+  <li><strong>Chrome 25 (Mac OS X/VoiceOver):</strong> “Button”</li>
+  <li><strong>Safari 6 (Mac OS X/VoiceOver):</strong> “Button”</li>
+  <li><strong>Firefox 19 (Mac OS X/VoiceOver):</strong> “Email button”</li>
+  <li><strong>Mobile Safari (iOS 6/VoiceOver):</strong> “Email button”</li>
+</ul>
+
+<p>Even though the <code class="highlighter-rouge">title</code> attribute is helpful for sighted users as a hint, it doesn’t provide any real consistent benefit as far as screenreaders go.</p>
+
+<h2 id="update-07-april-2013">Update (07-April-2013)</h2>
+
+<p>As several commenters mentioned, my recommendation results in an empty <code class="highlighter-rouge">&lt;button&gt;</code> element. I wasn’t too concerned about that at first, but as I thought about it more and more, the purist in me got a little bit upset. Yes, in an ideal world, you should be able to remove all JavaScript and CSS and the page still make sense. In this case, you’d be left with a button that has no descriptive text whatsoever. That turned my stomach and I went back to the drawing board to try and find a way to have text inside of the <code class="highlighter-rouge">&lt;button&gt;</code> element without hiding it offscreen. After some tinkering, here’s what I came up with:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;style&gt;
+.btn-label {
+    font-size: 0;
+    height: 1px;
+    overflow: hidden;
+    display: block;
+}
+&lt;/style&gt;
+
+&lt;button class="icon-envelope"&gt;&lt;span class="btn-label"&gt;Email&lt;/span&gt;&lt;/button&gt;
+</code></pre></div></div>
+
+<p>The idea is to have the descriptive text inside of the <code class="highlighter-rouge">&lt;button&gt;</code> element while placing the Font Awesome class on the <code class="highlighter-rouge">&lt;button&gt;</code> itself. This allows you to modify the inner <code class="highlighter-rouge">&lt;span&gt;</code> element separately from the <code class="highlighter-rouge">&lt;button&gt;</code>. The <code class="highlighter-rouge">&lt;span&gt;</code> is set to be practically invisible by using a <code class="highlighter-rouge">font-size</code> of 0, a <code class="highlighter-rouge">height</code> of one pixel (to make VoiceOver happy). The rest is used to ensure the <code class="highlighter-rouge">&lt;span&gt;</code> never grows any larger.</p>
+
+<p>In all browsers and screenreaders mentioned in this post, the text “Email button” is announced using this pattern. The solution is something that makes the purist side of me very comfortable. You aren’t tempting fate by moving text offscreen yet the <code class="highlighter-rouge">&lt;button&gt;</code> element still has text inside of it. You don’t have to use ARIA to provide additional context for screen readers in this case.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I still prefer the old-school <code class="highlighter-rouge">&lt;input type="image"&gt;</code> element for creating clickable icons. However, in the case of using an icon font, that really doesn’t work. In that situation, <del>I prefer to use the <code>aria-label</code> attribute to provide additional text for screen readers. Doing so yields the most consistent treatment for buttons across major browsers and screenreaders.</del> I prefer to use some in-line hidden text to ensure the <code class="highlighter-rouge">&lt;button&gt;</code> element has actual text inside. As a bonus, you don’t have to worry too much about how position text off screen might affect other parts of the page.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://fortawesome.github.com/Font-Awesome/">Font Awesome</a> (GitHub)</li>
+  <li><a href="http://snook.ca/archives/html_and_css/hiding-content-for-accessibility">Hiding content for accessibility</a> by Jonathan Snook (snook.ca)</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2013/04/01/making-accessible-icon-buttons/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

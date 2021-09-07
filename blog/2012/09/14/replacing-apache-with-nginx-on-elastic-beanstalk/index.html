@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Replacing Apache with nginx on Elastic Beanstalk - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/09/14/replacing-apache-with-nginx-on-elastic-beanstalk/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Replacing Apache with nginx on Elastic Beanstalk">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/09/14/replacing-apache-with-nginx-on-elastic-beanstalk/" />
+<meta name="og:title" content="Replacing Apache with nginx on Elastic Beanstalk">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="WellFurnished has been using Amazon’s Elastic Beanstalk1 service for some time now with one of the default configurations. For those who are unaware, Elastic Beanstalk is Amazon’s answer to services like Heroku and...">
+<meta name="keywords" content="Apache,AWS,Elastic Beanstalk,Linux,nginx,Tomcat,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Replacing Apache with nginx on Elastic Beanstalk</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-09-14T00:00:00+00:00" itemprop="datePublished">September 14, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/apache" rel="tag">Apache</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/aws" rel="tag">AWS</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/elastic-beanstalk" rel="tag">Elastic Beanstalk</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/linux" rel="tag">Linux</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/nginx" rel="tag">nginx</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/tomcat" rel="tag">Tomcat</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>WellFurnished has been using Amazon’s Elastic Beanstalk<sup><a href="https://gist.github.com/3718880">1</a></sup> service for some time now with one of the default configurations. For those who are unaware, Elastic Beanstalk is Amazon’s answer to services like Heroku and Google App Engine. You set up an application and one or more environments made up of a load balancer and any number of EC2 instances. There are several default instance types you can select from such as Apache with Tomcat 6 or 7, Apache with PHP, and Apache with Python (all are available in either 32-bit or 64-bit configurations).</p>
+
+<p>Once you have created an application, you can update any environment using Git. We’ve been using this for our deploys since the start. WellFurnished is written in Java using the Play framework<sup><a href="http://aws.amazon.com/elasticbeanstalk/">2</a></sup> so we have been using the 32-bit configuration with Apache and Tomcat 7. Play can export an exploded WAR file of the application which we then checked into the Elastic Beanstalk Git repository for the application. Then, we sit back and watch as the update rolls out to the environments we specified.</p>
+
+<p>It’s a really nice service that costs nothing over and above the AWS resources that you’re using. That being said, the number of configuration options is limited. Amazon says that you are always free to make modifications but there are no good tutorials or examples of how to do that. Over the past couple of days, I’ve gone through the process of replacing Apache with nginx in our Elastic Beanstalk instances. I did so by piecing together information I found spread across the Internet. This is my attempt to explain how I did it in the hopes that this will help others with the process.</p>
+
+<h2 id="understanding-how-it-works">Understanding how it works</h2>
+
+<p>Before modifying a configuration, it helps to understand exactly how Elastic Beanstalk works. Each of the default AMIs for Elastic Beanstalk comes configured with a Ruby on Rails web application called hostmanager. This application is responsible for interacting with Elastic Beanstalk including health checks and deployment of changes, among other things. As long as hostmanager is functioning properly, an EC2 instance will work properly within an Elastic Beanstalk application. It sounds simple, but in reality, this is usually where the problem is. Ensuring that hostmanager continues to work in the way that it used to is the key to creating custom EC2 configurations that still work with Elastic Beanstalk.</p>
+
+<p>The hostmanager runs at <code class="highlighter-rouge">http://localhost:8999</code> on the machine and is accessible publicly at <code class="highlighter-rouge">/_hostmanager</code>. No matter what you do, you must ensure that <code class="highlighter-rouge">/_hostmanager</code> continues to work properly. The Rails app for hostmanager starts automatically so all you need to do is make sure that it’s publicly accessible.</p>
+
+<p>One of Apache’s jobs on an Elastic Beanstalk instance is to make sure that hostmanager is accessible. It’s set up as a reverse proxy where <code class="highlighter-rouge">/_hostmanager</code> points to <code class="highlighter-rouge">http://localhost:8999</code>. Since my goal was to replace Apache with nginx, I had to make sure that this setting was preserved.</p>
+
+<h2 id="modifying-an-ami">Modifying an AMI</h2>
+
+<p>To get started, it’s easiest to have an Elastic Beanstalk environment already running. As mentioned before, we were using the 32-bit Apache/Tomcat 7 configuration on a small instance. This configuration is stored in an Amazon produced AMI. In order to create a custom AMI based on that configuration, you need to create a standalone EC2 instance using that same AMI.</p>
+
+<p>With Elastic Beanstalk already running, locate the EC2 instance in the EC2 section of the AWS console. Even though you’re using Elastic Beanstalk, it’s still just creates regular EC2 instances. If you’re unsure which EC2 instances being used then take a look at the elastic load balancer associated with that particular environment. That will give you the EC2 instance ID. In the EC2 section of the AWS Console, right click on the instance and select “Launch more likes this”. You’ll be taken through the EC2 instance creation process and in about a minute you’ll have an instance based off of the Elastic Beanstalk AMI.</p>
+
+<p>Then you can SSH into the new instance and configure it however you want. By default, neither Apache nor tomcat are running. You will need to manually start the in order to have a working environment:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo service httpd start
+sudo service tomcat7 start
+</code></pre></div></div>
+
+<p>Now everything is working just as it is in an instance used by Elastic Beanstalk. You’ll have to manually add in your application code if you want to test that, but otherwise the instance is completely functional.</p>
+
+<h2 id="installing-and-configuring-nginx">Installing and configuring nginx</h2>
+
+<p>Swapping nginx for Apache is a simple procedure in theory. Since both are being used as reverse proxies, it’s a matter of ensuring that the nginx configuration is equivalent to the Apache configuration. Start by installing nginx:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>yum -y install nginx
+</code></pre></div></div>
+
+<p>The next step is to modify the number of worker processes that nginx will use. By default it’s set to 1 and it’s a good idea to change it to 4. So find this line in <code class="highlighter-rouge">/etc/nginx/nginx.conf</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>worker_processes  1;
+</code></pre></div></div>
+
+<p>And change it to this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>worker_processes  4;
+</code></pre></div></div>
+
+<p>Next, setup proxy configuration for nginx (exact configuration taken from <cite>Hacking Elastic Beanstalk</cite> (O’Reilly)<sup><a href="http://playframework.org">3</a></sup>. Create a file called <code class="highlighter-rouge">/etc/nginx/conf.d/proxy.conf</code> and place this inside:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>proxy_redirect            off;
+proxy_set_header          Host            $host;
+proxy_set_header          X-Real-IP       $remote_addr;
+proxy_set_header          X-Forwarded-For $proxy_add_x_forwarded_for;
+client_max_body_size      10m;
+client_body_buffer_size   128k;
+client_header_buffer_size 64k;
+proxy_connect_timeout     90;
+proxy_send_timeout        90;
+proxy_read_timeout        90;
+proxy_buffer_size         16k;
+proxy_buffers             32              16k;
+proxy_busy_buffers_size   64k;
+</code></pre></div></div>
+
+<p>Note that you need to manually set some headers using nginx whereas Apache sets those for you when using the <code class="highlighter-rouge">ProxyPassReverse</code> directive.</p>
+
+<p>There’s a default server setup with nginx when it’s installed, so remove that:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo rm /etc/nginx/conf.d/default.conf
+</code></pre></div></div>
+
+<p>Create a file called <code class="highlighter-rouge">/etc/nginx/conf.d/beanstalk.conf</code> and fill it with this (also from <cite>Hacking Elastic Beanstalk</cite><sup><a href="http://playframework.org">3</a></sup>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>server {
+    listen 80;
+    server_name _;
+    access_log /var/log/httpd/elasticbeanstalk-access_log;
+    error_log /var/log/httpd/elasticbeanstalk-error_log;
+
+    #set the default location
+    location / {
+        proxy_pass         http://127.0.0.1:8080/;
+    }
+
+    # make sure the hostmanager works
+    location /_hostmanager/ {
+        proxy_pass         http://127.0.0.1:8999/;
+    }
+}
+</code></pre></div></div>
+
+<p>These settings mimic the settings from Apache write down to the location of the logs. This ensures that nginx is working almost exactly like Apache (for our purposes on WellFurnished, we put in a few more modifications, but this is what you need to get started).</p>
+
+<p>Now that nginx is set up, you can safely remove Apache and start nginx:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo yum remove httpd
+sudo service nginx start
+</code></pre></div></div>
+
+<p>As one final measure, make sure that nginx will start automatically when the server starts:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo /sbin/chkconfig nginx on
+</code></pre></div></div>
+
+<p>With that, nginx is ready to go as an Apache replacement.</p>
+
+<h2 id="modifying-hostmanager">Modifying hostmanager</h2>
+
+<p>The tricky part of the configuration is that hostmanager actually interacts with Apache. Since you just removed Apache, that’s going to make hostmanager quite confused and angry. Thankfully, <cite>Hacking Elastic Beanstalk</cite><sup><a href="http://playframework.org">3</a></sup> has a bash script that modifies hostmanager to deal with nginx instead of Apache (this must be run as sudo):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd /opt/elasticbeanstalk/srv/hostmanager/lib/elasticbeanstalk/hostmanager
+cp utils/apacheutil.rb utils/nginxutil.rb
+sed -i 's/Apache/Nginx/g' utils/nginxutil.rb
+sed -i 's/apache/nginx/g' utils/nginxutil.rb
+sed -i 's/httpd/nginx/g' utils/nginxutil.rb
+cp init-tomcat.rb init-tomcat.rb.orig
+sed -i 's/Apache/Nginx/g' init-tomcat.rb
+sed -i 's/apache/nginx/g' init-tomcat.rb
+</code></pre></div></div>
+
+<p>The script creates a utility to deal with nginx and then modifies <code class="highlighter-rouge">init-tomcat.rb</code>, The code that starts up Tomcat, so that it also keeps track of nginx.</p>
+
+<h2 id="creating-a-custom-ami">Creating a custom AMI</h2>
+
+<p>Now that the instances set up with appropriate modifications it’s time to create a custom AMI. Go back to the EC2 instances section of the AWS console and find your modified instance. Right click on it and select “Create Image (EBS AMI)”. It will ask you for an image name an optional description, just make sure you put something in that make sense to you. You can make any other modifications that you want (or just use the defaults) and then click “Yes, Create”. When your AMI is ready it will be listed in the AMIs list.</p>
+
+<p><strong>Important:</strong> You might be wondering why you can’t just go into an instance that Elastic Beanstalk started, modify that, and create a custom AMI directly from there. That would seem to be the logical thing to do because it requires less steps. However, Elastic Beanstalk write some configuration information to the instance when it starts up. If you create an AMI from that instance that it will always have that configuration and that will actually prevents hostmanager from starting properly (trust me, I tried).</p>
+
+<h2 id="using-the-custom-ami">Using the custom AMI</h2>
+
+<p>Go to the AMI list in the EC2 section of the AWS console and find your new AMI. Copy the AMI ID (not the name). In your Elastic Beanstalk environment, click on the Actions menu and select “Edit/Load Configuration”. Paste your custom AMI ID into the “Custom AMI” field and click “Apply Changes”. Elastic Beanstalk will then start deploying instances using the new AMI. After a couple of minutes, you should have a fully functioning environment with your new AMI.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Creating a custom AMI for Elastic Beanstalk is a little bit tricky and takes a lot of patience. I hope that someday Amazon will add nginx default configurations so that custom AMIs will no longer be needed. One thing to be aware of when using a custom AMI is that the instances won’t receive automatic updates, so you’ll need to keep on top of security fixes and other critical updates. Other than that, as long as hostmanager is running and accessible, you should be able to make any changes that you want.</p>
+
+<p>I created a bash script with all of the steps mentioned in this post as a <a href="https://gist.github.com/3718880">gist</a> that you can copy from. Note that the script must be run as sudo.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://aws.amazon.com/elasticbeanstalk/">Elastic Beanstalk</a> (Amazon)</li>
+  <li><a href="http://playframework.org">Play Framework</a> (Play)</li>
+  <li><a href="http://my.safaribooksonline.com/book/programming/java/9781449309558/hacking-elastic-beanstalk/hackingelectric#X2ludGVybmFsX0ZsYXNoUmVhZGVyP3htbGlkPTk3ODE0NDkzMDk1NTgvSV9zZWN0MTRfZDFlMjAyNQ==">Hacking Elastic Beanstalk</a> (Safari Online)</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/09/14/replacing-apache-with-nginx-on-elastic-beanstalk/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

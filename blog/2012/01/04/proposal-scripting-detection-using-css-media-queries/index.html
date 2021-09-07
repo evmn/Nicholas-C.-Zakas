@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Proposal: Scripting detection using CSS media queries - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/01/04/proposal-scripting-detection-using-css-media-queries/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Proposal: Scripting detection using CSS media queries">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/01/04/proposal-scripting-detection-using-css-media-queries/" />
+<meta name="og:title" content="Proposal: Scripting detection using CSS media queries">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="I’ve been doing a lot of thinking about CSS media queries lately. I’m a big fan of media queries, as I think they bring a sense of sanity to feature detection. That’s a...">
+<meta name="keywords" content="CSS,JavaScript,Media Query,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Proposal: Scripting detection using CSS media queries</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-01-04T00:00:00+00:00" itemprop="datePublished">January 4, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/css" rel="tag">CSS</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/media-query" rel="tag">Media Query</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>I’ve been doing a lot of thinking about CSS media queries lately. I’m a big fan of media queries, as I think they bring a sense of sanity to feature detection. That’s a big reason why I was investigating CSS media queries in JavaScript<sup><a href="../../03/css-media-queries-in-javascript-part-1/index.html">1</a></sup> and will continue to do so. I think we’re only scraping the surface of what can be done with media queries on the web. As part of my pondering over the holiday break, I scribbled down a few notes of ways I’d like to use media queries. I just proposed the first one to the CSS working group.</p>
+
+<h2 id="the-proposal">The Proposal</h2>
+
+<p>Yesterday, I sent an email<sup><a href="http://lists.w3.org/Archives/Public/www-style/2012Jan/0034.html">2</a></sup> to the CSS working group with my proposal. The basic idea is to allow you to determine if scripting is enabled in the browser using a media query. The proposal can be summed up with a few examples:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@media screen and (script) {
+    /* styles to apply only when scripting is enabled */
+}
+
+@media screen and not (script) {
+    /* styles to apply only when scripting is disabled */
+}
+</code></pre></div></div>
+
+<p>So, just like you currently use <code class="highlighter-rouge">device-width</code>, <code class="highlighter-rouge">orientation</code>, and so on to detect features of the device, you could also use <code class="highlighter-rouge">script</code> in the same way.</p>
+
+<h2 id="rationale">Rationale</h2>
+
+<p>In the realm of progressive enhancement, you don’t want to show page elements that can’t be used. This may be as simple as an arrow next to link indicating a dropdown menu is available. If JavaScript is disabled, you want the link to act like a regular link and not confuse people by having an arrow that means nothing. So you want to apply the style that shows the arrow only if JavaScript is enabled.</p>
+
+<p>The most common approach to this problem is to add a class to the <code class="highlighter-rouge"><span class="nt">&lt;html&gt;</span></code> element via JavaScript. So somewhere on the page, you put:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;script&gt;
+document.documentElement.className += " js-enabled";
+&lt;/script&gt;
+</code></pre></div></div>
+
+<p>This adds the class <code class="highlighter-rouge">js-enabled</code> via JavaScript. Of course, this only gets executed when JavaScript is enabled. You can then define CSS rules such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.arrow {
+    /* empty */
+}
+
+.js-enabled .arrow {
+    background: url(image.png) no-repeat;
+}
+</code></pre></div></div>
+
+<p>It’s a bit of a hack, but this basic technique is in use by large sites such Twitter and the Yahoo! homepage, as well as being done automatically by Modernizr and YUI.</p>
+
+<p>While this technique works, it has two downsides. First, you need to include that little JavaScript snippet (or a supporting library) to ensure the class ends up being added. Second, it alters the specificity of your rules, which can adversely affects the cascade.</p>
+
+<h2 id="clarifications">Clarifications</h2>
+
+<p>I’m a big believer that common patterns should be codified and standardized so that the development community can move on to more interesting challenges<sup><a href="../../../../2011/10/03/when-web-standards-fail-us/index.html">3</a></sup>. As such, it seems that the community has spoken that we want to define different styles when JavaScript is enabled, and CSS media queries seem like the right approach.</p>
+
+<p>The <cite>CSS Media Queries specification</cite><sup><a href="http://www.w3.org/TR/css3-mediaqueries/">4</a></sup> states:</p>
+
+<blockquote>
+  <p>A media query consists of a media type and zero or more expressions that check for the conditions of particular media features. Among the media features that can be used in media queries are ‘width’, ‘height’, and ‘color’. By using media queries, presentations can be tailored to a specific range of output devices without changing the content itself.</p>
+</blockquote>
+
+<p>The term <em>media feature</em> is key. When I was first debating myself over whether scripting support is appropriate for a CSS media query, I went and read the specification. Script support is just as much a media feature as color depth and orientation. It’s a capability of that particular device at the time your page is loaded. Given that, I felt comfortable proposing the inclusion of <code class="highlighter-rouge">script</code> as another media feature to test.</p>
+
+<p>To be clear, my proposal’s goal is to easily indicate whether or not scripting is enabled in a browser. Think of it as a relative of the <code class="highlighter-rouge">&lt;noscript&gt;</code> element. So instead of doing something like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;noscript&gt;
+&lt;style&gt;
+.foo {
+    color: red;
+}
+&lt;/style&gt;
+&lt;/noscript&gt;
+</code></pre></div></div>
+
+<p>You could do this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@media screen and not (script) {
+    .foo {
+        color: red;
+    }
+}
+</code></pre></div></div>
+
+<p>Of course, by omitting <code class="highlighter-rouge">not</code>, you could also apply changes when scripting is enabled.</p>
+
+<p>Some non-goals of this proposal are:</p>
+
+<ul>
+  <li><strong>Replacing JavaScript feature detection.</strong> You will still be checking, in JavaScript, if certain features are available. In short: I’m not looking to propose implementing media query features for all possible JavaScript APIs. If you want that, you should use Modernizr.</li>
+  <li><strong>Enabling JavaScript in CSS.</strong> I have no desire to have JavaScript in CSS in any way, shape, or form.</li>
+  <li><strong>Be JavaScript-centric in detection.</strong> Actually, the intent is to indicate if <em>scripting</em> is enabled, not just JavaScript. It would probably be easy to extend the syntax, such as <code class="highlighter-rouge">(script:"text/javascript")</code>, but I’m not sure that’s necessary at this point.</li>
+</ul>
+
+<p>And as I always like to remind people: no one would force you to use this feature if it’s implemented. If you don’t like it, you can always leave it to those who do.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I think CSS media queries are one of the best things to happen to the web, and I look forward to using them in new and interesting ways. Adding feature detection for scripting seems like a logic step towards standardizing a fairly common practice. The good news is that Florian Rivoal, one of the editors of the <cite>CSS Media Queries</cite> specification has agreed<sup><a href="http://lists.w3.org/Archives/Public/www-style/2012Jan/0046.html">5</a></sup> to write it up as a proposal for inclusion in <cite>CSS Level 4 Media Queries</cite>. I hope the proposal is able to move forward quickly.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="../../03/css-media-queries-in-javascript-part-1/index.html">CSS media queries in JavaScript, Part 1</a> by me</li>
+  <li><a href="http://lists.w3.org/Archives/Public/www-style/2012Jan/0034.html">Proposal: Detecting JavaScript with media queries</a> by me</li>
+  <li><a href="../../../../2011/10/03/when-web-standards-fail-us/index.html">When web standards fail us</a> by me</li>
+  <li><a href="http://www.w3.org/TR/css3-mediaqueries/">CSS Level 3 Media Queries</a></li>
+  <li><a href="http://lists.w3.org/Archives/Public/www-style/2012Jan/0046.html">Re: Proposal: Detecting JavaScript with media queries</a> by Florian Rivoal</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/01/04/proposal-scripting-detection-using-css-media-queries/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

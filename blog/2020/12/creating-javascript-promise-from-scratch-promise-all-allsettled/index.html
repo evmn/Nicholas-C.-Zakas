@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Creating a JavaScript promise from scratch, Part 6: Promise.all() and Promise.allSettled() - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Creating a JavaScript promise from scratch, Part 6: Promise.all() and Promise.allSettled()">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/" />
+<meta name="og:title" content="Creating a JavaScript promise from scratch, Part 6: Promise.all() and Promise.allSettled()">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="../../../../feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="../../../../feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="../../../../feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="../../../../feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="../../../../feeds/all.json">
+<link rel="icon" type="image/png" href="../../../../images/favicon.png">
+
+
+<link rel="canonical" href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html">
+
+
+
+<meta name="description" content="In my last post, I walked you through the creation of the Promice.race() and Promise.any() methods, both of which work on multiple promises and return a single promise that indicates the result of...">
+<meta name="keywords" content="JavaScript,Promises,ECMAScript 6,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Creating a JavaScript promise from scratch, Part 6: Promise.all() and Promise.allSettled()</h1>
+        <p itemprop="description" class="no-margin-top">Promise.all() and Promise.allSettled() work on any number of promises to allow you to know when all of the promises have resolved</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2020-12-16T00:00:00+00:00" itemprop="datePublished">December 16, 2020</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/promises" rel="tag">Promises</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ecmascript-6" rel="tag">ECMAScript 6</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>In my <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html">last post</a>, I walked you through the creation of the <code class="highlighter-rouge">Promice.race()</code> and <code class="highlighter-rouge">Promise.any()</code> methods, both of which work on multiple promises and return a single promise that indicates the result of the operation. This post continues on to discuss <code class="highlighter-rouge">Promise.all()</code> and <code class="highlighter-rouge">Promise.allSettled()</code>, two operations that are similar to one another as well as <code class="highlighter-rouge">Promise.any()</code>. Each of these methods use the same basic algorithm so if you’re able to understand one of them then you can understand them all.</p>
+
+<p>This is the sixth post in my series about creating JavaScript promises from scratch. If you haven’t already read the previous posts, I’d suggest you do before continuing on:</p>
+
+<ul>
+  <li><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">Part 1: Constructor</a></li>
+  <li><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">Part 2: Resolving to a promise</a></li>
+  <li><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">Part 3: then(), catch(), and finally()</a></li>
+  <li><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html">Part 4: Promise.resolve() and Promise.reject()</a></li>
+  <li><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html">Part 5: Promise.race() and Promise.any()</a></li>
+</ul>
+
+<p>As a reminder, this series is based on my promise library, <a href="https://github.com/humanwhocodes/pledge">Pledge</a>. You can view and download all of the source code from GitHub.</p>
+
+<h2 id="the-promiseall-method">The <code class="highlighter-rouge">Promise.all()</code> method</h2>
+
+<p>The <code class="highlighter-rouge">Promise.all()</code> method is the essentially the inverse of the <code class="highlighter-rouge">Promise.any()</code> method (discussed in part 5): it returns a rejected promise if any of the promises is rejected and returns a promise that is fulfilled to an array of promise results if all promises are fulfilled. Here are a couple examples:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise1</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span>
+<span class="p">]);</span>
+
+<span class="nx">promise1</span><span class="p">.</span><span class="k">catch</span><span class="p">(</span><span class="nx">reason</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">reason</span><span class="p">);</span>     <span class="c1">// 43</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">promise2</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">all</span><span class="p">([</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span>
+<span class="p">]);</span>
+
+<span class="nx">promise2</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">value</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>    <span class="c1">// 42</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>    <span class="c1">// 43</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">value</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>    <span class="c1">// 44</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Because <code class="highlighter-rouge">Promise.all()</code> is so closely related to <code class="highlighter-rouge">Promise.any()</code>, you can actually implement it using essentially the same algorithm.</p>
+
+<h3 id="creating-the-pledgeall-method">Creating the <code class="highlighter-rouge">Pledge.all()</code> method</h3>
+
+<p>The specification<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:1" class="footnote">1</a></sup> for <code class="highlighter-rouge">Promise.all()</code> describes the same basic algorithm that you’ve already seen for <code class="highlighter-rouge">Promise.race()</code> and <code class="highlighter-rouge">Promise.any()</code>.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// other methods omitted for space</span>
+
+    <span class="kd">static</span> <span class="nx">all</span><span class="p">(</span><span class="nx">iterable</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">const</span> <span class="nx">C</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="nx">pledgeCapability</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeCapability</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+        <span class="kd">let</span> <span class="nx">iteratorRecord</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">pledgeResolve</span> <span class="o">=</span> <span class="nx">getPledgeResolve</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+            <span class="nx">iteratorRecord</span> <span class="o">=</span> <span class="nx">getIterator</span><span class="p">(</span><span class="nx">iterable</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">performPledgeAll</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="nx">C</span><span class="p">,</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ThrowCompletion</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="nx">iteratorRecord</span> <span class="o">&amp;&amp;</span> <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">result</span> <span class="o">=</span> <span class="nx">iteratorClose</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>I’ve explained this algorithm in detail in part 5, so I’m going to skip right to discussing the <code class="highlighter-rouge">PerformPromiseAll()</code> <sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:2" class="footnote">2</a></sup> operation and how I’ve implemented it as <code class="highlighter-rouge">performPledgeAll()</code>.</p>
+
+<p>As I’ve already mentioned, this algorithm is so close to <code class="highlighter-rouge">PerformPromiseAny()</code><sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:3" class="footnote">3</a></sup> that it’s almost copy-and-paste. The first difference is that instead of tracking rejected values, you instead track fulfilled values (so the array is named <code class="highlighter-rouge">values</code> instead of <code class="highlighter-rouge">errors</code>). Then, instead of attaching a common fulfillment handler and a custom rejection handler, you attach a custom fulfillment handler and a common rejection handler. The last difference is that instead of tracking remaining elements so you can reject an array of errors, you track remaining elements to so you can fulfill an array of values. All of that is wrapped in the wacky iteration algorithm just as in <code class="highlighter-rouge">Promise.any()</code>. Here’s the code:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">performPledgeAll</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="kd">constructor</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">assertIsConstructor</span><span class="p">(</span><span class="kd">constructor</span><span class="p">);</span>
+    <span class="nx">assertIsCallable</span><span class="p">(</span><span class="nx">pledgeResolve</span><span class="p">);</span>
+
+    <span class="c1">// in performPledgeAny, this is the errors array</span>
+    <span class="kd">const</span> <span class="nx">values</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="kd">const</span> <span class="nx">remainingElementsCount</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="mi">1</span> <span class="p">};</span>
+    <span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">next</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">next</span> <span class="o">=</span> <span class="nx">iteratorStep</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">next</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// in performPledgeAny, this is where you reject errors</span>
+                <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kd">let</span> <span class="nx">nextValue</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">nextValue</span> <span class="o">=</span> <span class="nx">iteratorValue</span><span class="p">(</span><span class="nx">next</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nx">values</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">nextPledge</span> <span class="o">=</span> <span class="nx">pledgeResolve</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="kd">constructor</span><span class="p">,</span> <span class="nx">nextValue</span><span class="p">);</span>
+
+        <span class="c1">// in performPledgeAny, you'd create a reject element</span>
+        <span class="kd">const</span> <span class="nx">resolveElement</span> <span class="o">=</span> <span class="nx">createPledgeAllResolveElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">);</span>
+
+        <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="c1">// in performPledgeAny, you'd attach resultCapability.resolve</span>
+        <span class="c1">// and a custom reject element</span>
+        <span class="nx">nextPledge</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">resolveElement</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">);</span>
+        <span class="nx">index</span> <span class="o">=</span> <span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>I’ve commented in the code the differences from <code class="highlighter-rouge">performPledgeAny()</code> so hopefully you can see that there really isn’t a big difference. You’ll also find that the  <code class="highlighter-rouge">createPledgeAllResolveElement()</code> function (which implements the <code class="highlighter-rouge">Promise.all</code> Resolve Element Functions algorithm<sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:4" class="footnote">4</a></sup>) is very similar to the <code class="highlighter-rouge">createPledgeAnyRejectElement()</code> function:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">createPledgeAllResolveElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">alreadyCalled</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="kc">false</span> <span class="p">};</span>
+
+    <span class="k">return</span> <span class="nx">x</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">alreadyCalled</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nx">alreadyCalled</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+        <span class="nx">values</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
+        <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The <code class="highlighter-rouge">createPledgeAllResolveElement()</code> function returns a function that is used as the fulfillment handler for the promise returned from <code class="highlighter-rouge">Pledge.all()</code>. The <code class="highlighter-rouge">x</code> variable is the fulfilled value and is stored in the <code class="highlighter-rouge">values</code> array when available. When there are no further elements remaining, a resolved pledge is returned with the entire <code class="highlighter-rouge">values</code> array.</p>
+
+<p>Hopefully you can now see the relationship between <code class="highlighter-rouge">Promise.any()</code> and <code class="highlighter-rouge">Promise.all()</code>. The <code class="highlighter-rouge">Promise.any()</code> method returns a rejected promise with an array of values (wrapped in an <code class="highlighter-rouge">AggregateError</code>) when all of the promises are rejected and a fulfilled promise with the value from the first fulfilled promise; the <code class="highlighter-rouge">Promise.all()</code> method returns a fulfilled promises with an array of fulfillment values when all of the promises are fulfilled and returns a rejected promise with the reason from the first rejected promise (if one exists). So for <code class="highlighter-rouge">Promise.any()</code>, you create a new promise and assign the same fulfillment handler to each promise that was passed in; for <code class="highlighter-rouge">Promise.all()</code>, you create a new promise and assign the same rejection handler to each promise that was passed in. Then, in <code class="highlighter-rouge">Promise.any()</code> you create a new rejection handler for each promise to track the rejection; for <code class="highlighter-rouge">Promise.all()</code> you create a new fulfillment handler for each promise to track fulfillments.</p>
+
+<p>If it seems like <code class="highlighter-rouge">Promise.any()</code> and <code class="highlighter-rouge">Promise.all()</code> are just two sides of the same coin, then you are correct. The next step is to combine both of these methods into one, and that’s what <code class="highlighter-rouge">Promise.allSettled()</code> does.</p>
+
+<h2 id="the-promiseallsettled-method">The <code class="highlighter-rouge">Promise.allSettled()</code> method</h2>
+
+<p>The <code class="highlighter-rouge">Promise.allSettled()</code> method is the last of the four promise methods that work on multiple promises. This method is unique because the promise returned is never rejected unless an error is thrown during the iteration step. Instead, <code class="highlighter-rouge">Promise.allSettled()</code> returns a promise that is fulfilled with an array of result objects. Each result object has two properties:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">status</code> - either <code class="highlighter-rouge">"fulfilled"</code> or <code class="highlighter-rouge">"rejected"</code></li>
+  <li><code class="highlighter-rouge">value</code> - the value that was fulfilled or rejected</li>
+</ul>
+
+<p>The result objects allow you to collect information about every promise’s result in order to determine the next step to take. As such, <code class="highlighter-rouge">Promise.allSettled()</code> will take longer to complete than any of the other multi-promise methods because it has no short-circuiting behavior. Whereas <code class="highlighter-rouge">Promise.race()</code> returns as soon as the first promise is settled, <code class="highlighter-rouge">Promise.any()</code> returns as soon as the first promise is resolved, and <code class="highlighter-rouge">Promise.all()</code> returns as soon as the first promise is rejected, <code class="highlighter-rouge">Promise.allSettled()</code> must wait until all promises have settled. Here are some examples showing how <code class="highlighter-rouge">Promise.allSettled()</code> is used:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise1</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">allSettled</span><span class="p">([</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span>
+<span class="p">]);</span>
+
+<span class="nx">promise1</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">values</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>     <span class="c1">// { status: "fulfilled", value: 42 }</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>     <span class="c1">// { status: "rejected", value: 43 }</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>     <span class="c1">// { status: "fulfilled", value: 44 }</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">promise2</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">allSettled</span><span class="p">([</span>
+    <span class="k">new</span> <span class="nb">Promise</span><span class="p">(</span><span class="nx">resolve</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">);</span>
+        <span class="p">},</span> <span class="mi">500</span><span class="p">);</span>
+    <span class="p">}),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span>
+<span class="p">]);</span>
+
+<span class="nx">promise2</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">values</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>     <span class="c1">// { status: "fulfilled", value: 42 }</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>     <span class="c1">// { status: "rejected", value: 43 }</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>     <span class="c1">// { status: "fulfilled", value: 44 }</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">promise3</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">allSettled</span><span class="p">([</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">43</span><span class="p">),</span>
+    <span class="nb">Promise</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="mi">44</span><span class="p">)</span>
+<span class="p">]);</span>
+
+<span class="nx">promise3</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">values</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>     <span class="c1">// { status: "rejected", value: 42 }</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">values</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>     <span class="c1">// { status: "rejected", value: 43 }</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">values</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>     <span class="c1">// { status: "rejected", value: 44 }</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>Notice that a fulfilled promise is returned even when all of the promises passed to <code class="highlighter-rouge">Promise.allSettled()</code> are rejected.</p>
+
+<h3 id="creating-the-pledgeallsettled-method">Creating the <code class="highlighter-rouge">Pledge.allSettled()</code> method</h3>
+
+<p>Once again, the <code class="highlighter-rouge">Promise.allSettled()</code> method follows the same basic algorithm<sup id="fnref:5"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:5" class="footnote">5</a></sup> as the other three multi-promise methods, so the <code class="highlighter-rouge">Pledge.allSettled()</code> implementation is the same the others except for naming:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
+
+    <span class="c1">// other methods omitted for space</span>
+
+    <span class="kd">static</span> <span class="nx">allSettled</span><span class="p">(</span><span class="nx">iterable</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kd">const</span> <span class="nx">C</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+        <span class="kd">const</span> <span class="nx">pledgeCapability</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">PledgeCapability</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+        <span class="kd">let</span> <span class="nx">iteratorRecord</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="kd">const</span> <span class="nx">pledgeResolve</span> <span class="o">=</span> <span class="nx">getPledgeResolve</span><span class="p">(</span><span class="nx">C</span><span class="p">);</span>
+            <span class="nx">iteratorRecord</span> <span class="o">=</span> <span class="nx">getIterator</span><span class="p">(</span><span class="nx">iterable</span><span class="p">);</span>
+            <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">performPledgeAllSettled</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="nx">C</span><span class="p">,</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ThrowCompletion</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+
+            <span class="k">if</span> <span class="p">(</span><span class="nx">iteratorRecord</span> <span class="o">&amp;&amp;</span> <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">result</span> <span class="o">=</span> <span class="nx">iteratorClose</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="nx">result</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">result</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+
+    <span class="c1">// other methods omitted for space</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The algorithm for the <code class="highlighter-rouge">PerformPromiseAllSettled()</code> operation<sup id="fnref:6"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:6" class="footnote">6</a></sup> should look very familiar at this point. In fact, it is almost exactly the same as the <code class="highlighter-rouge">PerformPromiseAll()</code> operation. Just like <code class="highlighter-rouge">PerformPromiseAll()</code>, <code class="highlighter-rouge">PerformPromiseAllSettled()</code> uses a <code class="highlighter-rouge">remainingElementsCount</code> object to track how many promises must still be settled, and <code class="highlighter-rouge">index</code> variable to track where each result should go in the <code class="highlighter-rouge">values</code> array, and a <code class="highlighter-rouge">values</code> array to keep track of promise results. Unlike <code class="highlighter-rouge">PerformPromiseAll()</code>, the values stored in the <code class="highlighter-rouge">values</code> array in <code class="highlighter-rouge">PerformPromiseAllSettled()</code> are the result objects I mentioned in the previous section.</p>
+
+<p>The other significant difference between <code class="highlighter-rouge">PerformPromiseAll()</code> and <code class="highlighter-rouge">PerformPromiseAllSettled()</code> is that the latter creates a custom rejection handler for each promise in addition to a custom fulfillment handler. Those handlers are also created using the same basic algorithm you’ve already seen in other multi-promise methods.</p>
+
+<p>Without any further delay, here’s the implementation of <code class="highlighter-rouge">performPledgeAllSettled()</code>:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">performPledgeAllSettled</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="kd">constructor</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">assertIsConstructor</span><span class="p">(</span><span class="kd">constructor</span><span class="p">);</span>
+    <span class="nx">assertIsCallable</span><span class="p">(</span><span class="nx">pledgeResolve</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">values</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="kd">const</span> <span class="nx">remainingElementsCount</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="mi">1</span> <span class="p">};</span>
+    <span class="kd">let</span> <span class="nx">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">let</span> <span class="nx">next</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">next</span> <span class="o">=</span> <span class="nx">iteratorStep</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">next</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kd">let</span> <span class="nx">nextValue</span><span class="p">;</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="nx">nextValue</span> <span class="o">=</span> <span class="nx">iteratorValue</span><span class="p">(</span><span class="nx">next</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">iteratorRecord</span><span class="p">.</span><span class="nx">done</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+            <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">reject</span><span class="p">(</span><span class="nx">error</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">resultCapability</span><span class="p">.</span><span class="nx">pledge</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nx">values</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="kc">undefined</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">nextPledge</span> <span class="o">=</span> <span class="nx">pledgeResolve</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="kd">constructor</span><span class="p">,</span> <span class="nx">nextValue</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">resolveElement</span> <span class="o">=</span> <span class="nx">createPledgeAllSettledResolveElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">);</span>
+
+        <span class="c1">// the only significant difference from performPledgeAll is adding this</span>
+        <span class="c1">// custom rejection handler to each promise instead of resultCapability.reject</span>
+        <span class="kd">const</span> <span class="nx">rejectElement</span> <span class="o">=</span> <span class="nx">createPledgeAllSettledRejectElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">);</span>
+
+        <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="nx">nextPledge</span><span class="p">.</span><span class="nx">then</span><span class="p">(</span><span class="nx">resolveElement</span><span class="p">,</span> <span class="nx">rejectElement</span><span class="p">);</span>
+        <span class="nx">index</span> <span class="o">=</span> <span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>As you can see, the only significant change from <code class="highlighter-rouge">performPledgeAll()</code> is the addition of the <code class="highlighter-rouge">rejectElement</code> that is used instead of <code class="highlighter-rouge">resultCapability.reject</code>. Otherwise, the functionality is exactly the same. The heavy lifting is really done by the <code class="highlighter-rouge">createPledgeAllSettledResolveElement()</code> and <code class="highlighter-rouge">createPledgeAllSettledRejectElement()</code> functions. These functions represent the corresponding steps in the specification for Promise.allSettled Resolve Element Functions<sup id="fnref:7"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:7" class="footnote">7</a></sup> and Promise.allSettled Reject Element Functions<sup id="fnref:8"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:8" class="footnote">8</a></sup> and are essentially the same function with the notable exception that one specifies the result as “fulfilled” and the other specifies the result as “rejected”. Here are the implementations:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">createPledgeAllSettledResolveElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">alreadyCalled</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="kc">false</span> <span class="p">};</span>
+
+    <span class="k">return</span> <span class="nx">x</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">alreadyCalled</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nx">alreadyCalled</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+        <span class="nx">values</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">status</span><span class="p">:</span> <span class="dl">"</span><span class="s2">fulfilled</span><span class="dl">"</span><span class="p">,</span>
+            <span class="na">value</span><span class="p">:</span> <span class="nx">x</span>
+        <span class="p">};</span>
+
+        <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">createPledgeAllSettledRejectElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">alreadyCalled</span> <span class="o">=</span> <span class="p">{</span> <span class="na">value</span><span class="p">:</span> <span class="kc">false</span> <span class="p">};</span>
+
+    <span class="k">return</span> <span class="nx">x</span> <span class="o">=&gt;</span> <span class="p">{</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">alreadyCalled</span><span class="p">.</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="nx">alreadyCalled</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+        <span class="nx">values</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="na">status</span><span class="p">:</span> <span class="dl">"</span><span class="s2">rejected</span><span class="dl">"</span><span class="p">,</span>
+            <span class="na">value</span><span class="p">:</span> <span class="nx">x</span>
+        <span class="p">};</span>
+        
+        <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">remainingElementsCount</span><span class="p">.</span><span class="nx">value</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="nx">pledgeCapability</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">values</span><span class="p">);</span>
+        <span class="p">}</span>
+
+    <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You’ve already seen several of these functions at this point, so I’ll just point out how these are different. First, even the reject element calls <code class="highlighter-rouge">pledgeCapability.resolve()</code> because the returned promise should never be rejected due to a passed-in promise being rejected. Next, the value inserted into the <code class="highlighter-rouge">values</code> array is an object instead of just <code class="highlighter-rouge">x</code> (as you saw in <code class="highlighter-rouge">Promise.any()</code> and <code class="highlighter-rouge">Promise.all()</code>). Both the resolve and reject elements are just inserting a result object into the <code class="highlighter-rouge">values</code> and array, and when there are no further promises to wait for, returns a resolved promise.</p>
+
+<h2 id="wrapping-up">Wrapping Up</h2>
+
+<p>This post covered creating <code class="highlighter-rouge">Promise.all()</code> and <code class="highlighter-rouge">Promise.allSettled()</code> from scratch. These are the last two of the built-in methods that work on multiple promises (the previous two were covered in part 5). The <code class="highlighter-rouge">Promise.all()</code> method is essentially the inverse of the <code class="highlighter-rouge">Promise.any()</code> method: it returns a rejected promise if any of the promises is rejected and returns a promise that is fulfilled to an array of promise results if all promises are fulfilled. The <code class="highlighter-rouge">Promise.allSettled()</code> method combines aspects of <code class="highlighter-rouge">Promise.all()</code> and <code class="highlighter-rouge">Promise.any()</code> so that it almost always returns a fulfilled promise with an array of result objects containing the results of both fulfilled and rejected promises.</p>
+
+<p>In the next, and final, part of this series, I’ll be covering unhandled promise rejections.</p>
+
+<p>All of this code is available in the <a href="https://github.com/humanwhocodes/pledge">Pledge</a> on GitHub. I hope you’ll download it and try it out to get a better understanding of promises.</p>
+
+<h2 id="references">References</h2>
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p><a href="https://tc39.es/ecma262/#sec-promise.all">Promise.all ( iterable )</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiseall">PerformPromiseAll ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:3">
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiseany">PerformPromiseAny ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:4">
+      <p><a href="https://tc39.es/ecma262/#sec-promise.all-resolve-element-functions">Promise.all Resolve Element Functions</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:5">
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiseallsettled">Promise.allSettled ( iterable )</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:6">
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiseallsettled">PerformPromiseAllSettled ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:7">
+      <p><a href="https://tc39.es/ecma262/#sec-promise.allsettled-resolve-element-functions">Promise.allSetled Resolve Element Functions</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:7" class="reversefootnote">&#8617;</a></p>
+    </li>
+    <li id="fn:8">
+      <p><a href="https://tc39.es/ecma262/#sec-promise.allsettled-reject-element-functions">Promise.allSetled Reject Element Functions</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:8" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="https://humanwhocodes.com/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='../../index.html'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="../../../../about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="../../../../policies/privacy">Privacy Policy</a> | <a href="../../../../policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="../../../../license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="../../../../feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

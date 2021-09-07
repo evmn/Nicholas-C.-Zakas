@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>The innovations of Internet Explorer - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/08/22/the-innovations-of-internet-explorer/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="The innovations of Internet Explorer">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/08/22/the-innovations-of-internet-explorer/" />
+<meta name="og:title" content="The innovations of Internet Explorer">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Long before Internet Explorer became the browser everyone loves to hate, it was the driving force of innovation on the Internet. Sometimes it’s hard to remember all of the good that Internet Explorer...">
+<meta name="keywords" content="CSS,DOM,Internet Explorer,JavaScript,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">The innovations of Internet Explorer</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-08-22T00:00:00+00:00" itemprop="datePublished">August 22, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/css" rel="tag">CSS</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/dom" rel="tag">DOM</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/internet-explorer" rel="tag">Internet Explorer</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Long before Internet Explorer became the browser everyone loves to hate, it was the driving force of innovation on the Internet. Sometimes it’s hard to remember all of the good that Internet Explorer did before Internet Explorer 6 became the scourge of web developers everywhere. Believe it or not, Internet Explorer 4-6 is heavily responsible for web development as we know it today. A number of proprietary features became de facto standards and then official standards with some ending up in the HTML5 specification. It may be hard to believe that Internet Explorer is actually to thank for a lot of the features that we take for granted today, but a quick walk through history shows that it’s true.</p>
+
+<h2 id="dom">DOM</h2>
+
+<p>If Internet Explorer is a browser that everyone loves to hate, the Document Object Model (DOM) is the API that everyone loves to hate. You can call the DOM overly verbose, ill-suited for JavaScript, and somewhat nonsensical, and you would be correct on all counts. However, the DOM gives developers access to every part of a webpage through JavaScript. There was a time when you could only access certain elements on the page through JavaScript. Internet Explorer 3 and Netscape 3 only allowed programmatic access to form elements, images, and links. Netscape 4 improved the situation by expanding programmatic access to the proprietary <code class="highlighter-rouge">&lt;layer&gt;</code> element via <code class="highlighter-rouge">document.layers</code>. Internet Explorer 4 improve the situation even further by allowing programmatic access of every element on the page via <code class="highlighter-rouge">document.all</code></p>
+
+<p>In many regards, <code class="highlighter-rouge">document.all</code> was the very first version of <code class="highlighter-rouge">document.getElementById()</code>. You still used an element’s ID to access it through <code class="highlighter-rouge">document.all</code>, such as <code class="highlighter-rouge">document.all.myDiv</code> or <code class="highlighter-rouge">document.all["myDiv"]</code>. The primary difference was that Internet Explorer used a collection instead of the function, which matched all other access methods at the time such as <code class="highlighter-rouge">document.images</code> and <code class="highlighter-rouge">document.forms</code>.</p>
+
+<p>Internet Explorer 4 was also the first browser to introduce the ability to get a list of elements by tag name via <code class="highlighter-rouge">document.all.tags()</code>. For all intents and purposes, this was the first version of <code class="highlighter-rouge">document.getElementsByTagName()</code> and worked the exact same way. If you want to get all <code class="highlighter-rouge">&lt;div&gt;</code> elements, you would use <code class="highlighter-rouge">document.all.tags("div")</code>. Even in Internet Explorer 9, this method still exists and is just an alias for <code class="highlighter-rouge">document.getElementsByTagName()</code>.</p>
+
+<p>Internet Explorer 4 also introduced us to perhaps the most popular proprietary DOM extension of all time: <code class="highlighter-rouge">innerHTML</code>. It seems that the folks at Microsoft realized what a pain it would be to build up a DOM programmatically and afforded us this shortcut, along with <code class="highlighter-rouge">outerHTML</code>. Both of which proved to be so useful, they were standardized in HTML5<sup><a href="http://www.desarrolloweb.com/articulos/innovaciones-internet-explorer.html">1</a></sup>. The companion APIs dealing with plain text, <code class="highlighter-rouge">innerText</code> and <code class="highlighter-rouge">outerText</code>, also proved influential enough that DOM Level 3 introduced <code class="highlighter-rouge">textContent</code><sup><a href="http://www.w3.org/TR/html5/apis-in-html-documents.html#innerhtml">2</a></sup>, which acts in a similar manner to <code class="highlighter-rouge">innerText</code>.</p>
+
+<p>Along the same lines, Internet Explorer 4 introduced <code class="highlighter-rouge">insertAdjacentHTML()</code>, yet another way of inserting HTML text into a document. This one took a little longer, but it was also codified in HTML5<sup><a href="http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-textContent">3</a></sup> and is now widely supported by browsers.</p>
+
+<h2 id="events">Events</h2>
+
+<p>In the beginning, there was no event system for JavaScript. Both Netscape and Microsoft took a stab at it and each came up with different models. Netscape brought us event capturing, the idea that an event is first delivered to the window, then the document, and so on until finally reaching the intended target. Netscape browsers prior to version 6 supported only event capturing.</p>
+
+<p>Microsoft took the opposite approach and came up with event bubbling. They believed that the event should begin at the actual target and then fire on the parents and so on up to the document. Internet Explorer prior to version 9 only supported event bubbling. Although the official DOM events specification evolves to include both event capturing and event bubbling, most web developers use event bubbling exclusively, with event capturing being saved for a few workarounds and tricks buried deep down inside of JavaScript libraries.</p>
+
+<p>In addition to creating event bubbling, Microsoft also created a bunch of additional events that eventually became standardized:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">contextmenu</code> – fires when you use the secondary mouse button on an element. First appeared in Internet Explorer 5 and later codified as part of HTML5<sup><a href="http://html5.org/specs/dom-parsing.html#insertadjacenthtml()">4</a></sup>. Now supported in all major desktop browsers.</li>
+  <li><code class="highlighter-rouge">beforeunload</code> – fires before the <code class="highlighter-rouge">unload</code> event and allows you to block unloading of the page. Originally introduced in Internet Explorer 4 and now part of HTML5<sup><a href="http://html5.org/specs/dom-parsing.html#insertadjacenthtml()">4</a></sup>. Also supported in all major desktop browsers.</li>
+  <li><code class="highlighter-rouge">mousewheel</code> – fires when the mouse wheel (or similar device) is used. The first browser to support this event was Internet Explorer 6. Just like the others, it’s now part of HTML5<sup><a href="http://html5.org/specs/dom-parsing.html#insertadjacenthtml()">4</a></sup>. The only major desktop browser to not support this event is Firefox (which does support an alternative <code class="highlighter-rouge">DOMMouseScroll</code> event).</li>
+  <li><code class="highlighter-rouge">mouseenter</code> – a non-bubbling version of <code class="highlighter-rouge">mouseover</code>, introduced by Microsoft in Internet Explorer 5 to help combat the troubles with using <code class="highlighter-rouge">mouseover</code>. This event became formalized in DOM Level 3 Events<sup><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#event-handlers-on-elements,-document-objects,-and-window-objects">5</a></sup>. Also supported in Firefox and Opera, but not in Safari or Chrome (yet?).</li>
+  <li><code class="highlighter-rouge">mouseleave</code> – a non-bubbling version of <code class="highlighter-rouge">mouseout</code> to match <code class="highlighter-rouge">mouseenter</code>. Introduced in Internet Explorer 5 and also now standardized in DOM Level 3 Events<sup><a href="http://www.w3.org/TR/DOM-Level-3-Events/#event-type-mouseenter">6</a></sup>. Same support level as <code class="highlighter-rouge">mouseenter</code>.</li>
+  <li><code class="highlighter-rouge">focusin</code> – a bubbling version of <code class="highlighter-rouge">focus</code> to help more easily manage focus on a page. Originally introduced in Internet Explorer 6 and now part of DOM Level 3 Events<sup><a href="http://www.w3.org/TR/DOM-Level-3-Events/#event-type-mouseleave">7</a></sup>. Not currently well supported, though Firefox has a bug opened for its implementation.</li>
+  <li><code class="highlighter-rouge">focusout</code> – a bubbling version of <code class="highlighter-rouge">blur</code> to help more easily manage focus on a page. Originally introduced in Internet Explorer 6 and now part of DOM Level 3 Events<sup><a href="http://www.w3.org/TR/DOM-Level-3-Events/#event-type-focusIn">8</a></sup>. As with <code class="highlighter-rouge">focusin</code>, not well supported yet but Firefox is close.</li>
+</ul>
+
+<h2 id="iframe">&lt;iframe&gt;</h2>
+
+<p>Frames were initially introduced by Netscape Navigator 2 as a proprietary feature. This included <code class="highlighter-rouge">&lt;frameset&gt;</code>, <code class="highlighter-rouge">&lt;frame&gt;</code>, and <code class="highlighter-rouge">&lt;noframes&gt;</code>. The idea behind this feature was pretty simple: at the time, everyone was using modems and roundtrips to the server were quite expensive. The main use case was to provide one frame with navigational elements that would only be loaded once, and another frame that could be controlled by the navigation and changed separately. Saving server render time and data transfer by having navigation as a separate page was a huge win at the time.</p>
+
+<p>Internet Explorer 3 supported frames as well, since they were becoming quite popular on the web. However, Microsoft added its own proprietary tag to that functionality: <code class="highlighter-rouge">&lt;iframe&gt;</code>. The basic idea behind this element was to embed a page within another page. Whereas Netscape’s implementation required you to create three pages to have static navigation (the navigation page, the content page, and the frameset page), you could create the same functionality in Internet Explorer using only two pages (the primary page including navigation, and the content page within the <code class="highlighter-rouge">&lt;iframe&gt;</code>). Initially, this was one of the major battlegrounds between Internet Explorer and Netscape Navigator.</p>
+
+<p>The <code class="highlighter-rouge">&lt;iframe&gt;</code> started to become more popular because it was less work than creating framesets. Netscape countered by introducing <code class="highlighter-rouge">&lt;ilayer&gt;</code> in version 4, which had very similar features to <code class="highlighter-rouge">&lt;iframe&gt;</code>. Of course, the <code class="highlighter-rouge">&lt;iframe&gt;</code> won out and is now an important part of web development. Both Netscape’s frames and Microsoft’s <code class="highlighter-rouge">&lt;iframe&gt;</code> were standardized in HTML 4, but Netscape’s frames were later obsoleted (deprecated) in HTML5.</p>
+
+<h2 id="xml-and-ajax">XML and Ajax</h2>
+
+<p>Although XML isn’t used nearly as much in the web today as many thought it would be, Internet Explorer also led the way with XML support. It was the first browser to support client-side XML parsing and XSLT transformation in JavaScript. Unfortunately, it did so through ActiveX objects representing XML documents and XSLT processors. The folks at Mozilla clearly thought there was something there because they invented similar functionality in the form of <code class="highlighter-rouge">DOMParser</code>, <code class="highlighter-rouge">XMLSerializer</code>, and <code class="highlighter-rouge">XSLTProcessor</code>. The first two are now part of HTML5<sup><a href="http://www.w3.org/TR/DOM-Level-3-Events/#event-type-focusOut">9</a></sup>. Although the standards-based JavaScript XML handling is quite different than Internet Explorer’s version, it was undoubtedly influenced by IE.</p>
+
+<p>The client-side XML handling was all part of Internet Explorer’s implementation of <code class="highlighter-rouge">XMLHttpRequest</code>, first introduced as an ActiveX object in Internet Explorer 5. The idea was to enable retrieval of XML documents from the server in a webpage and allow JavaScript to manipulate that XML as a DOM. Internet Explorer’s version requires you to use <code class="highlighter-rouge">new ActiveXObject("MSXML2.XMLHttp")</code>, also making it reliant upon version strings and making developers jump through hoops to test and use the most recent version. Once again, Firefox came along and cleaned up the mess up by creating a then-proprietary <code class="highlighter-rouge">XMLHttpRequest</code> object that duplicated the interface of Internet Explorer’s version exactly. Other browsers then copied Firefox’s implementation, ultimately leading to Internet Explorer 7 creating an ActiveX-free version as well. Of course, <code class="highlighter-rouge">XMLHttpRequest</code> was the driving force behind the Ajax revolution that got everybody excited about JavaScript.</p>
+
+<h2 id="css">CSS</h2>
+
+<p>When you think of CSS, you probably don’t think much about Internet Explorer. After all, it’s the one that tends to lag behind in CSS support (at least up to Internet Explorer 10). However, Internet Explorer 3 was the first browser to implement CSS. At the time, Netscape was pursuing an alternate proposal, JavaScript Style Sheets (JSSS)<sup><a href="http://html5.org/specs/dom-parsing.html#the-domparser-interface">10</a></sup>. As the name suggested, this proposal used JavaScript to define stylistic information about the page. Netscape 4 introduced JSSS and CSS, a full version behind Internet Explorer. The CSS implementation was less than stellar, often translating styles into JSSS in order to apply them properly<sup><a href="http://en.wikipedia.org/wiki/JavaScript_Style_Sheets">11</a></sup>. That also meant that if JavaScript was disabled, CSS didn’t work in Netscape 4.</p>
+
+<p>While Internet Explorer’s implementation of CSS was limited to font family, font size, colors, backgrounds, and margins, the implementation was solid and usable. Meanwhile, Netscape 4′s implementation was buggy and hard to work with. Yes, in some small way, Internet Explorer led to the success of CSS.</p>
+
+<p>The box model, an important foundation of CSS, was heavily influenced by Internet Explorer. Their first implementation in Internet Explorer 5 interpreted <code class="highlighter-rouge">width</code> and <code class="highlighter-rouge">height</code> to mean that the element should be that size in total, including padding and border. This came to be known as <code class="highlighter-rouge">border-box</code> sizing. The W3C decided that the appropriate box sizing method was <code class="highlighter-rouge">content-box</code>, where <code class="highlighter-rouge">width</code> and <code class="highlighter-rouge">height</code> specified only the size of the box in which the content lived so that padding and border added size to the element. While Internet Explorer switched its standards mode to use the <code class="highlighter-rouge">content-box</code> approach to match the standard, Internet Explorer 8 introduced the <code class="highlighter-rouge">box-sizing</code> property as a way for developers to switch back to the <code class="highlighter-rouge">border-box</code> model. Of course, <code class="highlighter-rouge">box-sizing</code> was standardized in CSS3<sup><a href="http://www.w3.org/Style/LieBos2e/history/">12</a></sup> and some, most notably Paul Irish, recommend that you should change your default <code class="highlighter-rouge">box-sizing</code> to <code class="highlighter-rouge">border-box</code><sup><a href="http://dev.w3.org/csswg/css3-ui/#box-sizing">13</a></sup>.</p>
+
+<p>Internet Explorer also brought us other CSS innovations that ended up being standardized:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">text-overflow</code> – used to show ellipses when text is larger than its container. First appeared in Internet Explorer 6 and standardized in CSS3<sup><a href="http://paulirish.com/2012/box-sizing-border-box-ftw/">14</a></sup>. Now supported in all major browsers.</li>
+  <li><code class="highlighter-rouge">overflow-x</code> and <code class="highlighter-rouge">overflow-y</code> – allows you to control overflow in two separate directions of the container. This property first appeared in Internet Explorer 5 and later was formalized in CSS3<sup><a href="http://www.w3.org/TR/css3-ui/#text-overflow0">15</a></sup>. Now supported in all major browsers.</li>
+  <li><code class="highlighter-rouge">word-break</code> – used to specify line breaking rules between words. Originally in Internet Explorer 5.5 and now standardized in CSS3<sup><a href="http://dev.w3.org/csswg/css3-box/#overflow-x">16</a></sup>. Supported in all major browsers except Opera.</li>
+  <li><code class="highlighter-rouge">word-wrap</code> – specifies whether the browser should break lines in the middle of words are not. First created for Internet Explorer 5.5 and now standardized in CSS3 as <code class="highlighter-rouge">overflow-wrap</code><sup><a href="http://dev.w3.org/csswg/css3-text/#word-break">17</a></sup>, although all major browsers support it as <code class="highlighter-rouge">word-wrap</code>.</li>
+</ul>
+
+<p>Additionally, many of the new CSS3 visual effects have Internet Explorer to thank for laying the groundwork. Internet Explorer 4 introduced the proprietary <code class="highlighter-rouge">filter</code> property making it the first browser capable of:</p>
+
+<ul>
+  <li>Generating gradients from CSS instructions (CSS3: gradients)</li>
+  <li>Creating semitransparent elements with an alpha filter (CSS3: <code class="highlighter-rouge">opacity</code> and RGBA)</li>
+  <li>Rotating an element an arbitrary number of degrees (CSS3: <code class="highlighter-rouge">transform</code> with <code class="highlighter-rouge">rotate()</code>)</li>
+  <li>Applying a drop shadow to an element (CSS3: <code class="highlighter-rouge">box-shadow</code>)</li>
+  <li>Applying a matrix transform to an element (CSS3: <code class="highlighter-rouge">transform</code> with <code class="highlighter-rouge">matrix()</code>)</li>
+</ul>
+
+<p>Additionally, Internet Explorer 4 had a feature called transitions, which allowed you to create some basic animation on the page using filters. The transitions were mostly based on the transitions commonly available in PowerPoint at the time, such as fading in or out, checkerboard, and so on<sup><a href="http://dev.w3.org/csswg/css3-text/#word-wrap">18</a></sup>.</p>
+
+<p>All of these capabilities are featured in CSS3 in one way or another. It’s pretty amazing that Internet Explorer 4, released in 1997, had all of these capabilities and we are now just starting to get the same capabilities in other browsers.</p>
+
+<h2 id="other-html5-contributions">Other HTML5 contributions</h2>
+
+<p>There is a lot of HTML5 that comes directly out of Internet Explorer and the APIs introduced. Here are some that have not yet been mentioned in this post:</p>
+
+<ul>
+  <li><strong>Drag and Drop</strong> – one of the coolest parts of HTML5 is the definition of native drag-and-drop<sup><a href="http://msdn.microsoft.com/en-us/library/ms532847(v=vs.85).aspx">19</a></sup>. This API originated in Internet Explorer 5 and has been described, with very few changes, in HTML5. The main difference is the addition of the <code class="highlighter-rouge">draggable</code> attribute to mark arbitrary elements as draggable (Internet Explorer used a JavaScript call, <code class="highlighter-rouge">element.dragDrop()</code> to do this). Other than that, the API closely mirrors the original and is now supported in all major desktop browsers.</li>
+  <li><strong>Clipboard Access</strong> – now split out from HTML5 into its own spec<sup><a href="http://www.w3.org/TR/html5/dnd.html#dnd">20</a></sup>, grants the browser access to the clipboard in certain situations. This API originally appeared in Internet Explorer 6 and was then copied by Safari, who moved <code class="highlighter-rouge">clipboardData</code> off of the <code class="highlighter-rouge">window</code> object and onto the <code class="highlighter-rouge">event</code> object for clipboard events. Safari’s change was kept as part of the HTML5 version and clipboard access is now available in all major desktop browsers except for Opera.</li>
+  <li><strong>Rich Text Editing</strong> – rich text editing using <code class="highlighter-rouge">designMode</code> was introduced in Internet Explorer 4 because Microsoft wanted a better text editing experience for Hotmail users. Later, Internet Explorer 5.5 introduced <code class="highlighter-rouge">contentEditable</code> As a lighter weight way of doing rich text editing. Along with both of these came the dreaded <code class="highlighter-rouge">execCommand()</code> method and its associated methods. For better or worse, this API for rich text editing was standardized in HTML5<sup><a href="http://dev.w3.org/2006/webapi/clipops/">21</a></sup> and is currently supported in all major desktop browsers as well as Mobile Safari and the Android browser.</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>While it’s easy and popular to poke at Internet Explorer, in reality, we wouldn’t have the web as we know it today if not for its contributions. Where would the web be without <code class="highlighter-rouge">XMLHttpRequest</code> and <code class="highlighter-rouge">innerHTML</code>? Those were the very catalysts for the Ajax revolution of web applications, upon which a lot of the new capabilities have been built. It seems funny to look back at the browser that has become a “bad guy” of the Internet and see that we wouldn’t be where we are today without it.</p>
+
+<p>Yes, Internet Explorer had its flaws, but for most of the history of the Internet it was the browser that was pushing technology forward. Now that were in a period with massive browser competition and innovation, it’s easy to forget where we all came from. So the next time you run into people who work on Internet Explorer, instead of hurling insults and tomatoes, say thanks for helping to make the Internet what it is today and for making web developers one of the most important jobs in the world.</p>
+
+<p><strong>Update (23-August-2012):</strong> Added mention of <code class="highlighter-rouge">box-sizing</code> per Sergio’s comment. Added mention of <code class="highlighter-rouge">&lt;iframe&gt;</code> per Paul’s comment.</p>
+
+<p><strong>Update (10-September-2012):</strong> Added mention of Internet Explorer 3 support for margins based on Chris’ comment.</p>
+
+<h2 id="translations">Translations</h2>
+
+<ul>
+  <li><a href="http://www.desarrolloweb.com/articulos/innovaciones-internet-explorer.html">Spanish</a></li>
+</ul>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://www.w3.org/TR/html5/apis-in-html-documents.html#innerhtml">innerHTML in HTML5</a></li>
+  <li><a href="http://www.w3.org/TR/DOM-Level-3-Core/core.html#Node3-textContent">textContent in DOM Level 3</a></li>
+  <li><a href="http://html5.org/specs/dom-parsing.html#insertadjacenthtml()">insertAdjacentHTML() in HTML5</a></li>
+  <li><a href="http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#event-handlers-on-elements,-document-objects,-and-window-objects">Event Handlers on Elements</a> (HTML5)</li>
+  <li><a href="http://www.w3.org/TR/DOM-Level-3-Events/#event-type-mouseenter">mouseenter</a> (DOM Level 3 Events)</li>
+  <li><a href="http://www.w3.org/TR/DOM-Level-3-Events/#event-type-mouseleave">mouseleave</a> (DOM Level 3 Events)</li>
+  <li><a href="http://www.w3.org/TR/DOM-Level-3-Events/#event-type-focusIn">focusin</a> (DOM Level 3 Events)</li>
+  <li><a href="http://www.w3.org/TR/DOM-Level-3-Events/#event-type-focusOut">focusout</a> (DOM Level 3 Events)</li>
+  <li><a href="http://html5.org/specs/dom-parsing.html#the-domparser-interface">DOMParser interface</a> (HTML5)</li>
+  <li><a href="http://en.wikipedia.org/wiki/JavaScript_Style_Sheets">JavaScript Style Sheets</a> (Wikipedia)</li>
+  <li><a href="http://www.w3.org/Style/LieBos2e/history/">The CSS Saga</a> by Håkon Wium Lie and Bert Bos</li>
+  <li><a href="http://dev.w3.org/csswg/css3-ui/#box-sizing">box-sizing property</a> (CSS3 UI)</li>
+  <li><a href="http://paulirish.com/2012/box-sizing-border-box-ftw/">* { box-sizing: border-box } FTW</a> (Paul Irish)</li>
+  <li><a href="http://www.w3.org/TR/css3-ui/#text-overflow0">text-overflow property</a> (CSS3 UI)</li>
+  <li><a href="http://dev.w3.org/csswg/css3-box/#overflow-x">overflow-x and overflow-y</a> (CSS3 Box)</li>
+  <li><a href="http://dev.w3.org/csswg/css3-text/#word-break">word-break</a> (CSS3 Text)</li>
+  <li><a href="http://dev.w3.org/csswg/css3-text/#word-wrap">overflow-wrap/word-wrap</a> (CSS3 Text)</li>
+  <li><a href="http://msdn.microsoft.com/en-us/library/ms532847(v=vs.85).aspx">Introduction to Filters and Transitions</a> (MSDN)</li>
+  <li><a href="http://www.w3.org/TR/html5/dnd.html#dnd">Drag and Drop</a> (HTML5)</li>
+  <li><a href="http://dev.w3.org/2006/webapi/clipops/">Clipboard API and Events</a> (HTML5)</li>
+  <li><a href="http://www.w3.org/TR/html5/editing.html#editing-0">User Interaction – Editing</a> (HTML5)</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/08/22/the-innovations-of-internet-explorer/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

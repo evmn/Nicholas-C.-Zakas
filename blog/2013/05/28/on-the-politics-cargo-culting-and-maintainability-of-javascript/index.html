@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>On the politics, cargo-culting, and maintainability of JavaScript - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2013/05/28/on-the-politics-cargo-culting-and-maintainability-of-javascript/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="On the politics, cargo-culting, and maintainability of JavaScript">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2013/05/28/on-the-politics-cargo-culting-and-maintainability-of-javascript/" />
+<meta name="og:title" content="On the politics, cargo-culting, and maintainability of JavaScript">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="There has recently been a renewed focus on what I’ve come to call the anti-convention movement in JavaScript. It seems like once or twice a year, someone either does a talk or writes...">
+<meta name="keywords" content="Conventions,JavaScript,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">On the politics, cargo-culting, and maintainability of JavaScript</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2013-05-28T00:00:00+00:00" itemprop="datePublished">May 28, 2013</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/conventions" rel="tag">Conventions</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>There has recently been a renewed focus on what I’ve come to call the anti-convention movement in JavaScript. It seems like once or twice a year, someone either does a talk or writes an article saying that all of the things so-called JavaScript experts tell you are wrong and you should do whatever you want. I take notice because frequently I’m listed along with those who are telling you not to do certain things (you know, the people you shouldn’t listen to). The most recent contributions are Angus Croll’s Politics of JavaScript talk<a href="http://net.tutsplus.com/tutorials/javascript-ajax/cargo-culting-in-javascript/?utm_source=buffer">1</a> from Web Directions and James Padolsey’s NetTuts article, Cargo-Culting in JavaScript<a href="http://c2.com/cgi/wiki?CodeForTheMaintainer">2</a>. Both take stances against commonly held beliefs in how you should write JavaScript. While I always enjoy a good debate about whether best practices makes sense or not, I feel that sometimes the discussion ends up in the wrong place.</p>
+
+<h2 id="maintainability">Maintainability</h2>
+
+<p>I have a bias. I think that maintainability is important in all code (not just with JavaScript). If you are at all familiar with my work, then this will come as no surprise. After all I’ve written a book about maintainability practices in JavaScript and I’ve written several articles and given talks about the subject as well. To me, maintainability is about creating high functioning teams that can move seamlessly between one another’s code. Code conventions and other best practices designed to increase maintainability do so by decreasing the likelihood that two people on the same team will solve the same problem differently. That may seem like a minor point some, but in practice, seeing things the same way is important for teams.</p>
+
+<p>I like to think of American football as a good example. Perhaps the most interesting relationship on the field is that between the quarterback and his wide receivers. The quarterback’s main job is to read the defense and figure out how best to make progress. The wide receivers’ job is to read the defense and figure out how best to get open so the quarterback can throw the ball to them . The most interesting part of this process is that the quarterback must actually throw the ball before the receiver arrives at the reception location. Because it takes a couple of seconds for the ball to get there, waiting until the receiver is wide open means waiting an extra couple of seconds during which the defense can get in the way. That’s why it’s important that the quarterback and the wide receivers see the same thing on defense and react the same way. When a defensive player behaves a certain way, both the quarterback and the wide receiver must realize it and react in complementary ways. That’s the only way a pass will work.</p>
+
+<p>It’s the same thing with a team of developers. You want everyone reading the field the same way. The fewer unique patterns there are in the code base, the easier it is for everyone to work with. As I’ve said in many of my writings and talks, code is actually a communication medium between developers. Making sure everyone speaks the same dialect is important.</p>
+
+<h2 id="what-i-do">What I do</h2>
+
+<p>The very first talk that I gave was on maintainability. I wasn’t trying to trail blaze nor was I trying to prevent anyone from doing anything they wanted to do. What I did then, and what I continue to do now, is to share my experiences. When I say to avoid something, it’s because I actually ran into trouble using it. When I say something is a good way to approach a problem, it’s because I found it to be successful in my own work. Most of my advice has to do with building large web applications and working on large teams because that’s how I’ve spent the past several years of my career. If you have ever seen me give a talk in person, you probably heard me say that some of these don’t apply when it’s just you working on a project all by yourself or with a couple of other people.</p>
+
+<p>Because I enjoy working on large projects and with large numbers of people, I focus most of my own energy on making those systems work. I love the scalability problem because it is much more difficult than anything else. I never talk from a theoretical background and I never claim that my way is the only way to do things. everything I share publicly, from my blog posts, to my books, to my talks, is just about sharing what I’ve learned in the hope that it also helps you. If it doesn’t help you, I wholeheartedly invite you to leave my advice off to the side where it doesn’t get in the way. I have no desire to convince you that I’m right or that you’re wrong, my only desire is to share what I’ve learned and let you use that however you see fit.</p>
+
+<h2 id="im-not-stupid">“I’m not stupid!”</h2>
+
+<p>Both Angus and James base their arguments around the assumption that those who are recommending certain practices believe that everyone else is stupid. While I can’t speak for everyone, I don’t think that this is the case. Recommending certain practices has nothing to do with whether or not you think that developers are stupid. If that were true, you could say the same thing about every person who gave a talk or wrote a book recommending anything. I don’t know when people started getting so upset about recommendations, but pointing the finger back at those making the recommendations and saying, “don’t call me stupid,” is ridiculous. Unfortunately, this seems to happen whenever somebody disagrees with a recommendation.</p>
+
+<p>That’s not to say that all advice is good. That’s also not to say that you should follow all of the advice all the time. You should, though, stop and think about the context in which the advice is given and whether or not that context applies to you. There is no rule that applies 100% of the time. That’s not just true with JavaScript, it’s true with every rule in the entire world. The fact that there are exceptions doesn’t mean that it’s a bad rule. If the rule holds 99% of the time than it’s worth codifying as a good idea. The recommendations that people make around best practices should be treated the same way. All rules are starting points and it’s up to you to continue the journey.</p>
+
+<p>Think about driving. Most roads have a line down the center and some have guardrails along the side. Most of the time, you expect people to drive on the correct side of the road and not drive off of the road onto the sidewalk. Why bother having those lines and guardrails? I’m relatively sure that everyone within a country knows which side of the road to drive on and that staying within your defined driving lane is expected. The lines and guardrails just serve to reinforce what you already know when you’re driving a car. They give you a few extra hints. So if you start to veer over the line in the middle of the road, you know that you may be entering into some dangerous territory. The line doesn’t stop you from doing it, it’s just an indicator of expectations. Yet I don’t know anyone who is offended by the lines in the road or guardrails.</p>
+
+<p>And just like with best practices, sometimes you actually have to cross over the line or drive over a sidewalk. What if you’re making a turn to the other side of the street? What if you need to pull into a driveway? What if a car is broken down and you need to get around it? There are even exceptions to the rules of the road. No one really thinks about it because we all just do it naturally.</p>
+
+<p>If you come from a position that anyone recommending a practice to you thinks you’re stupid then you are doing yourself a disservice. There is no global JavaScript contest to see who can get the most people to follow their practices. No one wins anything by having more people using comma-first than comma-last. Literally there is no skin in this game for anyone.</p>
+
+<h2 id="coding-for-the-maintainer">Coding for the maintainer</h2>
+
+<p>Both Angus and James use the following quote (one of my favorites, from Code for the Maintainer<a href="http://en.wikipedia.org/wiki/Dreyfus_model_of_skill_acquisition">3</a>):</p>
+
+<blockquote>
+  <p>Always code as if the person who ends up maintaining your code is a violent psychopath who knows where you live.</p>
+</blockquote>
+
+<p>Unfortunately both miss the context of this quote before dismissing it as bad advice. This quote doesn’t speak about your current teammates nor does it imply the person who is going to maintain your code will be stupider than you. The meaning behind this quote is that you don’t know who is going to be maintaining your code in the future and that person will lack context to figure out what your code is doing. Lacking context has nothing to do with intelligence.</p>
+
+<p>Think back to a time when you had to take over code from somebody else. Maybe that person was still at the company or maybe not. How did you feel needing to work with that code? I can tell you from personal experience, I’ve inherited some really bad code over the years. Code that is hard to work with because it’s very difficult to understand what it’s doing. I consider myself to be reasonably intelligent, typically above average on most days, but if you sit me down in front of some code that I’ve never seen before and tell me to fix a problem it will likely take me a while to do that.</p>
+
+<p>If I were to restate the quote in a way that would hopefully make people understand the intent better, I would restate it as this:</p>
+
+<blockquote>
+  <p>Always code as if the person who ends up maintaining your code will not be able to talk to you for help.</p>
+</blockquote>
+
+<p>Removing the scare tactic phrases from the quote makes it a bit more palatable. The idea is that the person who maintains your code won’t have you as a resource and therefore the code has to make sense on its own. The assumptions and organizational knowledge that exist only in your head are the enemy of that maintainer. It doesn’t matter how intelligent that person is, the job is a nightmare without proper context. That’s why I can’t jump in and start maintaining your JavaScript library even though I know JavaScript pretty well. That’s why things like code conventions and documentation are so important for maintainability.</p>
+
+<p>If your code can’t be easily maintained by someone else, then that’s not a mark of quality. The teams I’ve worked on have all converged on common conventions and that has allowed anyone to be able to work with any file at any point in time. Understanding the conventions means that you understand the files and that means you can do your job with a very low barrier to entry. It’s a point of pride for my teams that code ends up looking the same regardless of who wrote it because ultimately it’s the team’s responsibility for that code rather than an individual’s responsibility.</p>
+
+<h2 id="its-a-starting-point">It’s a starting point</h2>
+
+<p>Thankfully, Angus ends his presentation with a very important statement: there are no absolutes. All of the rules and best practices that you hear about are simply a starting point. I always tell people on my teams that we’re going to define some rules and follow them until they don’t make sense. When they don’t make sense, we’re going to talk about why that is and figure out what we’ve learned. The rules are there to help you get off on the right foot and make sure that you don’t need to stop and ask at every moment what the right approach is. That’s important because our jobs are fundamentally repetitive.</p>
+
+<p>We go into work mostly doing the same thing every day. If your job is to create features on a product, you’ll find that the features can get implemented in very similar ways even though the features themselves are very different. If your job is to fix bugs, you tend to debug and fix things in the same way. It’s the same for all of us, programming is repetitive. If everyone ends up doing the same task in different ways than the code becomes harder to manage. So you start by defining some rules about how things will be written and deal with the exceptions as they come up.</p>
+
+<p>And there will be exceptions. Exceptions don’t mean that the rule is bad, it just means that the context has changed and the rule may not apply.</p>
+
+<p>What we’re really talking about here is skill acquisition[4]. The rules are there to get you started on a journey of learning. All beginners are taught the rules that let them get moving quickly while avoiding common pitfalls. As you get more experienced, you learn more rules and also start to figure out the context in which the rules don’t apply. Not everyone is at the same level of professional development and so everyone doesn’t have a proper handle on what they’re doing to throw the rules away. It’s only through experience that these becomes more apparent, as the novice chess player eventually becomes a grandmaster.</p>
+
+<h2 id="effective-learning">Effective learning</h2>
+
+<p>This really all comes down to how you choose to learn. Every single person who takes the time to write a blog post or give a talk or otherwise share their knowledge is saving you valuable time. They are doing the heavy lifting of presenting an idea and it’s just up to you to decide if that idea fits with what you do or not. Thinking those people automatically believe you are stupid is counterproductive and doesn’t matter at all. Recommendations are simply ideas presented for consideration. Many times, the ideas flow from a problem that the recommender experienced at some point in time. Figure out the problem and you can figure out whether or not the context applies to you. That’s the most effective way to learn. Or to put it more eloquently:</p>
+
+<blockquote>
+  <p>Do not believe in anything simply because you have heard it. Do not believe in anything simply because it is spoken and rumored by many. Do not believe in anything simply because it is found written in your religious books. Do not believe in anything merely on the authority of your teachers and elders. Do not believe in traditions because they have been handed down for many generations. But after observation and analysis, when you find that anything agrees with reason and is conducive to the good and benefit of one and all, then accept it and live up to it.</p>
+
+  <ul>
+    <li>Buddha</li>
+  </ul>
+</blockquote>
+
+<h2 id="references">References</h2>
+
+<ul>
+  <li><span style="line-height: 13px;"><a href="https://speakerdeck.com/anguscroll/the-politics-of-javascript">The Politics of JavaScript</a> by Angus Croll (SpeakerDeck)</span></li>
+  <li><a href="http://net.tutsplus.com/tutorials/javascript-ajax/cargo-culting-in-javascript/?utm_source=buffer">Cargo-Culting in JavaScript</a> by James Padolsey (NetTuts)</li>
+  <li><a href="http://c2.com/cgi/wiki?CodeForTheMaintainer">Code for the Maintainer</a> (Cunningham &amp; Cunningham)</li>
+  <li><a href="http://en.wikipedia.org/wiki/Dreyfus_model_of_skill_acquisition">Dreyfus Model of Skill Acquisition</a> (Wikipedia)</li>
+</ul>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2013/05/28/on-the-politics-cargo-culting-and-maintainability-of-javascript/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

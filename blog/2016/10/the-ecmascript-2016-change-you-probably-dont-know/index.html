@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>The ECMAScript 2016 change you probably don't know - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2016/10/the-ecmascript-2016-change-you-probably-dont-know/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="The ECMAScript 2016 change you probably don't know">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2016/10/the-ecmascript-2016-change-you-probably-dont-know/" />
+<meta name="og:title" content="The ECMAScript 2016 change you probably don't know">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Compared to ECMAScript 6 (also known as ECMAScript 2015), ECMAScript 2016 was a minor update to the language specification for JavaScript. This was due to the decision that ECMAScript editions would now move...">
+<meta name="keywords" content="JavaScript,ECMAScript 2016,Strict Mode,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">The ECMAScript 2016 change you probably don't know</h1>
+        <p itemprop="description" class="no-margin-top">How the JavaScript strict mode directive changed in 2016.</p>
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2016-10-18T00:00:00+00:00" itemprop="datePublished">October 18, 2016</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/ecmascript-2016" rel="tag">ECMAScript 2016</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/strict-mode" rel="tag">Strict Mode</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Compared to ECMAScript 6 (also known as ECMAScript 2015), ECMAScript 2016 was a minor update to the language specification for JavaScript. This was due to the decision that ECMAScript editions would now move to a yearly release cycle, effectively just a snapshot of all the features that were ready. As such, most resources list only two significant changes in ECMAScript 2016:</p>
+
+<ol>
+  <li>The addition of the exponentiation (<code class="highlighter-rouge">**</code>) operator</li>
+  <li>The addition of the <code class="highlighter-rouge">Array.prototype.includes()</code> method</li>
+</ol>
+
+<p>These features had the most direct impact for JavaScript developers, however, there is one other significant change that is often forgotten. It’s something I cover in my book, <a href="http://amzn.to/2d31CIC">Understanding ECMAScript 6</a>, however, I’m still receiving questions about it and so I’d like to dig a bit deeper.</p>
+
+<p>First I’ll describe the change and then I’ll describe some of the rationale behind it.</p>
+
+<h2 id="the-change">The change</h2>
+
+<p>ECMAScript 2016 says that the <code class="highlighter-rouge">"use strict"</code> directive cannot be used in the body of a function whose parameters either have default values, use destructuring, or a rest parameter. The specification defines <em>simple parameters</em> as parameter lists that contain only identifiers (ECMAScript 5 only supported simple parameter lists)[1]. The change affects all function types, including function declarations and expressions, arrow functions, and concise object literal methods. Here are some examples:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// this is okay</span>
+<span class="kd">function</span> <span class="nx">doSomething</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="c1">// code</span>
+<span class="p">}</span>
+
+<span class="c1">// syntax error in ECMAScript 2016</span>
+<span class="kd">function</span> <span class="nx">doSomething</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="o">=</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="c1">// code</span>
+<span class="p">}</span>
+
+<span class="c1">// syntax error in ECMAScript 2016</span>
+<span class="kd">const</span> <span class="nx">doSomething</span> <span class="o">=</span> <span class="kd">function</span><span class="p">({</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">})</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="c1">// code</span>
+<span class="p">};</span>
+
+<span class="c1">// syntax error in ECMAScript 2016</span>
+<span class="kd">const</span> <span class="nx">doSomething</span> <span class="o">=</span> <span class="p">(...</span><span class="nx">a</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="c1">// code</span>
+<span class="p">};</span>
+
+<span class="kd">const</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+
+    <span class="c1">// syntax error in ECMAScript 2016</span>
+    <span class="nx">doSomething</span><span class="p">({</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">})</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+        <span class="c1">// code</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>You can still use <code class="highlighter-rouge">"use strict"</code> globally, outside of a function, in order to have that function run in strict mode even if the function has non-simple parameters. For example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// this is okay</span>
+<span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">doSomething</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="o">=</span><span class="nx">a</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// code</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this case, the <code class="highlighter-rouge">"use strict"</code> directive outside of the function is valid syntax. This is also not a concern if you’re using ECMAScript modules, which run all code in strict mode.</p>
+
+<h2 id="why-make-this-change">Why make this change?</h2>
+
+<p>This change is important due to the way strict mode and non-simple parameter lists work. When strict mode was created in ECMAScript 5, destructuring and default parameter values did not exist, so there was no problem with parsing the parameter list and then seeing a “<code class="highlighter-rouge">use strict</code>” directive. At that point, the <code class="highlighter-rouge">"use strict"</code> could not affect the outcome of parsing the parameter list, it was only used to validate parameter identifiers (disallowing duplicates and checking for forbidden identifiers like <code class="highlighter-rouge">eval</code> and <code class="highlighter-rouge">arguments</code>). With the introduction of destructuring and default parameter values in ECMAScript 6, however, this was no longer the case because the specification indicated that parameter lists should be parsed in the same mode as the function body (which means the <code class="highlighter-rouge">"use strict"</code> directive in the function body must trigger strict mode).</p>
+
+<p>The first thing to realize is that strict mode requires changes to both parsing and execution[2] of JavaScript code. As a very simple example, strict mode disallows the use of the old-style octal numeric literals (such as <code class="highlighter-rouge">070</code>). If code is parsed in strict mode, then <code class="highlighter-rouge">070</code> will throw a syntax error. With that in mind, what do you think the following code should do?</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// syntax error in ECMAScript 2016</span>
+<span class="kd">function</span> <span class="nx">doSomething</span><span class="p">(</span><span class="nx">value</span><span class="o">=</span><span class="mi">070</span><span class="p">)</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If you have a JavaScript parser attempting to parse this code, the parameter list is parsed before the function body. That means <code class="highlighter-rouge">070</code> is parsed as valid and then <code class="highlighter-rouge">"use strict"</code> is encountered in the function body, which tells the parser, “actually, you should have parsed the parameter list in strict mode.” At that point, the parser would have to backtrack and re-parse the parameter list in strict mode so a syntax error is thrown for <code class="highlighter-rouge">070</code>. That might not seem like a big deal, but what if the default parameter value is more complex?</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// syntax error in ECMAScript 2016</span>
+<span class="kd">function</span> <span class="nx">doSomething</span><span class="p">(</span><span class="nx">value</span><span class="o">=</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="nx">doSomeCalculation</span><span class="p">()</span> <span class="o">+</span> <span class="mi">070</span><span class="p">;</span>
+<span class="p">}()))</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In this case, with a function used in a default parameter value, you have more of a problem. The number of tokens you’d have to unwind is greater and the you also have to set the function in the default value as running in strict mode. That’s a lot of complexity to ensure that the default parameter value expression is parsed correctly and understood to be running in strict mode.</p>
+
+<p>Destructured parameters cause similar problems because they can include default values. For example:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// syntax error in ECMAScript 2016</span>
+<span class="kd">function</span> <span class="nx">doSomething</span><span class="p">({</span><span class="nx">value</span><span class="o">=</span><span class="mi">070</span><span class="p">})</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Here, the destructured parameter <code class="highlighter-rouge">value</code> has a default value that is disallowed in strict mode, causing the same problems as default parameter values.</p>
+
+<p>In the end, it appears TC-39 decided[3] to simply disallow function body <code class="highlighter-rouge">"use strict"</code> in situations that were not present in ECMAScript 5 in order to avoid missing edge cases. That means functions with default parameter values, destructured parameters, or rest parameters cannot have <code class="highlighter-rouge">"use strict"</code> in the function body. That includes situations where <code class="highlighter-rouge">"use strict"</code> would have no effect, such as this:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">outer</span><span class="p">()</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="c1">// syntax error in ECMAScript 2016</span>
+    <span class="kd">function</span> <span class="nx">doSomething</span><span class="p">(</span><span class="nx">value</span><span class="o">=</span><span class="mi">070</span><span class="p">)</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+        <span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This example nests a function with non-simple parameters inside of another function that has <code class="highlighter-rouge">"use strict"</code>. The <code class="highlighter-rouge">doSomething()</code> function is automatically in strict mode but JavaScript engines will still throw a syntax error on the <code class="highlighter-rouge">"use strict"</code> directive in <code class="highlighter-rouge">doSomething()</code>’s function body.</p>
+
+<h2 id="workarounds">Workarounds</h2>
+
+<p>This change is unlikely to affect many developers, which is likely why you weren’t aware of it. The <code class="highlighter-rouge">"use strict"</code> directive is starting to become a historical artifact of JavaScript as ECMAScript modules and classes both automatically run in strict mode without a way to opt-out, meaning that <code class="highlighter-rouge">"use strict"</code> is not needed in those situations. However, in the rare case that you need a function with non-simple parameters to run in strict mode, you can use an IIFE to create the function:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">doSomething</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">use strict</span><span class="dl">"</span><span class="p">;</span>
+
+    <span class="k">return</span> <span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
+    <span class="p">};</span>
+<span class="p">}());</span>
+</code></pre></div></div>
+
+<p>In this code, a function is created inside an IIFE that is running in strict mode. This allows the returned function to run in strict mode while using a default parameter value. Because the outer scope is running in strict mode, there is no problem parsing the default parameter value correctly and no need for an additional <code class="highlighter-rouge">"use strict"</code> inside the function body.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This small change to ECMAScript 2016, disallowing function body <code class="highlighter-rouge">"use strict"</code> for functions with non-simple parameter lists, highlights just how difficult evolving such a popular programming language can be. In this case, TC-39 decided to remove ambiguity by introducing a new syntax error that likely would have been part of ECMAScript 6 (2015) had this problem been surfaced earlier. Adding this syntax error was the most obvious path forward because it affects very little existing code (the specification change was made around the same time that JavaScript engines were implementing non-simple parameter lists) and likely wouldn’t affect much future code due to ECMAScript modules and classes running in strict mode.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://www.ecma-international.org/ecma-262/7.0/#sec-function-definitions-static-semantics-issimpleparameterlist">Static Semantics: IsSimpleParameterList</a> (ecma-international.org)</li>
+  <li><a href="https://www.nczonline.net/blog/2012/03/13/its-time-to-start-using-javascript-strict-mode/">It’s time to start using JavaScript strict mode</a> (nczonline.net)</li>
+  <li><a href="https://github.com/rwaldron/tc39-notes/blob/d0c651b358b361b0855cfe7af9ba0b76cab73949/es7/2015-07/july-29.md#611-the-scope-of-use-strict-with-respect-to-destructuring-in-parameter-lists">The scope of “use strict” with respect to destructuring in parameter lists</a></li>
+</ol>
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2016/10/the-ecmascript-2016-change-you-probably-dont-know/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

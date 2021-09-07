@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>History of the user-agent string - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2010/01/12/history-of-the-user-agent-string/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="History of the user-agent string">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2010/01/12/history-of-the-user-agent-string/" />
+<meta name="og:title" content="History of the user-agent string">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="A couple of weeks ago, I talked about feature detection and browser detection. That post featured a little bit about user-agent sniffing and the comments continued the trend. I maintain that user-agent sniffing...">
+<meta name="keywords" content="Browsers,Chrome,Firefox,Internet Explorer,Opera,Safari,User Agent String,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">History of the user-agent string</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2010-01-12T00:00:00+00:00" itemprop="datePublished">January 12, 2010</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/browsers" rel="tag">Browsers</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/chrome" rel="tag">Chrome</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/firefox" rel="tag">Firefox</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/internet-explorer" rel="tag">Internet Explorer</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/opera" rel="tag">Opera</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/safari" rel="tag">Safari</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/user-agent-string" rel="tag">User Agent String</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>A couple of weeks ago, I talked about <a href="../../../../2009/12/29/feature-detection-is-not-browser-detection/index.html">feature detection and browser detection</a>. That post featured a little bit about user-agent sniffing and the comments continued the trend. I maintain that user-agent sniffing is an important technique to keep in your back pocket for those rare occasions when it’s needed. Before being able to do that, though, it’s useful to understand why user-agent string detection is considered to be such an inexact science. And to do that, you need to take a look at how the user-agent string has evolved over the years.</p>
+
+<p>The following is an abridged version of the history of user-agent strings as it appears in my book, <a href="http://www.amazon.com/gp/product/047022780X?ie=UTF8&amp;tag=nczonline-20&amp;linkCode=as2&amp;camp=1789&amp;creative=390957&amp;creativeASIN=047022780X">Professional JavaScript for Web Developers, 2nd Edition</a>.</p>
+
+<h2 id="early-browsers">Early Browsers</h2>
+
+<p>The first web browser, Mosaic, was released in 1993 by the National Center for Supercomputing Applications (NCSA). Its user-agent string was fairly simple, taking a form similar to this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mosaic/0.9
+</code></pre></div></div>
+
+<p>Though this would vary depending on the operating system and platform, the basic format was simple and straightforward. The text before the forward slash indicated the product name (sometimes appearing as NCSA Mosaic or other derivatives), and the text after the slash is the product version.</p>
+
+<p>When Netscape Communications began developing their web browser, its codename was Mozilla (short for “Mosaic Killer”). Netscape Navigator 2, the first publicly available version, had a user-agent string with the following format:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/Version [Language] (Platform; Encryption)
+</code></pre></div></div>
+
+<p>Netscape kept the tradition of using the product name and version as the first part of the user-agent string, but added the following information afterwards:</p>
+
+<ol>
+  <li>Language – The language code indicating where the application was intended to be used.</li>
+  <li>Platform – The operating system and/or platform on which the application is running.</li>
+  <li>Encryption – The type of security encryption included. Possible values are U (128-bit encryption), I (40-bit encryption), and N (no encryption).</li>
+</ol>
+
+<p>A typical user-agent string from Netscape Navigator 2 looked like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/2.02 [fr] (WinNT; I)
+</code></pre></div></div>
+
+<p>This string indicates Netscape Navigator 2.02 is being used, is compiled for use in French-speaking countries, and is being run on Windows NT with 40-bit encryption. At this point in time, it was fairly easy to determine what browser was being used just by looking at the product name in the user-agent string.</p>
+
+<h2 id="netscape-navigator-3-and-internet-explorer-3">Netscape Navigator 3 and Internet Explorer 3</h2>
+
+<p>In 1996, Netscape Navigator 3 was released and became the most popular web browser, surpassing Mosaic. The user-agent string went through only a small change, removing the language token and allowing optional information about the operating system or CPU used on the system. The format became the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/Version (Platform; Encryption [; OS-or-CPU description])
+</code></pre></div></div>
+
+<p>A typical user-agent string for Netscape Navigator 3 running on a Windows system looked like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/3.0 (Win95; U)
+</code></pre></div></div>
+
+<p>This string indicates Netscape Navigator 3 running on Windows 95 with 128-bit encryption. Note that the OS or CPU description was left off when the browser ran on Windows systems.</p>
+
+<p>Shortly after the release of Netscape Navigator 3, Microsoft released their first publicly available web browser, Internet Explorer 3. Since Netscape was the dominant browser at the time, many servers specifically checked for it before serving up pages. The inability to access pages in IE would have crippled adoption of the fledgling browser, so the decision was made to create a user-agent string that would be compatible with the Netscape user-agent string. The result was the following format:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/2.0 (compatible; MSIE Version; Operating System)
+</code></pre></div></div>
+
+<p>For example, Internet Explorer 3.02 running on Windows 95 had this user-agent string:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/2.0 (compatible; MSIE 3.02; Windows 95)
+</code></pre></div></div>
+
+<p>Since most browser sniffers at the time looked only at the product-name part of the user-agent string, IE successfully identified itself as Mozilla, the same as Netscape Navigator. This move caused some controversy since it broke the convention of browser identification. Further, the true browser version is buried in the middle of the string.</p>
+
+<h2 id="netscape-communicator-4-and-internet-explorer-4-8">Netscape Communicator 4 and Internet Explorer 4-8</h2>
+
+<p>In August of 1997, Netscape Communicator 4 was released (the name was changed from Navigator to Communicator for this release). Netscape opted to keep the following user-agent string format from version 3. With version 4 on a Windows 98 machine, the user-agent string looked like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/4.0 (Win98; I)
+</code></pre></div></div>
+
+<p>As Netscape released patches and fixes for its browser, the version was incremented accordingly, as the following user-agent string from version 4.79 indicates:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/4.79 (Win98; I)
+</code></pre></div></div>
+
+<p>When Microsoft released Internet Explorer 4, the user-agent string featured an updated version, taking the following format:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/4.0 (compatible; MSIE Version; Operating System)
+</code></pre></div></div>
+
+<p>For example, IE 4 running on Windows 98 returned the following user-agent string:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/4.0 (compatible; MSIE 4.0; Windows 98)
+</code></pre></div></div>
+
+<p>With this change, the reported Mozilla version and the actual version of IE were synchronized, allowing for easy identification of these fourth-generation browsers. Unfortunately, the synchronization ended there. As soon as Internet Explorer 4.5 (released only for Macs), the Mozilla version remained 4 while the IE version changed as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/4.0 (compatible; MSIE 4.5; Mac_PowerPC)
+</code></pre></div></div>
+
+<p>In IE versions through version 7, the same pattern remained.</p>
+
+<p>Internet Explorer 8 <a href="http://blogs.msdn.com/ie/archive/2009/01/09/the-internet-explorer-8-user-agent-string-updated-edition.aspx">slightly modified the user-agent string</a> by adding the version of the rendering engine, Trident, into the user-agent string:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Trident/4.0)
+</code></pre></div></div>
+
+<p>Adding the rendering engine is important because the MSIE version changes to 7.0 when IE8 is running in compatibility mode while the Trident version remains the same. Since the original IE7 user-agent string doesn’t include the Trident version, you can easily distinguish between IE7 and IE8 running in compatibility mode.</p>
+
+<p>Note: It is unclear if the Mozilla version will ever change as IE continues to develop, because it now has little meaning (it can’t be used reliably to determine anything).</p>
+
+<h2 id="gecko">Gecko</h2>
+
+<p>The Gecko rendering engine is at the heart of Firefox. When Gecko was first developed, it was as part of the generic Mozilla browser that was to become Netscape 6. A specification was written for Netscape 6, indicating how the user-agent string should be constructed in all future versions. The new format represented a fairly drastic departure from its relatively simple user-agent string used through version 4.x. The format is as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/MozillaVersion (Platform; Encryption; OS-or-CPU; Language; PrereleaseVersion)Gecko/GeckoVersion ApplicationProduct/ApplicationProductVersion
+</code></pre></div></div>
+
+<p><a href="https://developer.mozilla.org/User_Agent_Strings_Reference">A lot of thought</a> went into this remarkably complex user-agent string. To better understand the Gecko user-agent string format, consider the following user-agent strings taken from various Gecko-based browsers.</p>
+
+<p>Netscape 6.21 on Windows XP:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:0.9.4) Gecko/20011128 Netscape6/6.2.1
+</code></pre></div></div>
+
+<p>SeaMonkey 1.1a on Linux:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1b2) Gecko/20060823 SeaMonkey/1.1a
+</code></pre></div></div>
+
+<p>Firefox 2.0.0.11 on Windows XP:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11
+</code></pre></div></div>
+
+<p>Camino 1.5.1 on Mac OS X:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (Macintosh; U; Intel Mac OS X; en; rv:1.8.1.6) Gecko/20070809 Camino/1.5.1
+</code></pre></div></div>
+
+<p>All of these user-agent strings indicate Gecko-based browsers (albeit using different versions). Oftentimes, looking for a particular browser is not as important as understanding whether it’s Gecko-based. The Mozilla version hasn’t changed from 5.0 since the first Gecko-based browser was released, and it likely won’t change again.</p>
+
+<h2 id="webkit">WebKit</h2>
+
+<p>In 2003, Apple announced that it would release its own web browser, called Safari. The Safari rendering engine, called WebKit, began as a fork of the KHTML rendering engine used in the Linux-based Konqueror web browser. A couple of years later, WebKit was split off into its own open-source project, focusing on development of the rendering engine.</p>
+
+<p>Developers of this new browser and rendering engine faced a problem similar to that faced by Internet Explorer 3.0: how do you ensure that the browser isn’t locked out of popular sites? The answer is, put enough information into the user-agent string to convince web sites that the browser is compatible with another popular browser. This led to a user-agent string with the following format:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (Platform; Encryption; OS-or-CPU; Language) AppleWebKit/AppleWebKitVersion (KHTML, like Gecko) Safari/SafariVersion
+</code></pre></div></div>
+
+<p>Here’s an example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/124 (KHTML, like Gecko) Safari/125.1
+</code></pre></div></div>
+
+<p>As you can see, this is another long user-agent string. It takes into account not only the version of the Apple WebKit but also the Safari version. All WebKit-based browsers identify themselves as Mozilla 5.0, the same as all Gecko-based browsers. The Safari version has typically been the build number of the browser, not necessarily a representation of the release version number. So although Safari 1.25 has the number 125.1 in the user-agent string, there may not always be a one-to-one match. For this reason, Safari’s user-agent string was augmented slightly when version 3 was released. The version token is now used to identify the actual version of Safari being used:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (Macintosh; U; PPC Mac OS X; en) AppleWebKit/522.15.5 (KHTML, like Gecko) Version/3.0.3 Safari/522.15.5
+</code></pre></div></div>
+
+<p>The most interesting and controversial part of this user-agent string is the addition of the string “(KHTML, like Gecko)” in a pre-1.0 version of Safari. Apple got a lot of pushback from developers who saw this as a blatant attempt to trick clients and servers into thinking Safari was actually Gecko (as if adding Mozilla/5.0 wasn’t enough). Apple’s response was similar to Microsoft’s when the IE user-agent string came under fire: Safari is compatible with Mozilla, and web sites shouldn’t block out Safari users because they appear to be using an unsupported browser.</p>
+
+<p>Note that this change was made only to Safari, not to WebKit, so other WebKit-based browsers may not have this change. Generally speaking, as with Gecko, it’s typical to determine that a browser is WebKit-based rather than trying to identify Safari specifically.</p>
+
+<h2 id="konqueror">Konqueror</h2>
+
+<p>Konqueror, the browser bundled with the KDE Linux desktop environment, is based on the KHTML open-source rendering engine. Though available only on Linux, Konqueror has an active user base. For optimal compatibility, Konqueror opted to format its user-agent string after IE as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (compatible; Konqueror/Version; OS-or-CPU)
+</code></pre></div></div>
+
+<p>However, Konqueror 3.2 introduced a change to coincide with changes to the WebKit user-agent string, identifying itself as KHTML as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (compatible; Konqueror/Version; OS-or-CPU) KHTML/KHTMLVersion (like Gecko)
+</code></pre></div></div>
+
+<p>Here’s an example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (compatible; Konqueror/3.5; SunOS) KHTML/3.5.0 (like Gecko)
+</code></pre></div></div>
+
+<p>The version numbers for Konqueror and KHTML tend to coincide or be within a subpoint difference, such as Konquerer 3.5 using KHTML 3.5.1.</p>
+
+<h2 id="chrome">Chrome</h2>
+
+<p>Google’s Chrome web browser uses WebKit as its rendering engine but uses a different JavaScript engine. For Chrome’s initial beta release, version 0.2, the user-agent string carries along all of the information from WebKit as well as an extra section for the Chrome version. The format is as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (Platform; Encryption; OS-or-CPU; Language) AppleWebKit/AppleWebKitVersion (KHTML, like Gecko) Chrome/ChromeVersion Safari/SafariVersion
+</code></pre></div></div>
+
+<p>The full user-agent string for Chrome 0.2 is as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.2.149.29 Safari/525.13
+</code></pre></div></div>
+
+<p>It’s likely that the WebKit version and Safari version will always be synchronized going forward, though this is not guaranteed.</p>
+
+<h2 id="opera">Opera</h2>
+
+<p>One of the most controversial web browsers, as far as user-agent strings are concerned, is Opera. The default user-agent string for Opera is the most logical of all modern browsers, correctly identifying itself and its version. Prior to version 8.0, the Opera user-agent string was in the following format:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Opera/Version (OS-or-CPU; Encryption) [Language]
+</code></pre></div></div>
+
+<p>Using Opera 7.54 on a Windows XP computer, the user-agent string is as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Opera/7.54 (Windows NT 5.1; U) [en]
+</code></pre></div></div>
+
+<p>With the release of Opera 8, the language part of the user-agent string was moved inside of the parentheses to better match other browsers, as follows:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Opera/Version (OS-or-CPU; Encryption; Language)
+</code></pre></div></div>
+
+<p>Opera 8 on Windows XP yields the following user-agent string:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Opera/8.0 (Windows NT 5.1; U; en)
+</code></pre></div></div>
+
+<p>By default, Opera returns a user-agent string in this simple format. Currently it is the only one of the four major browsers to use the product name and version to fully and completely identify itself. As with other browsers, however, Opera found problems with using its own user-agent string. Even though it’s technically correct, there is a lot of browser-sniffing code on the Internet that is geared toward user-agent strings reporting the Mozilla product name. There is also a fair amount of code looking specifically for IE or Gecko. Instead of confusing sniffers by changing its own user-agent string, Opera identifies itself as a different browser completely by changing its own user-agent string.</p>
+
+<p>As of Opera 9, there are two ways to change the user-agent string. One way is to identify it as another browser, either Firefox or IE. When using this option, the user-agent string changes to look just like the corresponding one for Firefox or IE, with the addition of the string “Opera” and Opera’s version number at the end. Here’s an example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Mozilla/5.0 (Windows NT 5.1; U; en; rv:1.8.1) Gecko/20061208 Firefox/2.0.0 Opera 9.50
+
+Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; en) Opera 9.50
+</code></pre></div></div>
+
+<p>The first string identifies Opera 9.5 as Firefox 2 while maintaining the Opera version information. The second string identifies Opera 9.5 as Internet Explorer 6 and includes the Opera version information. Although these user-agent strings pass most tests for Firefox and IE, the possibility of identifying Opera is open.<br />
+Another option for identifying the browser is to mask it as either Firefox or IE. When masking the browser’s identity, the user-agent strings are exactly the same as would be returned from the other browsers – the string “Opera” does not appear, nor does any Opera version information. There is literally no way to distinguish Opera from the other browsers via user-agent string when identity masking is used. Further complicating the issue is Opera’s tendency to set site-specific user-agent strings without notifying the user.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The history of the user-agent string is marked by browsers trying to convince user-agent sniffers that they are what they are not. Internet Explorer wants to be identified as Netscape 4; Konqueror and WebKit want to be identified as Firefox; Chrome wants to be identified as Safari. This can make user-agent sniffing a bit more difficult although every browser (with the exception of Opera) gives you a definitive way to identify it out of a crowd. The thing to remember about sniffing is that if a browser goes through great lengths to trick you, it’s because they believe their browser is compatible with the browser that they are reporting. In those cases, it may not even be necessary to determine which is which.</p>
+
+<p>Chrome, for example, claims that any site that works with Safari 3 will also work with Chrome, so there is no reason to try to detect Chrome. It’s worth nothing that this claim has already shot themselves in the foot, and so Chrome now spoofs <a href="http://news.cnet.com/8301-17939_109-10153165-2.html">Safari for Hotmail</a>. Chrome isn’t the only one that does this sort of thing, there’s a lot that goes on behind the scenes of browsers for compatibility reasons. And so the battle rages on.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">Popular Posts</h2>
+<ul class="block-list">
+
+<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+
+<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+
+<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+
+<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+
+<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+
+</ul>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2010/01/12/history-of-the-user-agent-string/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Event delegation in JavaScript - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/06/30/event-delegation-in-javascript/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Event delegation in JavaScript">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/06/30/event-delegation-in-javascript/" />
+<meta name="og:title" content="Event delegation in JavaScript">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Last week, I spoke at and attended the Velocity web performance conference in San Jose. It was a lot of fun and I learned a lot in the other sessions I sat in...">
+<meta name="keywords" content="Delegation,DOM,Events,JavaScript,Performance,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Event delegation in JavaScript</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-06-30T00:00:00+00:00" itemprop="datePublished">June 30, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/delegation" rel="tag">Delegation</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/dom" rel="tag">DOM</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/events" rel="tag">Events</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/performance" rel="tag">Performance</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Last week, I spoke at and attended the <a href="http://en.oreilly.com/velocity2009">Velocity</a> web performance conference in San Jose. It was a lot of fun and I learned a lot in the other sessions I sat in on. During one session, <a href="http://www.stevesouders.com/">Steve Souders</a> announced to everyone that I had covered event delegation in my chapter from his new book, <cite><a href="http://www.amazon.com/gp/product/0596522304?ie=UTF8&amp;tag=nczonline-20&amp;link_code=as3&amp;camp=211189&amp;creative=373489&amp;creativeASIN=0596522304">Even Faster Web Sites</a></cite>. Unfortunately, Steve misspoke as that topic isn’t covered, so I’m going to fill in the gap with this post.</p>
+
+<h2 id="traditional-event-handling">Traditional event handling</h2>
+
+<p>Event delegation is, quite simply, using a single event handler to manage a particular type of event for the entire page. This isn’t a new idea, but it is an important one to grasp for performance. Most of the time, you’ll see code like this in web applications:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>document.getElementById("help-btn").onclick = function(event){
+    openHelp();
+};
+
+document.getElementById("save-btn").onclick = function(event){
+    saveDocument();
+};
+
+document.getElementById("undo-btn").onclick = function(event){
+    undoChanges();
+};
+</code></pre></div></div>
+
+<p>This traditional way of coding assigns an event handler to each element that is actionable. For web sites with only a small amount of interaction, this may be okay. Large web applications, however, can grind to a halt when there are too many event handlers. The problem here isn’t necessarily a speed issue but rather a memory issue. If there are hundreds of possible interactions, there will end up being hundreds of ties between DOM elements and your JavaScript code. The more memory required of your web application, the slower it will run in general. Event delegation helps by minimizing this issue.</p>
+
+<h2 id="event-bubbling-and-capturing">Event bubbling and capturing</h2>
+
+<p>Event delegation would be possible if not for the flowing nature of events. Early on in web development, browser vendors had to answer a philosophical question: when you click an area on a web page, what element are you actually interacting with? The problem came with the definition of interaction. Clicking within the bounds of an element is somewhat ambiguous. After all, a click on any element is also within the bounds of other elements. Consider clicking on a button. You’re actually clicking within the bounds of the button element, within the bounds of the <code class="highlighter-rouge">&lt;body&gt;</code> element, and within the bounds of the <code class="highlighter-rouge"><span class="nt">&lt;html&gt;</span></code> element (see figure below).</p>
+
+<p style="text-align: center;">
+  <a href="https://humanwhocodes.com/images/wp-content/uploads/2009/06/event-delegation-1.png"><img class="alignnone size-full wp-image-2126" src="https://humanwhocodes.com/blog/wp-content/uploads/2009/06/event-delegation-1.png" alt="Clicks within rectangles on a web page" width="280" height="232" /></a>
+</p>
+
+<p>At the time of this problem, there were two dominant browsers: Netscape Navigator and Internet Explorer. Each decided to solve this problem in a different way. Netscape defined an approach called event capturing, where events first occur on the highest object in the DOM tree (document) and then work down to the deepest element affected by the event. So in this example, event capturing has the click event first handled by <code class="highlighter-rouge">document</code>, then the <code class="highlighter-rouge"><span class="nt">&lt;html&gt;</span></code> element, then <code class="highlighter-rouge">&lt;body&gt;</code>, and finally the <code class="highlighter-rouge">&lt;button&gt;</code> element.</p>
+
+<p>Internet Explorer approached the problem in the exact opposite way. The IE team defined an approach called event bubbling. Event bubbling said that the deepest element affected by the event should receive the event first, then its parent should receive the event, and then it’s parent, etc., until the <code class="highlighter-rouge">document</code> object finally receives the event. Even though the document doesn’t have a distinct visual representation separate from <code class="highlighter-rouge"><span class="nt">&lt;html&gt;</span></code>, it is still deemed to be its parent and thus bubbling continues up the DOM structure. The previous example would then see the <code class="highlighter-rouge">&lt;button&gt;</code> element receiving the event first, then <code class="highlighter-rouge">&lt;body&gt;</code>, <code class="highlighter-rouge"><span class="nt">&lt;html&gt;</span></code>, and finally, <code class="highlighter-rouge">document</code>.</p>
+
+<p style="text-align: center;">
+  <a href="https://humanwhocodes.com/images/wp-content/uploads/2009/06/event-delegation-2.png"><img class="alignnone size-full wp-image-2127" src="https://humanwhocodes.com/blog/wp-content/uploads/2009/06/event-delegation-2.png" alt="Diagram of event capturing and event bubbling" width="320" height="329" /></a>
+</p>
+
+<p>When defining the DOM, the W3C apparently found merit in both approaches and so the DOM Level 2 Events specification defines both event capturing and event bubbling as being present. First, the <code class="highlighter-rouge">document</code> receives the event, then the capturing phase commences to the most specific element affected by the event. Once the event is handled by that element, it bubbles back up to the <code class="highlighter-rouge">document</code>. The DOM <code class="highlighter-rouge">addEventListener()</code> method accepts three arguments: the name of the event to handle, a function to execute as the handler, and a Boolean set to <code class="highlighter-rouge">true</code> to handle the event during the capturing phase or <code class="highlighter-rouge">false</code> to handle during the bubbling phase. Most web developers have always been told to provide <code class="highlighter-rouge">false</code> as this argument so that it behaves the same way as <code class="highlighter-rouge">attachEvent()</code> in IE. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//bubbling phase handler
+document.addEventListener("click", handleClick, false);
+
+//capturing phase handler
+document.addEventListener("click", handleClick, true);
+</code></pre></div></div>
+
+<p>Attaching an event handler via a property (<code class="highlighter-rouge">element.onclick = function(){}</code>), automatically assumes you want to use the bubbling phase to handle the event (this is done for backwards compatibility). Pretty much every browser except Internet Explorer (even through version 8.0) supports the DOM Level 2 events specification and therefore supports both capturing and bubbling. Internet Explorer still has its own proprietary event system that supports just bubbling.</p>
+
+<h2 id="event-delegation-using-bubbling">Event delegation using bubbling</h2>
+
+<p>The key to event delegation is to use the bubbling aspect of events to handle them at the highest level (usually <code class="highlighter-rouge">document</code>). Not all events bubble, but mouse and keyboard events do, and fortunately, those are the ones you’re in which you’re interested. Revisiting the earlier example, you can handle all of the <code class="highlighter-rouge">click</code> events by assigning an event handler to the <code class="highlighter-rouge">document</code> and then checking the event’s target to determine the course of action.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>document.onclick = function(event){
+    //IE doesn't pass in the event object
+    event = event || window.event;
+    
+    //IE uses srcElement as the target
+Â    var target = event.target || event.srcElement;    
+
+    switch(target.id){
+        case "help-btn":
+            openHelp();
+            break;
+        case "save-btn":
+            saveDocument();
+            break;
+        case "undo-btn":
+            undoChanges();
+            break;
+        //others?
+    }
+};
+</code></pre></div></div>
+
+<p>Using event delegation, the number of functions necessary to manage events has been cut back to one. All click events are now handled by a single function which then <em>delegates</em> to the appropriate function depending on the target of the event. The same can be down for <code class="highlighter-rouge">mousedown</code>, <code class="highlighter-rouge">mouseup</code>, <code class="highlighter-rouge">mousemove</code>, <code class="highlighter-rouge">mouseover</code>, <code class="highlighter-rouge">mouseout</code>, <code class="highlighter-rouge">dblclick</code>, <code class="highlighter-rouge">keyup</code>, <code class="highlighter-rouge">keydown</code>, and <code class="highlighter-rouge">keypress</code>. A word of caution, though, <code class="highlighter-rouge">mouseover</code> and <code class="highlighter-rouge">mouseout</code> are difficult to handle via event delegation due to their nature (the mouse is considered “out” when it moves from a container to its child).</p>
+
+<p>Note: You can also accomplish event delegation via event capturing, but it only works in browsers that support capturing and therefore not in Internet Explorer.</p>
+
+<h2 id="benefits">Benefits</h2>
+
+<p>Event delegation has several benefits to the performance of a web application:</p>
+
+<ol>
+  <li>Fewer functions to manage.</li>
+  <li>Takes up less memory.</li>
+  <li>Fewer ties between your code and the DOM.</li>
+  <li>Don’t need to worry about removing event handlers when changing the DOM via <code class="highlighter-rouge">innerHTML</code>.</li>
+</ol>
+
+<p>Moving from traditional event handling to event delegation has improved the overall performance of large-scale web applications around the world. It’s become so important that JavaScript libraries such as <a href="http://developer.yahoo.com/yui/3/">YUI</a> and <a href="http://www.jquery.com/">jQuery</a> have started to bake it into their core interfaces. It really takes very little effort to implement event delegation, but the performance gains can be quite noticeable through the user interface. This is especially apparent when you move from dozens of event handlers to just one. Give event delegation a try and you may just never do traditional event handling again.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/06/30/event-delegation-in-javascript/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Thoughts on TypeScript - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2012/10/04/thoughts-on-typescript/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Thoughts on TypeScript">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2012/10/04/thoughts-on-typescript/" />
+<meta name="og:title" content="Thoughts on TypeScript">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Earlier this week, Microsoft released TypeScript1, a new compile-to-JavaScript language for “application scale JavaScript.” My initial reaction was confusion: Um, why? blogs.msdn.com/b/somasegar/ar… (via @izs) — Nicholas C. Zakas (@slicknet) October 1, 2012 It...">
+<meta name="keywords" content="JavaScript,TypeScript,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Thoughts on TypeScript</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2012-10-04T00:00:00+00:00" itemprop="datePublished">October 4, 2012</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/typescript" rel="tag">TypeScript</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Earlier this week, Microsoft released TypeScript<sup><a href="http://www.typescriptlang.org/">1</a></sup>, a new compile-to-JavaScript language for “application scale JavaScript.” My initial reaction was confusion:</p>
+
+<blockquote class="twitter-tweet tw-align-center">
+  <p>
+    Um, why? <a href="http://t.co/RufJBt7s" title="http://blogs.msdn.com/b/somasegar/archive/2012/10/01/typescript-javascript-development-at-application-scale.aspx">blogs.msdn.com/b/somasegar/ar…</a> (via @<a href="https://twitter.com/izs">izs</a>)
+  </p>
+
+  <p>
+    — Nicholas C. Zakas (@slicknet) <a href="https://twitter.com/slicknet/status/252828286437163008" data-datetime="2012-10-01T17:52:15+00:00">October 1, 2012</a>
+  </p>
+</blockquote>
+
+<p>It seems like almost every week there’s a new language that’s trying to replace JavaScript on the web. Google received a lukewarm reception when it introduced Dart<sup><a href="http://www.dartlang.org/">2</a></sup>, it’s own idea for fixing all of JavaScript’s perceived flaws. CoffeeScript<sup><a href="http://coffeescript.org/">3</a></sup> continues to be the most prominent of these options, frequently inciting the holy wars online. And now Microsoft is throwing its hat into the ring and I couldn’t help but wonder why.</p>
+
+<h2 id="my-bias">My bias</h2>
+
+<p>Before talking about TypeScript specifically, I want to explain my personal bias so that you can take the rest of my comments in their proper context. There is a very real problem in the web development industry and that problem is a significant lack of good JavaScript developers. I can’t tell you the number of companies that contact me trying to find above-average JavaScript talent to work on their applications. Yes, there are many more competent JavaScript developers now than there were 10 years ago, but the demand has increased in a way that far outpaces the supply increase. There are simply not enough people to fill all of the JavaScript jobs that are available. That’s a problem.</p>
+
+<p>Some would argue that the high demand and low supply puts good JavaScript developers in an awesome position and we should never want to change that. After all, that’s why we can demand the salaries that we do. From a personal economic standpoint, I agree. From the standpoint of wanting to improve the web, I disagree. Yes, I want to be able to make a good living doing what I do, but I also want the web as a whole to continue to grow and get better, and that only happens when we have more competent developers entering the workforce.</p>
+
+<p>I see compile-to-JavaScript languages as a barrier to that goal. We should be convincing more people to learn JavaScript rather than giving them more options to not write JavaScript. I often wonder what would happen if all of the teams and companies who spent time, energy, personnel, and money to develop these alternatives instead used those resources on improving JavaScript and teaching it.</p>
+
+<p>To be clear, I’m not saying that JavaScript is a perfect language and doesn’t have its warts. Every language I’ve ever used has parts that suck and parts that are awesome, and JavaScript is no different. I do believe that JavaScript has to evolve and that necessarily introduces more parts that will suck as well as more parts that are awesome. I just wish we were all spending our efforts in the same area rather than splintering them across different projects.</p>
+
+<h2 id="what-is-typescript">What is TypeScript?</h2>
+
+<p>I spent a lot of time this week looking at TypeScript, reading through the documentation, and watching the video on the site. I was then invited by Rey Bango to meet with a couple members of the TypeScript team to have my own questions answered. With all of that background, I feel like I have a very good idea about what TypeScript is and what it is not.</p>
+
+<p>TypeScript is first and foremost a superset of JavaScript. That means you can write regular JavaScript inside of TypeScript and it is completely valid. TypeScript adds additional features on top of JavaScript that then get converted into ECMAScript 5 compatible code by the TypeScript compiler. This is an interesting approach and one that’s quite different from the other compile-to-JavaScript languages out there. Instead of creating a completely new language with new syntax rules, TypeScript starts with JavaScript and adds additional features that fit in with the syntax quite nicely.</p>
+
+<p>At its most basic, TypeScript allows you to annotate variables, function arguments, and functions with type information. This additional information allows for tools to provide better auto complete and error checking than you could get using normal JavaScript. The syntax is borrowed from the original JavaScript 2/ECMAScript 4 proposal<sup><a href="http://www.ecma-international.org/activities/Languages/Language%20overview.pdf">4</a></sup> that was also implemented as ActionScript 3:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var myName: string = "Nicholas";
+
+function add(num1: number, num2: number): number {
+    return num1 + num2;
+}
+
+function capitalize(name: string): string {
+    return name.toUpperCase();
+}
+</code></pre></div></div>
+
+<p>The colon syntax may look familiar if you ever used Pascal or Delphi, both of which use the same syntax for indicating the type. The strings, numbers, and booleans in JavaScript are represented in TypeScript as <code class="highlighter-rouge">string</code>, <code class="highlighter-rouge">number</code>, and <code class="highlighter-rouge">bool</code> (note: all lowercase). These annotations help the TypeScript compiler to figure out if you are using correct values. For example, the following would cause a warning:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// warning: add() was defined to accept numbers
+var result = add("a", "b");
+</code></pre></div></div>
+
+<p>Since <code class="highlighter-rouge">add()</code> was defined to accept numbers, this code causes a warning from the TypeScript compiler.</p>
+
+<p>TypeScript is also smart enough to infer types when there is an assignment. For example, each of these declarations is automatically assigned a type:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var count = 10;           // assume ": number"
+var name = "Nicholas";    // assume ": string"
+var found = false;        // assume ": bool"
+</code></pre></div></div>
+
+<p>That means to get some benefit out of TypeScript, you don’t necessarily have to add type annotations everywhere. You can choose not to add type annotations and let the compiler try to figure things out, or you can add a few type annotations to help out.</p>
+
+<p>Perhaps the coolest part of these annotations is the ability to properly annotate callback functions. Suppose you want to run a function on every item in an array, similar to <code class="highlighter-rouge">Array.prototype.forEach()</code>. Using JavaScript, you would define something like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function doStuffOnItems(array, callback) {
+    var i = 0,
+        len = array.length;
+
+    while (i &lt; len) {
+        callback(array[i], i, array);
+        i++;
+    }
+}&lt;/code&gt;
+</code></pre></div></div>
+
+<p>The callback function accepts three arguments, a value, an index, and the array itself. There’s no way to know that aside from reading the code. In TypeScript, you can annotate the function arguments to be more specific:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function doStuffOnItems(array: string[], 
+        callback: (value: string, i: number, array: string[]) =&gt; {}) {
+    var i = 0,
+        len = array.length;
+
+    while (i &lt; len) {
+        callback(array[i], i, array);
+        i++;
+    }
+}&lt;/code&gt;
+</code></pre></div></div>
+
+<p>This code adds annotations to both arguments of <code class="highlighter-rouge">doStuffOnItems()</code>. The first argument is defined as an array of strings, and the second argument is defined as a function accepting three arguments. Note that the format for defining a function type is the ECMAScript 6 fat arrow function syntax.<sup><a href="http://wiki.ecmascript.org/doku.php?id=harmony:arrow_function_syntax">5</a></sup> With that in place, the compiler can check to see that a function matches the signature before the code is ever executed.</p>
+
+<p>The type annotations really are the core of TypeScript and what it was designed to do. By having this additional information, editors can be made that not only do type checking of code before its executed, but also provide better autocomplete support as you’re coding. TypeScript already has plug-ins for Visual Studio, Vim, Sublime Text 2, and Emacs,<sup><a href="http://blogs.msdn.com/b/interoperability/archive/2012/10/01/sublime-text-vi-emacs-typescript-enabled.aspx">6</a></sup> so there are lots of options to try it out.</p>
+
+<h2 id="additional-features">Additional features</h2>
+
+<p>While the main point of TypeScript is to provide some semblance of static typing to JavaScript, it doesn’t stop there. TypeScript also has support for ECMAScript 6 classes<sup><a href="http://wiki.ecmascript.org/doku.php?id=strawman:maximally_minimal_classes">7</a></sup> and modules<sup><a href="http://wiki.ecmascript.org/doku.php?id=harmony:modules">8</a></sup> (as they are currently defined). That means you can write something like this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>class Rectangle {
+    constructor(length: number, width: number) {
+        this.length = length;
+        this.width = width;
+    }
+
+    area() {
+        return this.length * this.width;
+    }
+}
+</code></pre></div></div>
+
+<p>And TypeScript converts it into this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var Rectangle = (function () {
+    function Rectangle(length, width) {
+        this.length = length;
+        this.width = width;
+    }
+    Rectangle.prototype.area = function () {
+        return this.length * this.width;
+    };
+    return Rectangle;
+})();
+</code></pre></div></div>
+
+<p>Note that the constructor function is created appropriately and the one method is properly placed onto the prototype.</p>
+
+<p>Aside from modules and classes, TypeScript also introduces the ability to define interfaces. Interfaces are not defined in ECMAScript 6 at all but are helpful to TypeScript when it comes to type checking. Since JavaScript code tends to have a large amount of object literals defined, interfaces provide an easy way to validate that the right type of object is being used. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>interface Point {
+    x: number;
+    y: number;
+}
+
+function getDistance(pointA: Point, pointB: Point) {
+    return Math.sqrt( 
+               Math.pow(pointB.x - pointA.x, 2) +
+               Math.pow(pointB.y - pointA.y, 2)
+           );
+}
+
+var result = getDistance({ x: -2, y: -3}, { x: -4, y: 4})
+</code></pre></div></div>
+
+<p>In this code, there’s an interface called <code class="highlighter-rouge">Point</code> with two properties <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code>. The <code class="highlighter-rouge">getDistance()</code> function accepts two points and calculates the distance between them. The two arguments can be any object containing exactly those two properties of <code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code>, meaning I can pass in object literals and TypeScript will check to ensure that they contain the correct properties.</p>
+
+<p>Both interfaces and classes feed into the type system to provide better error checking. Modules are just ways to group related functionality together.</p>
+
+<h2 id="what-i-like">What I like</h2>
+
+<p>The more I played with TypeScript the more I found parts of it that I really like. First and foremost, I like that you can write regular JavaScript inside of TypeScript. Microsoft isn’t trying to create a completely new language, they are trying to augment JavaScript in a useful way. I can appreciate that. I also like that the code compiles down into regular JavaScript that actually makes sense. Debugging TypeScript generated code isn’t all that difficult because it uses familiar patterns.</p>
+
+<p>What impressed me the most is what TypeScript doesn’t do. It doesn’t output type checking into your JavaScript code. All of those type annotations and error checking are designed to be used only while you’re developing. The final code doesn’t do any type checking unless you are doing it manually using JavaScript code. Classes and modules get converted into regular JavaScript while interfaces completely disappear. No code for interfaces ever appear in the final JavaScript because they are used purely during development time for type checking and autocomplete purposes.</p>
+
+<p>The editor integration for TypeScript is quite good. All you have to do is add a few annotations and all of a sudden the editor starts to light up with potential errors and suggestions. The ability to explicitly define expectations for callback functions is especially impressive, since that’s the one area I tend see a lot of issues related to passing incorrect values into functions.</p>
+
+<p>I also like that Microsoft open-sourced TypeScript. They seem to be committed to developing this in the open and to developing a community around TypeScript. Whether or not they follow through and actually operate as an open source project is yet to be seen, but they’ve at least taken steps to allow for that possibility.</p>
+
+<h2 id="what-i-dont-like">What I don’t like</h2>
+
+<p>While I applaud Microsoft’s decision to use ECMAScript 6 classes, I fear it puts the language in a difficult position. According to the TypeScript team members I spoke with, they’re absolutely planning on staying in sync with ECMAScript 6 syntax for modules and classes. That’s a great approach in theory because it encourages people to learn skills that will be useful in the future. In reality, that’s a difficult proposition because ECMAScript 6 is not yet complete and there is no guarantee that the syntax won’t change again before the specification is finished. That puts the TypeScript team in a very difficult position: continue to update the syntax to reflect the current reality of ECMAScript 6 or lag behind (possibly fork?) In order to keep their development environment stable.</p>
+
+<p>The same goes for the type annotations. While there is significant prior work indicating that the colon syntax will work in JavaScript, there’s no guarantee that it will ever be added to the language. That means what TypeScript is currently doing may end up at odds with what ECMAScript eventually does. That will also lead to a decision as to which way to go.</p>
+
+<p>The TypeScript team is hoping that a community will evolve around the language and tools in order to help inform them of which direction to go when these sort of decisions appear. That’s also a double-edged sword. If they succeed in creating a large community around TypeScript, it’s very likely that the community may decide that they want to go away from the ECMAScript standard rather than stick with it due to the high maintenance cost of upgrading existing code.</p>
+
+<p>And I really don’t like having a primitive type named <code class="highlighter-rouge">bool</code>. I already told them I’d like to see that changed to <code class="highlighter-rouge">boolean</code> so that it maps back to the values returned from <code class="highlighter-rouge">typeof</code>, along with <code class="highlighter-rouge">string</code> and <code class="highlighter-rouge">number</code>.</p>
+
+<h2 id="should-you-use-it">Should you use it?</h2>
+
+<p>I think TypeScript has a lot of promise but keep one thing in mind: the current offering is an early alpha release. It may not look like that from the website, which is quite polished, or the editor plug-ins, or the fact that the version number is listed as 0.8.0, but I did confirm with the TypeScript team that they consider this a very early experimental release to give developers a preview of what’s coming. That means things may change significantly over the next year before TypeScript stabilizes (probably as ECMAScript 6 stabilizes).</p>
+
+<p>So is it worth using now? I would say only experimentally and to provide feedback to the TypeScript team. If you choose to use TypeScript for your regular work, you do so at your own risk and I highly recommend that you stick to using type annotations and interfaces exclusively because these are removed from compiled code and less likely to change since they are not directly related to ECMAScript 6. I would avoid classes, modules, and anything else that isn’t currently supported in ECMAScript 5.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>TypeScript offers something very different from the other compile-to-JavaScript languages in that it starts with JavaScript and adds additional features on top of it. I’m happy that regular JavaScript can be written in TypeScript and still benefit from some of the type checking provided by the TypeScript compiler. That means writing TypeScript can actually help people learn JavaScript, which makes me happy. There’s no doubt that these type annotations can create a better development experience when integrated with editors. Once ECMAScript 6 is finalized, I can see a big use for TypeScript, allowing developers to write ECMAScript 6 code that will still work in browsers that don’t support it natively. We are still a long way from that time, but in the meantime, TypeScript is worth keeping an eye on.</p>
+
+<h2 id="references">References</h2>
+
+<ol>
+  <li><a href="http://www.typescriptlang.org/">TypeScript</a> (typescriptlang.org)</li>
+  <li><a href="http://www.dartlang.org/">Dart</a> (dartlang.org)</li>
+  <li><a href="http://coffeescript.org/">CoffeeScript</a> (coffeescript.org)</li>
+  <li><a href="http://www.ecma-international.org/activities/Languages/Language%20overview.pdf">Proposed ECMAScript 4th Edition – Language Overview</a> (ECMA)</li>
+  <li><a href="http://wiki.ecmascript.org/doku.php?id=harmony:arrow_function_syntax">ECMAScript 6 Arrow Function Syntax</a> (ECMA)</li>
+  <li><a href="http://blogs.msdn.com/b/interoperability/archive/2012/10/01/sublime-text-vi-emacs-typescript-enabled.aspx">Sublime Text, Vi, Emacs: TypeScript enabled!</a> (MSDN)</li>
+  <li><a href="http://wiki.ecmascript.org/doku.php?id=strawman:maximally_minimal_classes">ECMAScript 6 Maximally Minimal Classes</a> (ECMA)</li>
+  <li><a href="http://wiki.ecmascript.org/doku.php?id=harmony:modules">ECMAScript 6 Modules</a> (ECMA)</li>
+</ol>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2012/10/04/thoughts-on-typescript/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Accessing Google Spreadsheets from Node.js - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2014/03/04/accessing-google-spreadsheets-from-node-js/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Accessing Google Spreadsheets from Node.js">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2014/03/04/accessing-google-spreadsheets-from-node-js/" />
+<meta name="og:title" content="Accessing Google Spreadsheets from Node.js">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="I’ve recently been working on a project involving Google Spreadsheets. My goal was to store data in the spreadsheet using a form and then read the data from that spreadsheet using a Node.js...">
+<meta name="keywords" content="API,Google,JavaScript,Node.js,Spreadsheets,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Accessing Google Spreadsheets from Node.js</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2014-03-04T00:00:00+00:00" itemprop="datePublished">March 4, 2014</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/api" rel="tag">API</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/google" rel="tag">Google</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/node-js" rel="tag">Node.js</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/spreadsheets" rel="tag">Spreadsheets</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>I’ve recently been working on a project involving Google Spreadsheets. My goal was to store data in the spreadsheet using a form and then read the data from that spreadsheet using a Node.js application. Having no experience with Google web services, I ended up digging through a lot of documentation only to find that there are no official Node.js examples. So I pieced together the process of accessing data from a Google Spreadsheet and wanted to share so others wouldn’t have to do the same thing.</p>
+
+<p>This post assumes that you already have a Google Spreadsheet and that the spreadsheet is not shared publicly. It also assumes that you do not want to use your Google username and password to access the spreadsheet through a web service. This is possible, but I personally feel better using OAuth.</p>
+
+<h2 id="step-1-create-a-google-developers-console-project">Step 1: Create a Google Developers Console project</h2>
+
+<p>In order to access data from any Google web service, you first need to create a project in <a href="https://console.developers.google.com/project">Google Developers Console</a>. Name it whatever you would like and then click on it to see more information about the application.</p>
+
+<h2 id="step-2-enable-the-drive-api">Step 2: Enable the Drive API</h2>
+
+<p>All projects have a set of APIs enabled by default, but the Drive API isn’t one of them. This is the API that lets you access things inside of Google Drive, including spreadsheets.</p>
+
+<p>On the left side, click <strong>APIs &amp; auth</strong> and then <strong>APIs</strong>. On the right side, scroll down until you find the Drive API and click the button to enable it.</p>
+
+<p><a href="../../../../../images/wp-content/uploads/2014/02/gapi-enable.png"><img src="../../../../../images/wp-content/uploads/2014/02/gapi-enable.png" alt="" width="600" class="alignleft size-full wp-image-3568" /></a></p>
+
+<h2 id="step-3-create-a-service-account">Step 3: Create a service account</h2>
+
+<p>In order to avoid using your personal Google account information to access the API, you’ll need to set up a service account. A service account is a Google account used only to access web services.</p>
+
+<p>On the left menu, click <strong>APIs &amp; auth</strong> and then <strong>Credentials</strong>. You’ll see your client ID and the email address representing your application. Don’t worry about those, you don’t need them.</p>
+
+<p>Click <strong>Create New Client ID</strong>, which will pop up a dialog. Select <strong>Service Account</strong> and click <strong>Create Client ID</strong>.</p>
+
+<p><a href="../../../../../images/wp-content/uploads/2014/02/gapi-service-create.png"><img src="../../../../../images/wp-content/uploads/2014/02/gapi-service-create.png" alt="" width="599" height="316" class="alignleft size-full wp-image-3570" /></a></p>
+
+<p>You’ll then see your new information on the page.</p>
+
+<h2 id="step-4-generate-a-key">Step 4: Generate a key</h2>
+
+<p>The service account you created needs a way to authenticate itself with the Drive API. To do that, click <strong>Generate a New Key</strong>, which is located under the service account information.</p>
+
+<p>The browser will download a private key and you’ll be given the password to use with the key. Make sure to keep this file safe, you won’t able to get another copy if you lose (you’ll just create a new key).</p>
+
+<h2 id="step-5-generate-a-pem-file">Step 5: Generate a PEM file</h2>
+
+<p>In order to use the key in Node.js with the crypto module, the key needs to be in PEM format. To do that, run this command:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openssl pkcs12 -in downloaded-key-file.p12 -out your-key-file.pem -nodes
+</code></pre></div></div>
+
+<p>You’ll be asked for the password that was given to you in the last step.</p>
+
+<h2 id="step-6-share-your-spreadsheet">Step 6: Share your spreadsheet</h2>
+
+<p>When you created the service account, an email address was created along with it in the format of &lt;bunch_of_chars&gt;@developer.gserviceaccount.com. The email address is important because you need to share your spreadsheet with the service account.</p>
+
+<p>To do so, open the spreadsheet and click the <strong>Share</strong> button. In the dialog, enter your service account email address and uncheck <strong>Notify people via email</strong>. You’ll be asked to confirm that it’s okay not to send an email, and of course it is, since that’s just the service account.</p>
+
+<p><a href="../../../../../images/wp-content/uploads/2014/02/gapi-share.png"><img src="../../../../../images/wp-content/uploads/2014/02/gapi-share.png" alt="" width="535" height="210" class="alignleft size-full wp-image-3571" /></a></p>
+
+<p>You can decide whether you want the service account to have full access to modify the spreadsheet or just view it. As always, it’s best to start with the lowest permission level needed.</p>
+
+<h2 id="step-7-setting-up-your-nodejs-project">Step 7: Setting up your Node.js project</h2>
+
+<p>There are a lot of packages on npm relating to Google APIs, but for my use case I chose <code class="highlighter-rouge">&lt;a href="https://www.npmjs.org/package/edit-google-spreadsheet"&gt;edit-google-spreadsheet&lt;/a&gt;</code> due to its excellent documentation and support for multiple authentication methods, including OAuth2. If you just want a library to deal with authentication (assuming you’ll do the web service calls yourself), then take a look at <code class="highlighter-rouge">&lt;a href="https://www.npmjs.org/package/google-oauth-jwt"&gt;google-oauth-jwt&lt;/a&gt;</code>.</p>
+
+<p>Install <code class="highlighter-rouge">edit-google-spreadsheet</code>:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm i edit-google-spreadsheet --save
+</code></pre></div></div>
+
+<h2 id="step-8-making-the-request">Step 8: Making the request</h2>
+
+<p>The <code class="highlighter-rouge">edit-google-spreadsheet</code> module is simple to get started with. Here’s an example that reads the spreadsheet:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var Spreadsheet = require('edit-google-spreadsheet');
+
+Spreadsheet.load({
+    debug: true,
+    spreadsheetId: '&lt;bunch_of_chars&gt;',
+    worksheetName: 'Sheet 1',
+
+    oauth : {
+        email: '&lt;bunch_of_chars&gt;@developer.gserviceaccount.com',
+        keyFile: 'path/to/your_key.pem'
+    }
+
+}, function sheetReady(err, spreadsheet) {
+
+    if (err) {
+        throw err;
+    }
+
+    spreadsheet.receive(function(err, rows, info) {
+        if (err) {
+            throw err;
+        }
+
+        console.dir(rows);
+        console.dir(info);
+    });
+
+});
+</code></pre></div></div>
+
+<p>You can specify the spreadsheet to read by using either <code class="highlighter-rouge">spreadsheetName</code> or <code class="highlighter-rouge">spreadsheetId</code>. I prefer using <code class="highlighter-rouge">spreadsheetId</code>, since the name may change at some point. The ID is found in the share URL for the spreadsheet. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>https://docs.google.com/spreadsheet/ccc?key=&lt;bunch_of_chars&gt;&amp;#038;usp=sharing
+</code></pre></div></div>
+
+<p>The value for the query string param <code class="highlighter-rouge">key</code> is the spreadsheet ID.</p>
+
+<p>You also need to specify which worksheet to read. Unfortunately, the worksheet ID isn’t available in the Google Spreadsheets UI, so you’ll need to at least start by using <code class="highlighter-rouge">worksheetName</code>. The worksheet IDs are available in the extra information sent along the spreadsheet data (<code class="highlighter-rouge">info</code> in the example).</p>
+
+<p>In this example, I also have the <code class="highlighter-rouge">debug</code> flag set, which outputs additional information to the console. Start with it turned on to aid with development, I found it immensely useful.</p>
+
+<p>For more information on how to use <code class="highlighter-rouge">edit-google-spreadsheet</code>, please see its <a href="https://github.com/jpillora/node-edit-google-spreadsheet">README</a>.</p>
+
+<h2 id="securing-the-pem-file">Securing the PEM file</h2>
+
+<p>Although the example above uses the PEM file directly, it’s important to understand that you should never check private keys into a source code repository. The <code class="highlighter-rouge">edit-google-spreadsheet</code> module allows you to specify a string instead of a file path by using the <code class="highlighter-rouge">key</code> property. There are many different ways to get the text from the PEM file, but perhaps the easiest is simply to store its contents in an environment variable. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export PEM_KEY="`cat /path/to/your_key.pem`"
+</code></pre></div></div>
+
+<p>Then, from inside of your Node.js application, you can read the key from the environment, such as:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var Spreadsheet = require('edit-google-spreadsheet');
+
+Spreadsheet.load({
+    debug: true,
+    spreadsheetId: '&lt;bunch_of_chars&gt;',
+    worksheetName: 'Sheet 1',
+
+    oauth : {
+        email: '&lt;bunch_of_chars&gt;@developer.gserviceaccount.com',
+        key: process.env.PEM_KEY
+    }
+
+}, function sheetReady(err, spreadsheet) {
+
+   // ...
+
+});
+</code></pre></div></div>
+
+<p>The primary benefit of this approach is that you avoid checking the key file into your repository while still allowing its use. You should do the same for the service account email address and any other information that is authentication-related.</p>
+
+<h2 id="the-end">The end</h2>
+
+<p>With that, you should be able to get an app up and running easily with access to Google Spreadsheet data. I’ve always loved the ability to set up arbitrary forms that store their data in Google Spreadsheets, and now being able to programmatically access that data from Node.js just makes it an even more powerful option.</p>
+
+<p><strong>Update (6-March-2014):</strong> Added section on securing your PEM key.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img
+    src="../../../../../images/shirts/spark-joy-sarcastic-250.png" 
+    alt="My Code Sparks Joy (Sarcasm) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2014/03/04/accessing-google-spreadsheets-from-node-js/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+

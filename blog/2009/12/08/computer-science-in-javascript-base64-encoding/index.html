@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ttw" content="cfanq3r">
+
+
+<title>Computer science in JavaScript: Base64 encoding - Human Who Codes</title>
+<meta name="twitter:site" content="@humanwhocodes">
+<meta name="twitter:creator" content="@slicknet">
+<meta name="twitter:url" content="https://humanwhocodes.com/blog/2009/12/08/computer-science-in-javascript-base64-encoding/" />
+<meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="twitter:image:alt" content="Human Who Codes" />
+<meta name="twitter:title" content="Computer science in JavaScript: Base64 encoding">
+<meta name="twitter:description" content="">
+<meta name="twitter:card" content="summary">
+
+<meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
+<meta name="og:url" content="https://humanwhocodes.com/blog/2009/12/08/computer-science-in-javascript-base64-encoding/" />
+<meta name="og:title" content="Computer science in JavaScript: Base64 encoding">
+<meta name="og:description" content="">
+<meta name="og:type" content="article">
+
+
+
+<link rel="stylesheet" href="../../../../../styles/index.css" type="text/css" media="screen">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Blog" href="https://humanwhocodes.com/feeds/blog.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Snippets" href="https://humanwhocodes.com/feeds/snippets.json">
+<link rel="alternate" type="application/rss+xml" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.xml">
+<link rel="alternate" type="application/json" title="Human Who Codes - Everything" href="https://humanwhocodes.com/feeds/all.json">
+<link rel="icon" type="image/png" href="https://humanwhocodes.com/images/favicon.png">
+
+
+<link rel="canonical" href="index.html">
+
+
+
+<meta name="description" content="Not too long ago, I wrote about data URIs and released a couple of tools to help generate them. A key part of the data URI equation is base64 encoding. Base64 encoding is...">
+<meta name="keywords" content="Base64,Computer Science,JavaScript,Nicholas,Zakas,NCZOnline">
+
+<script src="../../../../../scripts/emailform.js" async></script>
+</head>
+<body itemscope itemtype="http://schema.org/WebPage">
+    <header class="highlight-background">
+        <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
+            <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
+            <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
+                <li class="hide-offscreen"><a href="index.html#content">Skip to content</a></li>
+                <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
+                <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
+                <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
+                <li><a href="https://humanwhocodes.com/donate/" class="dark-text no-underline">Donate</a></li>
+                <li><a href="https://humanwhocodes.com/contact/" class="dark-text no-underline">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <hr>
+    <div class="content-background">
+        <div id="page-grid" class="page-width page-grid center">
+            <main id="content" role="main" class="content-width gutters">
+
+<article itemtype="http://schema.org/Article">
+    <header>
+        <h1 itemprop="headline" class="no-margin gutter-bottom headline-text">Computer science in JavaScript: Base64 encoding</h1>
+        
+        <div class="post-meta gutter-top smaller-font dark-dotted-border-top dark-dotted-border-bottom">
+            <p class="no-margin byline">Posted at <time datetime="2009-12-08T00:00:00+00:00" itemprop="datePublished">December 8, 2009</time> by <span itemprop="author" itemtype="http://schema.org/Person">Nicholas
+                    C. Zakas</span></p>
+            <p class="no-margin-top tags">Tags:
+                
+                <a href="https://humanwhocodes.com/blog/tag/base64" rel="tag">Base64</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/computer-science" rel="tag">Computer Science</a>,
+                
+                <a href="https://humanwhocodes.com/blog/tag/javascript" rel="tag">JavaScript</a>
+                
+            </p>
+        </div>
+    </header>
+    <section id="post-body" class="content-font">
+        
+<p>Not too long ago, I wrote about <a href="../../../10/27/data-uris-explained/index.html">data URIs</a> and released a <a href="../../../11/03/automatic-data-uri-embedding-in-css-files/index.html">couple of tools</a> to help generate them. A key part of the data URI equation is <a href="http://en.wikipedia.org/wiki/Base64">base64 encoding</a>. Base64 encoding is described in <a href="http://tools.ietf.org/html/rfc3548">RFC 3548</a>, along with base16 and base 32 encodings, all of which are ways to represent single-byte data with a limited character set. A common and unfortunate misconception is that base64 encoding is an encryption algorithm designed to obscure the underlying data. Base64 encoding provides no encryption, it simply translates one form of data into another following a single algorithm.</p>
+
+<p>All three encodings, base16, base32, and base64 were defined so that data could be transmitted in a safe manner without risk of data loss when passed through 7-bit systems. Email traditionally was a 7-bit system, and MIME base64 encoding was originally defined to enable data to safely be transmitted from one system to the next. In short, these encodings were created to protect against data corruption when 8-bit data might be transmitted through or by 7-bit systems.</p>
+
+<h2 id="how-does-it-work">How does it work?</h2>
+
+<p>Base64 encoding works directly on the underlying binary representation of data. You don’t really base64 encode strings, you base64 encode the bytes representing the characters that make up strings. Each character in the string is represented by a single 8-bit byte; each character in a base64-encoded string is made up of just 6 bits. Base64 encoding is really nothing more than performing this conversion.</p>
+
+<p>There are 65 possible characters in the base64 alphabet: the letters A through Z, a through z, the numbers 0 through 9, the plus sign (+) and the slash (/). The 65th character is the equals sign (=) and that is used to indicate padding (discussed later). The 6-bit number 0 therefore is represented by the letter A in a base64-encoded string, the 6-bit number 1 is represented by B, and so on.</p>
+
+<p>In order to base64 encode data, you need at least 24 bits (the smallest number that’s equally divisible by 6 and 8), so any three-character ASCII sequence can cleanly be encoded in base64. Consider the string “hat”. The letter “h” is represented by 104 or 01101000 in binary, “a” is 97 or 01100001, and “t” is 116 or 01110100. If you put together, you end up with:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>01101000-01100001-01110100
+</code></pre></div></div>
+
+<p>To convert into base64 encoding, take this and redefine the boundaries to be 6 bits:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>011010-000110-000101-110100
+</code></pre></div></div>
+
+<p>After that, convert each 6 bits into a number.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>26-6-5-52
+</code></pre></div></div>
+
+<p>Then, replace each number with it’s character from the base64 alphabet.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>a-G-F-0
+</code></pre></div></div>
+
+<p>And so the base64 encoded form of “hat” is “aGF0″. This works out well because there were exactly 24 bits, or three ASCII characters, to encode. Since not all strings have lengths evenly divisible by three, base64 encoding requires some padding when there aren’t enough bytes for encoding.</p>
+
+<p>Note that because every three bytes of a string end up represented as four bytes, the resulting base64-encoded string is always around 33% larger than the original. For data URIs, this is generally okay because base64 encoding also makes gzipping much more efficient, so you actually end up transferring roughly the <a href="http://www.ravelrumba.com/blog/convert-css-images-to-data-uris-automatically-with-cssembed/">same number of bytes</a> over the wire.</p>
+
+<h2 id="padding">Padding</h2>
+
+<p>Encoding proceeds, converting each 24 bits, until there are no longer 24 bits to convert. At that point, there are three possible situations:</p>
+
+<ol>
+  <li>There are no further bits to convert (the original string is evenly divisible by three).</li>
+  <li>There are 8 extra bits. In this case, right-pad with zeros out to 12 bits.</li>
+  <li>There are 16 extra bits. In this case, right-pad with zeros out to 18 bits.</li>
+</ol>
+
+<p>Note that for the second and third conditions, the right padding only fills out to the closest number of bits that are evenly divisible by six. Each 6-bit segment is converted into a character and then two or one equals signed are appended to the end, respectively. Each equals sign indicates that two extra bits of padding were added. These characters don’t literally represent anything in the original ASCII string; they are simply indicators that padding was necessary so that the decoder knows how to deal with the base64 encoded string.</p>
+
+<p>For example, consider the word hatch. The letter “h” is represented by 104 or 01101000 in binary, “a” is 97 or 01100001, “t” is 116 or 01110100, “c” is 99 or 01100011, and “h” is 104 or 01101000. The resulting binary representation is:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>01101000-01100001-01110100-01100011-01101000
+</code></pre></div></div>
+
+<p>To convert into base64 encoding, create 6-bit groups:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(011010-000110-000101-110100)(011000-110110-1000)
+</code></pre></div></div>
+
+<p>Note that there is only one complete set of 24 bits at the beginning of this sequence. The second part of the sequence is made up of only 16 bits. In this circumstance, the last group is padding with two zeros to create an 18 bit group:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(011010-000110-000101-110100)(011000-110110-100000)
+</code></pre></div></div>
+
+<p>Then the 6-bit groups are converted into characters:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(a-G-F-0)(Y-2-g)
+</code></pre></div></div>
+
+<p>So the resulting string is “aGF0Y2g”. But this isn’t the final base64 encoded string. Since there were two bits of padding adding, a single equals sign must be appended to the end, making the result “aGF0Y2g=”.</p>
+
+<h2 id="encoding-in-javascript">Encoding in JavaScript</h2>
+
+<p>Base64 encoding in many languages deal directly with bytes and byte arrays. Since JavaScript doesn’t have native data types for either, the bitwise operators become very important to this process. Bitwise operators act directly on the underlying bit representation of numbers. Even though JavaScript numbers are technically stored in 64-bits, integer values are treated as if they’re 32 bits whenever bitwise operators are involved. The most complex part of the problem is converting three 8-bit numbers into four 6-bit numbers, and this is where the bitwise operators come in.</p>
+
+<h3 id="bitwise-operations">Bitwise operations</h3>
+
+<p>Consider that you have three 8-bit numbers:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AAAAAAAA-BBBBBBBB-CCCCCCCC
+</code></pre></div></div>
+
+<p>The 6-bit equivalent is:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AAAAAA-AABBBB-BBBBCC-CCCCCC
+</code></pre></div></div>
+
+<p>Note how the 6-bit first number is made up of the most significant 6 bits of the 8-bit number. Essentially, you want to cut off the last two bits and treat them like they never existed. This is precisely what the right shift (») operator does. Take the number 240 or 11110000 in binary. If you right-shift this number two places, you end up with 00111100 in binary (60). All of the bits have shifted to the right by two spots, and when there’s not enough room, the remaining bits “fall off” the end and are eliminated. All of the bits to the left are filled in with zeros. Thus, to get the first 6-bit number from the group of 8-bit number, you can do the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var first6bitNum = first8bitNum &gt;&gt; 2;    //right shift by two bits
+</code></pre></div></div>
+
+<p>The second 6-bit number is a bit tricky, as it’s made up of a combination of the first 8-bit number and the second 8-bit number. The easy part is getting the four most significant bits from the second 8-bit number, because once again, it’s a right shift. Right shifting the second 8-bit number by four will get all of those bits in the correct place. To get the first two bits, there are a couple of operations to perform on the first 8-bit number.</p>
+
+<p>The only parts you want from the first 8-bit digit are the least significant to bits, everything else needs to become zero. The way to do that is to use a bitwise AND operation against the number 3 (binary 00000011). A bitwise AND creates a number bit-by-bit from two operands. If the corresponding bits in each number have the same value, then the resulting number has that value in the same bit. For example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    01100001
+AND 00000011
+------------
+    00000001
+</code></pre></div></div>
+
+<p>Note that the resulting number (1) has the exact same values in the two least significant bits as the original (97). By performing a bitwise AND against 3, you eliminate zero-out all remaining bits and are left with just the two least significant bits. To get these bits into the correct spot for the second 6-bit number, you need to left shift by four spaces (to allow room for the four bits already available from the second 8-bit number). You then use a bitwise OR operator to combine the two groups. Therefore, the second 6-bit number is:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var second6bitNum = (first8bitNum &amp; 3) &lt;&lt; 4 | (second8bitNum &gt;&gt; 4); 
+</code></pre></div></div>
+
+<p>For the third 6-bit number, the process is almost exactly the same. This number is made up of the bits of the second and third 8-bit number, so there’s another process of bitwise AND and shifting that takes place. This time, you need the four least significant bits of the second 8-bit number and the two most significant bits of the third 8-bit number. Once again, the least significant bits of the 6-bit number are easiest, as you just right shift the third 8-bit number by six bits. To get the four most significant bits of the 6-bit number, perform a bitwise AND with 15 (binary 00001111, hex 0F), which zeros out the most significant four bits, then left shift the result over by two spots to allow room for two more bits:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var third6bitNum = (second8bitNum &amp; 0x0f) &lt;&lt; 2 | (third8bitNum &gt;&gt; 6); 
+</code></pre></div></div>
+
+<p>And the last 6-bit digit is also easy, as you just need to remove the two most significant bits from the last 8-bit number. To do so, perform a bitwise AND with 63 (00111111 in binary, 3F in hex):</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var fourth6bitNum = third8bitNum &amp; 0x3f; 
+</code></pre></div></div>
+
+<p>With all of the 6-bit numbers determined, you can then assign a base64 digit to represent the value. This is typically done by listing out all base64 digits in a string where the character index is the 6-bit number. Example:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+var firstBase64Digit = digits.charAt(first6bitNum);   //get first digit
+</code></pre></div></div>
+
+<p>This is the basic process for converting from ASCII to base64 encoding.</p>
+
+<h3 id="the-base64encode-function">The base64Encode() function</h3>
+
+<p>Before even attempting to base64 encode a string, you should check to see if the string contains only ASCII characters. Since base64 encoding requires eight bits per input character, any character with a code higher than 255 cannot be accurately represented. The specification indicates that an error should be thrown in this case:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function base64Encode(text){
+
+    if (/([^\u0000-\u00ff])/.test(text)){
+        throw new Error("Can't base64 encode non-ASCII characters.");
+    } 
+
+    //more code here
+}
+</code></pre></div></div>
+
+<p>This check uses a simple regular expression that checks for any characters not in the range 0-255. If even one of these characters is in the string, then there’s a non-ASCII character that can’t be encoded and an error is thrown.</p>
+
+<p>The next section’s primary job is to convert each three eight-bit sequence into four six-bit sequences using bitwise operators. Since each character in the string represents a single eight-bit byte, you can proceed character-by-character through the string:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function base64Encode(text){
+
+    if (/([^\u0000-\u00ff])/.test(text)){
+        throw new Error("Can't base64 encode non-ASCII characters.");
+    } 
+
+    var digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+        i = 0,
+        cur, prev, byteNum,
+        result=[];      
+
+    while(i &lt; text.length){
+
+        cur = text.charCodeAt(i);
+        byteNum = i % 3;
+
+        switch(byteNum){
+            case 0: //first byte
+                result.push(digits.charAt(cur &gt;&gt; 2));
+                break;
+
+            case 1: //second byte
+                result.push(digits.charAt((prev &amp; 3) &lt;&lt; 4 | (cur &gt;&gt; 4)));
+                break;
+
+            case 2: //third byte
+                result.push(digits.charAt((prev &amp; 0x0f) &lt;&lt; 2 | (cur &gt;&gt; 6)));
+                result.push(digits.charAt(cur &amp; 0x3f));
+                break;
+        }
+
+        prev = cur;
+        i++;
+    }
+
+    //more code here
+
+    return result.join("");
+}
+</code></pre></div></div>
+
+<p>Since each byte of a three-byte sequence is treated slightly differently, the <code class="highlighter-rouge">byteNum</code> variable tracks which byte of the three-byte sequence is being processed. When <code class="highlighter-rouge">byteNum</code> is 0, it’s the first byte of the second, 1 indicates the second, and 2 indicates the third. This is easily calculated using the modulus operator.</p>
+
+<p>This algorithm uses two variables to track progress through the string, <code class="highlighter-rouge">cur</code> to track the current character and <code class="highlighter-rouge">prev</code> to track the previous character. This is necessary because the second and third bytes need information about the previous byte to properly base64-encode. A <code class="highlighter-rouge">switch</code> statement is used to determine how to interpret the byte and then the bitwise operators are applied. Once the base64 value is calculated, it is used as a lookup into the <code class="highlighter-rouge">digits</code> variable. The <code class="highlighter-rouge">digits</code> variable is a list of all base64 digits in the order in which they are used. As such, you can use <code class="highlighter-rouge">digits</code> as a lookup table for base64 digits via <code class="highlighter-rouge">charAt()</code>. The results are built up using an array, <code class="highlighter-rouge">result</code>, which will be joined later.</p>
+
+<p>The last step to accomplish is padding for strings that don’t have the correct number of bytes.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function base64Encode(text){
+
+    if (/([^\u0000-\u00ff])/.test(text)){
+        throw new Error("Can't base64 encode non-ASCII characters.");
+    } 
+
+    var digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+        i = 0,
+        cur, prev, byteNum,
+        result=[];      
+
+    while(i &lt; text.length){
+
+        cur = text.charCodeAt(i);
+        byteNum = i % 3;
+
+        switch(byteNum){
+            case 0: //first byte
+                result.push(digits.charAt(cur &gt;&gt; 2));
+                break;
+
+            case 1: //second byte
+                result.push(digits.charAt((prev &amp; 3) &lt;&lt; 4 | (cur &gt;&gt; 4)));
+                break;
+
+            case 2: //third byte
+                result.push(digits.charAt((prev &amp; 0x0f) &lt;&lt; 2 | (cur &gt;&gt; 6)));
+                result.push(digits.charAt(cur &amp; 0x3f));
+                break;
+        }
+
+        prev = cur;
+        i++;
+    }
+
+    if (byteNum == 0){
+        result.push(digits.charAt((prev &amp; 3) &lt;&lt; 4));
+        result.push("==");
+    } else if (byteNum == 1){
+        result.push(digits.charAt((prev &amp; 0x0f) &lt;&lt; 2));
+        result.push("=");
+    }
+
+    return result.join("");
+}
+</code></pre></div></div>
+
+<p>This part is quite easy thanks to the <code class="highlighter-rouge">byteNum</code> variable. If <code class="highlighter-rouge">byteNum</code> is 2 once the main loop is complete, that means there were an appropriate number of bytes to complete the encoding. If <code class="highlighter-rouge">byteNum</code> is any other number, that means padding is necessary. So, if <code class="highlighter-rouge">byteNum</code> is 0, that means there was one extra byte and you need to pad four bits. This is done using the left-shift operator and then two equals signs are added to the end. If <code class="highlighter-rouge">byteNum</code> is 1, that means there were two extra bytes and you need to pad two bits.</p>
+
+<p>After that, the result is joined together and returned. This is the base64-encoded version of the original string.</p>
+
+<h2 id="decoding-in-javascript">Decoding in JavaScript</h2>
+
+<p>Once you know how to base64 encode a string, base64 decoding is easy to do by reversing the process. Almost the exact same algorithm can be used with the same adjustments.</p>
+
+<h3 id="bitwise-operations-1">Bitwise operations</h3>
+
+<p>To begin, consider that you have the following sequence of four 6-bit numbers:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AAAAAA-BBBBBB-CCCCCC-DDDDDD
+</code></pre></div></div>
+
+<p>To transform this into three 8-bit numbers, the result would be:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AAAAAABB-BBBBCCCC-CCDDDDDD
+</code></pre></div></div>
+
+<p>So the first 8-bit byte is a combination of the first two 6-bit numbers, using the six bits of the first number and two bits of the second. In order to accomplish this, the first number must be shifted left two bits to allow room for the two bits from the second number. The second number then must be shifted to the right by four bits to eliminate its four least significant bits. The result in code:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var first8bitNum= (first6bitNum &lt;&lt; 2) | (second6bitNum &gt;&gt; 4); 
+</code></pre></div></div>
+
+<p>For the second 8-bit number, you only want to rightmost four bits of this number, so the first step is to apply a bitwise AND with the number 15 (binary 00001111, hex 0F). After that, these bits need to be shifted to the left four spots to put them in proper position. The first four bits of the third 6-bit digit are then needed, so shift that number to the right by two spots and use a bitwise OR to combine that with the previous result:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var second8bitNum= ((second6bitNum &amp; 0x0f) &lt;&lt; 4) | (third6bitNum &gt;&gt; 2); 
+</code></pre></div></div>
+
+<p>The last 8-bit number follows a similar approach. You only want the last two bits of the third 6-bit number, so a bitwise AND with 3 (binary 00000011) is performed to isolate those bits. Then, a left-shift of six spots moves those bits into position. Since all of the bits in fourth 6-bit number are in the correct spots already, you can just perform a bitwise OR between this and the previous result to get the third 8-bit number:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var third8bitNum= ((third6bitNum &amp; 3) &lt;&lt; 6) | fourth6bitNum; 
+</code></pre></div></div>
+
+<p>To convert each of these values into an ASCII character, use the <code class="highlighter-rouge">String.fromCharCode()</code> method:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var firstChar = String.fromCharCode(first8bitNum); 
+</code></pre></div></div>
+
+<p>You may be wondering what happens in the case of bit padding, since that hasn’t been covered in this section. The interesting thing about base64 decoding is that you can completely ignore the padding and still end up with the correct value. So if you base64 decode “aGF0Y2g”, you get the same result as when you based64 decode “aGF0Y2g=”. The reason lies in how the digits are determined.</p>
+
+<p>Recall that the word “hatch” is represented in base64 binary as the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(011010-000110-000101-110100)(011000-110110-100000)
+</code></pre></div></div>
+
+<p>There were two bits of padding added, so the original representation is actually this:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(011010-000110-000101-110100)(011000-110110-1000)
+</code></pre></div></div>
+
+<p>Now, compare the resulting 8-bit sequences when each of these are converted:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(01101000-01100001-01110100)(01100011-01101000-00)
+(01101000-01100001-01110100)(01100011-01101000)
+</code></pre></div></div>
+
+<p>Note that the original, with padding, has two extra zero bits to the right. This would make up the last two bits of a third digit, but there aren’t enough bits to completely created a third ASCII character. Whenever the last sequence has four or fewer bits of 0, you can just ignore it.</p>
+
+<h3 id="the-base64decode-function">The base64Decode() function</h3>
+
+<p>As with encoding, the first step should always be to validate the input. There are a couple of things to keep in mind here. First, white space is not significant in base64-encoded data, so it should be ignored. Second, the length of the string should be a multiple of 4, and if it’s not, this is not a valid base64-encoded string. Keeping this in mind, you can come up with a reasonable data validation approach:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function base64Decode(text){
+
+    text = text.replace(/\s/g,"");
+
+    if(!(/^[a-z0-9\+\/\s]+\={0,2}$/i.test(text)) || text.length % 4 &gt; 0){
+        throw new Error("Not a base64-encoded string.");
+    }   
+
+    //more code here
+}
+</code></pre></div></div>
+
+<p>Since white space is not significant, the first step is to remove it before doing any further validation. The regular expression checks that there are no invalid characters in the text and then the length is validated. If all of these conditions pass, then it’s time to move into the decoding portion of the function.</p>
+
+<p>As mentioned previously, padding doesn’t really matter in decoding, so an equals signs are stripped to avoid confusion. Then, a similar process to base64-encoding is taken: go character-by-character and keep track of the previous character because it’s needed for calculations.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function base64Decode(text){
+
+    text = text.replace(/\s/g,"");
+
+    if(!(/^[a-z0-9\+\/\s]+\={0,2}$/i.test(text)) || text.length % 4 &gt; 0){
+        throw new Error("Not a base64-encoded string.");
+    }   
+
+    //local variables
+    var digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+        cur, prev, digitNum,
+        i=0,
+        result = [];
+
+    text = text.replace(/=/g, "");
+
+    while(i &lt; text.length){
+
+        cur = digits.indexOf(text.charAt(i));
+        digitNum = i % 4;
+
+        switch(digitNum){
+
+            //case 0: first digit - do nothing, not enough info to work with
+
+            case 1: //second digit
+                result.push(String.fromCharCode(prev &lt;&lt; 2 | cur &gt;&gt; 4));
+                break;
+
+            case 2: //third digit
+                result.push(String.fromCharCode((prev &amp; 0x0f) &lt;&lt; 4 | cur &gt;&gt; 2));
+                break;
+
+            case 3: //fourth digit
+                result.push(String.fromCharCode((prev &amp; 3) &lt;&lt; 6 | cur));
+                break;
+        }
+
+        prev = cur;
+        i++;
+    }
+
+    return result.join("");
+}
+</code></pre></div></div>
+
+<p>Once again, a <code class="highlighter-rouge">digits</code> variable is used to help the conversion. In this case, the <code class="highlighter-rouge">indexOf()</code> method is used to locate the base64 digit and return its position. This is then used to perform the decoding. The <code class="highlighter-rouge">digitNum</code> variable keeps track of which 6-bit digit you’re evaluating in a group of four. Note that the first digit, digit number 0, must be ignored initially because there’s not enough information to do any decoding. When digit number 1 is encountered, you can then look back at digit 0 to retrieve the necessary information. All that’s left is to apply the proper bitwise operations to each digit and store the result, ultimately returning the joined string.</p>
+
+<p>If there was any padding in the input text, then the loop will stop at either digit 1 or 2, leaving the padded zeros without evaluation. There is no need to create a special case to address padding.</p>
+
+<h2 id="native-base64-support">Native base64 support</h2>
+
+<p>Several browsers actually have base64 encoding and decoding built-in by default. Firefox, Safari, and Chrome all support two functions:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">btoa(text)</code> – base64 encodes text.</li>
+  <li><code class="highlighter-rouge">atob(text)</code> – base64 decodes text.</li>
+</ul>
+
+<p>Internet Explorer and Opera don’t natively support these methods, so you’ll still need another implementation such as the one in this post to perform base64 encoding in those browsers.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Base64 encoding was originally designed to safely transfer 8-bit data through 7-bit systems. It has now gained more popularity for use in data URIs in browsers. Even though there are some browsers that natively support base64 encoding and decoding, not all of them do, so it’s necessary to have some code to work everywhere.</p>
+
+<p>One thing I cannot say enough is that base64 encoding is <em>not</em> an encryption algorithm. Don’t make the mistake of thinking the encoded data is secure when, in fact, it’s just converted into another form that is easily decoded.</p>
+
+<p>You can download the source code from my GitHub project, <a href="http://github.com/nzakas/computer-science-in-javascript">Computer Science in JavaScript</a>. If you’d like to use it in your <a href="http://developer.yahoo.com/yui/3/">YUI 3</a> code, check out the <a href="http://yuilibrary.com/gallery/show/base64">Base64 utility</a> on YUI Gallery.</p>
+
+
+<!--
+<div class="center-text">
+
+
+</div>-->
+    </section>
+    <footer>
+        <div class="gutters round-borders cta-background margin-bottom">
+            <h3 class="no-margin-top">Was this helpful?</h3>
+            <p>If you found this post helpful, please consider donating to support my work.</p>
+            <ul class="inline-list grid-columns">
+                <li class="center-text"><a href="https://github.com/users/nzakas/sponsorship" class="link-btn cta-btn">Donate with GitHub</a></li>
+                <li class="center-text"><a href="https://www.paypal.com/donate/?token=QV5gLG9Q5szfku7XrfOVQLxk25R5wYQgS5Li_q0si6WRF_XYkhpV6DM0pTIkyQtXDW00tW&country.x=US&locale.x=US" class="link-btn cta-btn">Donate with PayPal</a></li>
+            </ul>
+        </div>
+    </footer>
+<!--
+    <footer class="media-box gutters round-borders cta-background margin-bottom">
+        <div class="media-box-media">
+            <a href="/donate" class="link-btn cta-btn">Donate</a>
+        </div>
+        <div>
+            <p class="no-margin"><b>Was this helpful?</b> If you found this post helpful, I would very much appreciate your support. Donations of any amount gratefully accepted.</p>
+        </div>
+    </footer>
+-->
+</article>
+
+<div class="grid-columns">
+    <div class="gutters round-borders content-item-border highlight-background">
+        
+        <h2 class="no-margin-top">New in the Store</h2>
+<p><a href="https://teespring.com/stores/humanwhocodes?utm_source=humanwhocodes&utm_campaign=postmodule"><img 
+    src="../../../../../images/shirts/spark-joy-sincere-250.png" 
+    alt="My Code Sparks Joy (Sincerity) T-shirt" height="250"></a></p>
+
+    </div>
+    <div class="gutters round-borders content-item-border highlight-background">
+        <h2 class="no-margin-top">Join the Mailing List</h2>
+        <p>Never miss an update by joining 3,000 other mailing list members.</p>
+        <form method="post" name="sideemailform" action="https://mailinglist.humanwhocodes.com/api/subscribe">
+            <div id="mc_embed_signup_scroll">
+                <div style="margin-bottom: 0.5em">
+                    <label>First name:
+                        <input type="text" value="" style="width:100%" name="firstName">
+                    </label>
+                </div>
+                <div style="margin-bottom: 0.5em">
+                    <label>Last name:
+                        <input type="text" value="" style="width:100%" name="lastName">
+                    </label>
+                </div>
+                <div>
+                    <label>Email address:
+                        <input type="email" value="" style="width:100%" name="email" required>
+                    </label>
+                </div>
+                <input type="hidden" name="formId" value="1408574">
+                <div class="center-text gutters">
+                    <input type="submit" value="Subscribe">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+<div id="disqus_thread" class="hide-on-mobile"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = 'nczonline',
+        disqus_url = 'http://humanwhocodes.com/blog/2009/12/08/computer-science-in-javascript-base64-encoding/';
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+        </main>
+
+        <div id="sidebar" class="sidebar-width sidebar-background gutters hide-on-small-screens">
+            <h1 class="hide-offscreen">Additional Information</h1>
+            <script async type="text/javascript" src="https://cdn.carbonads.com/carbon.js?serve=CKYIEK3Y&amp;placement=humanwhocodescom" id="_carbonads_js"></script>
+        
+            
+            
+            <h2 class="smaller-font">Top Sponsors</h2>
+            <ul class="inline-list inline-image-list">
+                
+                <li><a href="https://github.com/scoutapm-sponsorships"><img src="https://avatars.githubusercontent.com/u/71095532?u=9f5a794ddc3b67ba057ee65e7ce166ad205a76c2&v=4" alt="Scout APM Sponsorships" width="90" style="padding: 5px; border-radius: 50%"></a></li>
+                
+            </ul>
+            
+
+            <h2 class="smaller-font">My Books</h2>
+            <ul class="inline-list inline-image-list">
+                
+                
+                <li><a href="https://geni.us/hwc-es6-book"><img src="../../../../../images/books/understandinges6ns.png" alt="Understanding ECMAScript 6" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-oopjs-book"><img src="../../../../../images/books/oopinjsns.png" alt="The Principles of Object-Oriented JavaScript" width="100"></a></li>
+                
+                <li><a href="https://geni.us/hwc-mjs-book"><img src="../../../../../images/books/maintainablejs.png" alt="Maintainable JavaScript" width="100"></a></li>
+                
+                <li><a href="https://amzn.to/2JBDt96"><img src="../../../../../images/books/pro_js_3e.png" alt="Professional JavaScript for Web Developers, 3rd Edition" width="100"></a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Recent Snippets</h2>
+            <ul class="">
+                
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/03/create-user-linux-ssh-key/">Creating a new user with an SSH key on Linux</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-setup-deploy-web-application-dokku/">How to setup and deploy a web application on Dokku</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2021/02/how-to-regain-jenkins-web-access-after-lockout/">How to regain Jenkins web access after being locked out</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/create-typescript-declarations-from-javascript-jsdoc/">Create TypeScript declarations from JavaScript and JSDoc</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/10/read-environment-variables-deno/">How to read environment variables in Deno using JavaScript</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/08/validate-github-webhook-signature-nodejs/">How to validate the signature of a GitHub webhook using Node.js</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/07/eleventy-heading-ids/">How to generate ID attributes in headings using Eleventy</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2020/02/optionally-await-function-result/">How to optionally await a JavaScript function call</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/jest-globals-intellisense-visual-studio-code/">Setting up Visual Studio Code intellisense for Jest globals</a></li>
+                
+                <li><a href="https://humanwhocodes.com/snippets/2019/05/nodejs-read-stream-promise/">Reading streams with promises in Node.js</a></li>
+                
+            </ul>
+            <h2 class="smaller-font">Archives</h2>
+            <ul>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2021/'>2021</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2020/'>2020</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2019/'>2019</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2018/'>2018</a></li>
+
+
+                <li><a href='https://humanwhocodes.com/blog/2016/'>2016</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2015/'>2015</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2014/'>2014</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2013/'>2013</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2012/'>2012</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2011/'>2011</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2010/'>2010</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2009/'>2009</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2008/'>2008</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2007/'>2007</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2006/'>2006</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2005/'>2005</a></li>
+
+                <li><a href='https://humanwhocodes.com/blog/2004/'>2004</a></li>
+
+            </ul>
+
+        </div> <!-- sidebar -->
+    </div> <!-- page-grid -->
+</div> <!-- content-background -->
+<hr>
+<footer class="inverted-colors">
+    <div class="page-width center">
+        <div class="page-grid orange-border-bottom">
+            <div class="margin-top content-width gutters">
+                <div class="collapsible-media-box">
+                    <div class="media-box-media center-text">
+                        <img src="../../../../../images/me/me-150x150.jpg" alt="Photo of Nicholas C. Zakas" width="150" class="circle-image">
+                    </div>
+                    <div>
+                        <h2 class="no-margin-top center-text-on-mobile">About the Human</h2>
+                        <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
+                            I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
+                            I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="margin-top sidebar-width hide-on-small-screens">
+                <h2 class="no-margin-top">On the Web</h2>
+                <ul>
+                    <li><a href="https://www.twitter.com/slicknet/">Twitter</a></li>
+                    <li><a href="https://www.github.com/nzakas/">GitHub</a></li>
+                    <li><a href="https://www.instagram.com/humanwhocodes">Instagram</a></li>
+                    <li><a href="https://www.youtube.com/channel/UC95Pwj8oPPZN2mJCEtMqOsg">YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/nzakas">LinkedIn</a></li>
+                    <li><a href="https://www.slideshare.net/nzakas/presentations/">Slideshare</a></li>
+                    <li><a href="https://amazon.com/author/nzakas/">Amazon</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="center-text"><a href="https://humanwhocodes.com/policies/privacy">Privacy Policy</a> | <a href="https://humanwhocodes.com/policies/terms">Terms of Service</a></p>
+        <p class="center-text">Copyright &copy; 2004-2021 Human Who Codes LLC. Content licensed under a <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/" rel="nofollow noopener">Creative Commons Attribution-NonCommercial-NoDerivs 3.0 Unported License</a>.<br>All code examples on all pages, unless otherwise indicated, are <a href="https://humanwhocodes.com/license">BSD licensed</a>.<br>Some links may be affiliate links. We may get paid if you buy something or take an action after clicking one of these. As an Amazon Associate we earn from qualifying purchases. <a href="https://humanwhocodes.com/feeds/blog.xml">Blog Feed</a></p>
+    </div>
+</footer>
+
+<!-- Google Analytics -->
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-6849003-1', 'auto');  // Replace with your property ID.
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+</body>
+</html>
+
