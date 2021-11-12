@@ -108,7 +108,7 @@ person.age = 20;    // Error!
 
 <h2 id="proxies-to-the-rescue">Proxies to the rescue</h2>
 
-<p>Proxies have a long and complicated history in ECMAScript 6. An early proposal was implemented by both Firefox and Chrome before TC-39 decided to change proxies in a very dramatic way. The changes were, in my opinion, for the better, as they smoothed out a lot of the rough edges from the original proxies proposal (I did some experimenting with the early proposal<sup><a href="../../../../2011/09/15/experimenting-with-ecmascript-6-proxies/index.html">1</a></sup>).</p>
+<p>Proxies have a long and complicated history in ECMAScript 6. An early proposal was implemented by both Firefox and Chrome before TC-39 decided to change proxies in a very dramatic way. The changes were, in my opinion, for the better, as they smoothed out a lot of the rough edges from the original proxies proposal (I did some experimenting with the early proposal<sup><a href="http://127.0.0.1:8000/blog/2011/09/15/experimenting-with-ecmascript-6-proxies/index.html">1</a></sup>).</p>
 
 <p>The biggest change was the introduction of a target object with which the proxy would interact. Instead of just defining traps for particular types of operations, the new “direct” proxies intercept operations intended for the target object. They do this through a series of methods that correspond to under-cover-operations in ECMAScript. For instance, whenever you read a value from an object property, there is an operation called <code class="highlighter-rouge">[[Get]]</code> that the JavaScript engine performs. The <code class="highlighter-rouge">[[Get]]</code> operation has built-in behavior that can’t be changed, however, proxies allow you to “trap” the call to <code class="highlighter-rouge">[[Get]]</code> and perform your own behavior. Consider the following:</p>
 
@@ -230,7 +230,7 @@ console.log(person.age);         // Error!
 <h2 id="references">References</h2>
 
 <ol>
-  <li><a href="../../../../2011/09/15/experimenting-with-ecmascript-6-proxies/index.html">Experimenting with ECMAScript 6 proxies</a> by me (NCZOnline)</li>
+  <li><a href="http://127.0.0.1:8000/blog/2011/09/15/experimenting-with-ecmascript-6-proxies/index.html">Experimenting with ECMAScript 6 proxies</a> by me (NCZOnline)</li>
 </ol>
 
 
@@ -430,7 +430,7 @@ console.log(person.age);         // Error!
                         <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
                             I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
                             I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
-                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="http://127.0.0.1:8000/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
                             and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
                     </div>
                 </div>

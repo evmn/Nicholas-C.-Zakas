@@ -85,7 +85,7 @@
 
 <p>The first blog post contains some criticisms in the comments from Kyle Simpson, the creator of <a href="http://labjs.com">LABjs</a>, another script loader. LABjs’s goal is a bit different than ControlJS: to enable parallel downloading of JavaScript files while maintaining execution order. To do so, LABjs needs to know which browsers allow parallel downloads by default and then provide other solutions for the browsers that don’t.</p>
 
-<p>Both LABjs and ControlJS have a major problem: they’re using various browser detection techniques to determine the correct course of action to optimize script loading. Some have argued that LABjs’s browser inference is safer than ControlJS’s user-agent detection, but I disagree. Browser inference is feature detection plus assumptions and is an <a href="../../../../2009/12/29/feature-detection-is-not-browser-detection/index.html">inherently flawed approach</a> (<a href="https://twitter.com/getify/status/26109887817">seriously</a>). Browser inference isn’t more accurate than user-agent detection, nor is it less likely to fail. I’m not saying that user-agent detection is a great thing, but at least it’s explicit in what it’s trying to detect. I choose explicit over implicit every time as it helps to prevent errors or, if errors occur, identify them faster. But this is a debate that’s tangential to the point of this post.</p>
+<p>Both LABjs and ControlJS have a major problem: they’re using various browser detection techniques to determine the correct course of action to optimize script loading. Some have argued that LABjs’s browser inference is safer than ControlJS’s user-agent detection, but I disagree. Browser inference is feature detection plus assumptions and is an <a href="http://127.0.0.1:8000/blog/2009/12/29/feature-detection-is-not-browser-detection/index.html">inherently flawed approach</a> (<a href="https://twitter.com/getify/status/26109887817">seriously</a>). Browser inference isn’t more accurate than user-agent detection, nor is it less likely to fail. I’m not saying that user-agent detection is a great thing, but at least it’s explicit in what it’s trying to detect. I choose explicit over implicit every time as it helps to prevent errors or, if errors occur, identify them faster. But this is a debate that’s tangential to the point of this post.</p>
 
 <p>LABjs has already proven that this approach, browser-based forking of script loading techniques, is a <a href="http://blog.getify.com/2010/10/ff4-script-loaders-and-order-preservation/comment-page-1/#comment-748">bad idea</a>. It’s just too fragile to withstand the onslaught of browser updates that we’ve been seeing, which is why I’ve never suggested using script loaders that try to outsmart the browser. Kyle faced a <a href="http://blog.getify.com/2010/10/ff4-script-loaders-and-order-preservation/">serious issue</a> when Firefox 4 nightlies started showing up that broke the behavior of LABjs. The issue was that dynamically inserted script elements were no longer guaranteeing execution order, which was something LABjs relied on. The change was made to bring Firefox in alignment with the  HTML5 spec and other browsers. ControlJS will undoubtedly run into the same issue as browsers continue to evolve. Maintenance of such solutions comes at a high price.</p>
 
@@ -206,15 +206,15 @@ script.execute();
         <h2 class="no-margin-top">Popular Posts</h2>
 <ul class="block-list">
 
-<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
 
-<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
 
-<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
 
-<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
 
-<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
 
 </ul>
 
@@ -378,7 +378,7 @@ script.execute();
                         <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
                             I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
                             I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
-                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="http://127.0.0.1:8000/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
                             and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
                     </div>
                 </div>

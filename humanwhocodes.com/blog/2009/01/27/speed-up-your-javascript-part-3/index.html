@@ -87,7 +87,7 @@
     </header>
     <section id="post-body" class="content-font">
         
-<p>Recursion is the enemy of fast-running scripts. Too much recursion can cause the browser to grind to a halt or quit unexpectedly, and so must be addressed a serious performance problem in JavaScript. In <a href="../../20/speed-up-your-javascript-part-2/index.html">part 2</a> of this series, I wrote briefly about handling too much recursion in a function through memoization. Memoization is a technique for caching previously calculated values so that they need not be recalculated; when a recursive function is doing such a calculation, memoization is incredibly useful. The memoizer I presented was Crockford’s, and is useful primarily for recursive functions that return integers. All recursive functions, of course, don’t return integers. A more generic <code class="highlighter-rouge">memoizer()</code> function can be created to deal with any type of recursive function:</p>
+<p>Recursion is the enemy of fast-running scripts. Too much recursion can cause the browser to grind to a halt or quit unexpectedly, and so must be addressed a serious performance problem in JavaScript. In <a href="http://127.0.0.1:8000/blog/2009/01/20/speed-up-your-javascript-part-2/index.html">part 2</a> of this series, I wrote briefly about handling too much recursion in a function through memoization. Memoization is a technique for caching previously calculated values so that they need not be recalculated; when a recursive function is doing such a calculation, memoization is incredibly useful. The memoizer I presented was Crockford’s, and is useful primarily for recursive functions that return integers. All recursive functions, of course, don’t return integers. A more generic <code class="highlighter-rouge">memoizer()</code> function can be created to deal with any type of recursive function:</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function memoizer(fundamental, cache){
     cache = cache || {}
@@ -167,9 +167,9 @@ function mergeSort(items){
 }
 </code></pre></div></div>
 
-<p>This implementation of the merge sort algorithm uses a series of loops instead of recursion to sort the array. Since merge sort works by first breaking down an array into several one-item arrays, this method does that explicitly instead of implicitly via recursive calls. The <code class="highlighter-rouge">work</code> array is initially an array of one-item arrays. The loops enable the merging of two arrays at a time, placing the result back into the <code class="highlighter-rouge">work</code> array. When the function has done its job, the result is stored in the first position of <code class="highlighter-rouge">work</code> and is returned. In this version of merge sort, there is no recursion. It does, however, introduce a large number of loops based on the number of items in the array, so it may be worth revisiting the techniques discussed in <a href="../../20/speed-up-your-javascript-part-2/index.html">part 2</a> to handle the extra overhead.</p>
+<p>This implementation of the merge sort algorithm uses a series of loops instead of recursion to sort the array. Since merge sort works by first breaking down an array into several one-item arrays, this method does that explicitly instead of implicitly via recursive calls. The <code class="highlighter-rouge">work</code> array is initially an array of one-item arrays. The loops enable the merging of two arrays at a time, placing the result back into the <code class="highlighter-rouge">work</code> array. When the function has done its job, the result is stored in the first position of <code class="highlighter-rouge">work</code> and is returned. In this version of merge sort, there is no recursion. It does, however, introduce a large number of loops based on the number of items in the array, so it may be worth revisiting the techniques discussed in <a href="http://127.0.0.1:8000/blog/2009/01/20/speed-up-your-javascript-part-2/index.html">part 2</a> to handle the extra overhead.</p>
 
-<p>The bottom line: always be on the look out for recursion in your JavaScript. Memoization and iteration are two ways to avoid excessive recursion and the <a href="../../05/what-determines-that-a-script-is-long-running/index.html" title="What determines that a script is long running?">long-running script dialog</a>.</p>
+<p>The bottom line: always be on the look out for recursion in your JavaScript. Memoization and iteration are two ways to avoid excessive recursion and the <a href="http://127.0.0.1:8000/blog/2009/01/05/what-determines-that-a-script-is-long-running/index.html" title="What determines that a script is long running?">long-running script dialog</a>.</p>
 
 <h2 id="translations">Translations</h2>
 
@@ -375,7 +375,7 @@ function mergeSort(items){
                         <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
                             I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
                             I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
-                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="http://127.0.0.1:8000/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
                             and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
                     </div>
                 </div>

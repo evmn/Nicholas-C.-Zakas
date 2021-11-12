@@ -85,7 +85,7 @@
         
 <p>Now a few weeks removed from a large amount of hand-ringing around the performance of <code class="highlighter-rouge">localStorage</code> in browsers, I’ve learned some more about why there was such a concern at Mozilla (which prompted Chris to write his blog post<sup><a href="http://hacks.mozilla.org/2012/03/there-is-no-simple-solution-for-local-storage/">1</a></sup>). The post was met with skepticism because it lacked two key components: numbers and a comparison. The assertion was that <code class="highlighter-rouge">localStorage</code> is slow, but there was no data to back it up.</p>
 
-<p>Wanting to get to the bottom of it, I<sup><a href="../../../03/07/in-defense-of-localstorage/index.html">2</a></sup> and John Allsopp<sup><a href="http://www.webdirections.org/blog/localstorage-perhaps-not-so-harmful/">3</a></sup> wrote blog posts trying to provide numbers around <code class="highlighter-rouge">localStorage</code>. John’s post focused on quantifying the amount of time it takes to perform a single read and a single write, which gave us good initial numbers for these operations. My post focused on comparing <code class="highlighter-rouge">localStorage</code> reads and writes to cookie reads and writes from JavaScript. My theory was that cookies are the closest appromixation of <code class="highlighter-rouge">localStorage</code> due to the fact that its contents are stored on disk and are shared by all tabs pointing to the same origin. Both John and I concluded by saying that <code class="highlighter-rouge">localStorage</code> doesn’t have an appreciably bad affect on performance either as an aggregate rating or in comparison to cookies.</p>
+<p>Wanting to get to the bottom of it, I<sup><a href="http://127.0.0.1:8000/blog/2012/03/07/in-defense-of-localstorage/index.html">2</a></sup> and John Allsopp<sup><a href="http://www.webdirections.org/blog/localstorage-perhaps-not-so-harmful/">3</a></sup> wrote blog posts trying to provide numbers around <code class="highlighter-rouge">localStorage</code>. John’s post focused on quantifying the amount of time it takes to perform a single read and a single write, which gave us good initial numbers for these operations. My post focused on comparing <code class="highlighter-rouge">localStorage</code> reads and writes to cookie reads and writes from JavaScript. My theory was that cookies are the closest appromixation of <code class="highlighter-rouge">localStorage</code> due to the fact that its contents are stored on disk and are shared by all tabs pointing to the same origin. Both John and I concluded by saying that <code class="highlighter-rouge">localStorage</code> doesn’t have an appreciably bad affect on performance either as an aggregate rating or in comparison to cookies.</p>
 
 <h2 id="more-details">More details</h2>
 
@@ -122,7 +122,7 @@
 });
 </code></pre></div></div>
 
-<p>Ignoring the name, the <code class="highlighter-rouge">getBetterLocalStorage()</code> function signals the browser that it’s time to read everything into memory, so the <code class="highlighter-rouge">storage</code> object can be used as any other object. Once the callback function is finished executing, the changes would be written back to disk. Though I’m not ready to throw out <code class="highlighter-rouge">localStorage</code> completely, I do like the direction of this API. In fact, it closely follows a proposal I made for improving <code class="highlighter-rouge">localStorage</code> with expiration dates and encryption.<sup><a href="../../../../2010/04/13/towards-more-secure-client-side-data-storage/index.html">4</a></sup></p>
+<p>Ignoring the name, the <code class="highlighter-rouge">getBetterLocalStorage()</code> function signals the browser that it’s time to read everything into memory, so the <code class="highlighter-rouge">storage</code> object can be used as any other object. Once the callback function is finished executing, the changes would be written back to disk. Though I’m not ready to throw out <code class="highlighter-rouge">localStorage</code> completely, I do like the direction of this API. In fact, it closely follows a proposal I made for improving <code class="highlighter-rouge">localStorage</code> with expiration dates and encryption.<sup><a href="http://127.0.0.1:8000/blog/2010/04/13/towards-more-secure-client-side-data-storage/index.html">4</a></sup></p>
 
 <h2 id="conclusion">Conclusion</h2>
 
@@ -134,9 +134,9 @@
 
 <ol>
   <li><a href="http://hacks.mozilla.org/2012/03/there-is-no-simple-solution-for-local-storage/">There is no simple solution for localStorage</a> by Chris Heilmann</li>
-  <li><a href="../../../03/07/in-defense-of-localstorage/index.html">In defense of localStorage</a> by Me</li>
+  <li><a href="http://127.0.0.1:8000/blog/2012/03/07/in-defense-of-localstorage/index.html">In defense of localStorage</a> by Me</li>
   <li><a href="http://www.webdirections.org/blog/localstorage-perhaps-not-so-harmful/">localStorage, perhaps not so harmful</a> by John Allsopp</li>
-  <li><a href="../../../../2010/04/13/towards-more-secure-client-side-data-storage/index.html">Towards more secure client-side data storage</a> by Me</li>
+  <li><a href="http://127.0.0.1:8000/blog/2010/04/13/towards-more-secure-client-side-data-storage/index.html">Towards more secure client-side data storage</a> by Me</li>
 </ol>
 
 
@@ -174,15 +174,15 @@
         <h2 class="no-margin-top">Popular Posts</h2>
 <ul class="block-list">
 
-<li><a href="../../../06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
 
-<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
 
-<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
 
-<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
 
-<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
 
 </ul>
 
@@ -346,7 +346,7 @@
                         <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
                             I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
                             I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
-                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="http://127.0.0.1:8000/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
                             and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
                     </div>
                 </div>

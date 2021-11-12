@@ -89,7 +89,7 @@
 
 <p>The behavior of proxies is defined through traps, which are simply functions that “trap” a specific behavior so you can respond appropriately. There are several different traps available, some that are fundamental and some that are derived. The fundamental traps define low-level behavior, such as what happens when calling <code class="highlighter-rouge">Object.defineProperty()</code> on the object, while derived traps define slightly higher-level behavior such as reading from and writing to properties. The fundamental traps are recommended to always be implemented while the derived traps are considered optional (when derived traps are undefined, the default implementation uses the fundamental traps to fill the gap).</p>
 
-<p>My experiments focused largely on the derived <code class="highlighter-rouge">get</code> trap. The <code class="highlighter-rouge">get</code> trap defines what happens when a property is read from the object. Think of the <code class="highlighter-rouge">get</code> trap as a global getter that is called for every property on the object. This made me realize that my <a href="../../../../2009/02/17/mozilla-javascript-extension-nosuchmethod/index.html">earlier experiments</a> with the proprietary <code class="highlighter-rouge">__noSuchMethod__()</code> might be applicable. After some tinkering, I ended up with the following HTML writer prototype:</p>
+<p>My experiments focused largely on the derived <code class="highlighter-rouge">get</code> trap. The <code class="highlighter-rouge">get</code> trap defines what happens when a property is read from the object. Think of the <code class="highlighter-rouge">get</code> trap as a global getter that is called for every property on the object. This made me realize that my <a href="http://127.0.0.1:8000/blog/2009/02/17/mozilla-javascript-extension-nosuchmethod/index.html">earlier experiments</a> with the proprietary <code class="highlighter-rouge">__noSuchMethod__()</code> might be applicable. After some tinkering, I ended up with the following HTML writer prototype:</p>
 
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/*
  * The constructor name I want is HTMLWriter.
@@ -320,15 +320,15 @@ console.log(mystack.pop());     //"goodbye"
         <h2 class="no-margin-top">Popular Posts</h2>
 <ul class="block-list">
 
-<li><a href="../../../../2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
 
-<li><a href="../../../../2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
 
-<li><a href="../../../../2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
 
-<li><a href="../../../../2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
 
-<li><a href="../../../../2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
 
 </ul>
 
@@ -492,7 +492,7 @@ console.log(mystack.pop());     //"goodbye"
                         <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
                             I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
                             I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
-                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="http://127.0.0.1:8000/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
                             and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
                     </div>
                 </div>

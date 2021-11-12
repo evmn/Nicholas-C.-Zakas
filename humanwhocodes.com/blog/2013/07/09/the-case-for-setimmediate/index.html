@@ -87,7 +87,7 @@
         
 <p>One of my favorite new APIs that has been beaten about is <code class="highlighter-rouge">setImmediate()</code>. While I’ll concede the naming is completely wrong, the functionality is completely awesome. The basic idea is to tell the browser that you want some JavaScript code executed after the last UI task in the event loop completes. To put it more simply, this is a much better implementation of <code class="highlighter-rouge">setTimeout(fm, 0)</code>. Since browsers clamp their timers to 4ms, it really doesn’t matter if you say 0, 1, 2, 3, or 4. You aren’t actually going to get exactly what you specified and so using <code class="highlighter-rouge">setTimeout(fn, 0)</code> introduces an observable delay as well as the overhead of using a timer when it’s not needed (see more about this in my Velocity talk from last year<sup><a href="https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/setImmediate/Overview.html">1</a></sup>). The <code class="highlighter-rouge">setImmediate()</code> function was designed to do what <code class="highlighter-rouge">setTimeout(fn, 0)</code> <em>seems</em> like it should do.</p>
 
-<p>The <code class="highlighter-rouge">setImmediate()</code> method was first described in Efficient Script Yielding<sup><a href="https://developer.mozilla.org/en-US/docs/Web/API/window.setImmediate">2</a></sup> and spearheaded by Microsoft. To date, Internet Explorer 10+ is the only browser to implement <code class="highlighter-rouge">setImmediate()</code>. For some reason both Mozilla and WebKit are against adding this method<sup><a href="../../../../2009/08/11/timed-array-processing-in-javascript/index.html">3</a></sup> despite what I consider to be a large amount of evidence that this would be a useful addition to the web platform. Here’s why.</p>
+<p>The <code class="highlighter-rouge">setImmediate()</code> method was first described in Efficient Script Yielding<sup><a href="https://developer.mozilla.org/en-US/docs/Web/API/window.setImmediate">2</a></sup> and spearheaded by Microsoft. To date, Internet Explorer 10+ is the only browser to implement <code class="highlighter-rouge">setImmediate()</code>. For some reason both Mozilla and WebKit are against adding this method<sup><a href="http://127.0.0.1:8000/blog/2009/08/11/timed-array-processing-in-javascript/index.html">3</a></sup> despite what I consider to be a large amount of evidence that this would be a useful addition to the web platform. Here’s why.</p>
 
 <h2 id="animations-and-requestanimationframe">Animations and requestAnimationFrame()</h2>
 
@@ -177,7 +177,7 @@ function getValue(key, callback) {
   <li>&lt;a href=”“http://www.slideshare.net/nzakas/javascript-timers-power-consumption-and-performance”&gt;Timers, Power Consumptions, and Performance&lt;/a&gt; by me (Slideshare)</li>
   <li><a href="https://dvcs.w3.org/hg/webperf/raw-file/tip/specs/setImmediate/Overview.html">Efficient Script Yielding</a> (W3C)</li>
   <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/window.setImmediate">window.setImmediate</a> (MDN)</li>
-  <li><a href="../../../../2009/08/11/timed-array-processing-in-javascript/index.html">Timed array processing in JavaScript</a> by me (NCZOnline)</li>
+  <li><a href="http://127.0.0.1:8000/blog/2009/08/11/timed-array-processing-in-javascript/index.html">Timed array processing in JavaScript</a> by me (NCZOnline)</li>
   <li><a href="http://ie.microsoft.com/testdrive/Performance/setImmediateSorting/Default.html">setImmediate API</a> (IE TestDrive)</li>
   <li><a href="http://howtonode.org/understanding-process-next-tick">Understanding process.nextTick()</a> by Kishore Nallan (How To Node)</li>
   <li><a href="http://nodejs.org/api/process.html#process_process_nexttick_callback">process.nextTick()</a> (Nodejs.org)</li>
@@ -384,7 +384,7 @@ function getValue(key, callback) {
                         <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
                             I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
                             I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
-                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="http://127.0.0.1:8000/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
                             and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
                     </div>
                 </div>

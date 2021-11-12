@@ -83,7 +83,7 @@
     </header>
     <section id="post-body" class="content-font">
         
-<p>In a <a href="../../../11/30/empty-image-src-can-destroy-your-site/index.html">previous post</a>, I discussed the problem with setting an HTML image’s <code class="highlighter-rouge">src</code> attribute to an empty string. In Internet Explorer, Safari, and Chrome, this results in a second request being made to the server (Firefox 3.5 patched this behavior and Opera doesn’t exhibit the behavior). My post also showed a couple of ways to detect this issue on the server side at the time a request is received. I noted that it’s very difficult to detect these requests from Internet Explorer because it doesn’t send different <code class="highlighter-rouge">Accept</code> headers for image requests than it does for HTML requests. After a bit more investigation, I’ve found a way to prevent this behavior in Internet Explorer through version 8.</p>
+<p>In a <a href="http://127.0.0.1:8000/blog/2009/11/30/empty-image-src-can-destroy-your-site/index.html">previous post</a>, I discussed the problem with setting an HTML image’s <code class="highlighter-rouge">src</code> attribute to an empty string. In Internet Explorer, Safari, and Chrome, this results in a second request being made to the server (Firefox 3.5 patched this behavior and Opera doesn’t exhibit the behavior). My post also showed a couple of ways to detect this issue on the server side at the time a request is received. I noted that it’s very difficult to detect these requests from Internet Explorer because it doesn’t send different <code class="highlighter-rouge">Accept</code> headers for image requests than it does for HTML requests. After a bit more investigation, I’ve found a way to prevent this behavior in Internet Explorer through version 8.</p>
 
 <h2 id="the--tag">The <base /> tag</h2>
 
@@ -124,7 +124,7 @@
 
 <h2 id="conclusion">Conclusion</h2>
 
-<p>Specifying a base URL on a page isÂ a quick and easy solution to prevent an extra request due to an empty image source URL in Internet Explorer. It’s important to note that this has <em>no effect</em> on the other browsers with this behavior. For those, you’ll still have to use the server-side detection logic shared in the <a href="../../../11/30/empty-image-src-can-destroy-your-site/index.html">previous post</a> to detect such a request and abort before server resources are used. At least for Internet Explorer, the solution is simple and can save your server.</p>
+<p>Specifying a base URL on a page isÂ a quick and easy solution to prevent an extra request due to an empty image source URL in Internet Explorer. It’s important to note that this has <em>no effect</em> on the other browsers with this behavior. For those, you’ll still have to use the server-side detection logic shared in the <a href="http://127.0.0.1:8000/blog/2009/11/30/empty-image-src-can-destroy-your-site/index.html">previous post</a> to detect such a request and abort before server resources are used. At least for Internet Explorer, the solution is simple and can save your server.</p>
 
 <h2 id="credits">Credits</h2>
 
@@ -327,7 +327,7 @@
                         <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
                             I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
                             I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
-                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="http://127.0.0.1:8000/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
                             and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
                     </div>
                 </div>

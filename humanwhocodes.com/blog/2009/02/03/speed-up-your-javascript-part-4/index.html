@@ -85,7 +85,7 @@
     </header>
     <section id="post-body" class="content-font">
         
-<p>Over the past few weeks, I’ve been exploring the various techniques for speeding up your JavaScript. <a href="../../../01/13/speed-up-your-javascript-part-1/index.html">Part 1</a> covered how to deal with loops that are doing too much. <a href="../../../01/20/speed-up-your-javascript-part-2/index.html">Part 2</a> focused on functions that do too much and taught techniques such as queuing and memoization to lighten the workload. <a href="../../../01/27/speed-up-your-javascript-part-3/index.html">Part 3</a> expanded the conversation to handling recursion both with memoization and switching to an iterative algorithm. Part 4, the last part in this series, focuses on too much DOM interaction.</p>
+<p>Over the past few weeks, I’ve been exploring the various techniques for speeding up your JavaScript. <a href="http://127.0.0.1:8000//index.html">Part 3</a> expanded the conversation to handling recursion both with memoization and switching to an iterative algorithm. Part 4, the last part in this series, focuses on too much DOM interaction.</p>
 
 <p>We all know that the DOM is slow…really slow…and that it’s one of the most common sources of performance issues. What makes it slow is that DOM changes can change the user interface of a page, and redrawing the page is an expensive operation. Too many DOM changes mean a lot of redrawing since each change must be applied sequentially and synchronously to ensure the correct end result. This process is called <a href="http://dev.opera.com/articles/view/efficient-javascript/?page=3#reflow">reflow</a>, and is one of the most expensive functions of a browser. Reflow happens at various points in time:</p>
 
@@ -95,7 +95,7 @@
   <li>When you retrieve a measurement that must be calculated, such as accessing <code class="highlighter-rouge">offsetWidth</code>, <code class="highlighter-rouge">clientHeight</code>, or any computed CSS value (via <code class="highlighter-rouge">getComputedStyle()</code> in DOM-compliant browsers or <code class="highlighter-rouge">currentStyle</code> in IE), while DOM changes are queued up to be made.</li>
 </ul>
 
-<p>They key, then, is to limit the number of reflows that occur on a page via DOM interactions. Most browsers will not update the DOM while JavaScript is executing. Instead, they queue up the DOM interactions and apply them sequentially once the script has finished executing. As with JavaScript execution, the user cannot interact with the browser while a reflow is occurring. (Reflows will happen when the <a href="../../../01/05/what-determines-that-a-script-is-long-running/index.html">long-running script dialog</a> is displayed because it represents a break in JavaScript execution, allowing the UI to update.)</p>
+<p>They key, then, is to limit the number of reflows that occur on a page via DOM interactions. Most browsers will not update the DOM while JavaScript is executing. Instead, they queue up the DOM interactions and apply them sequentially once the script has finished executing. As with JavaScript execution, the user cannot interact with the browser while a reflow is occurring. (Reflows will happen when the <a href="http://127.0.0.1:8000/blog/2009/01/05/what-determines-that-a-script-is-long-running/index.html">long-running script dialog</a> is displayed because it represents a break in JavaScript execution, allowing the UI to update.)</p>
 
 <p>There are two basic ways to mitigate reflow based on DOM changes. The first is to perform as many changes as possible outside of the live DOM structure (the part representing visible elements). The classic example is adding a number of DOM nodes into a document:</p>
 
@@ -393,7 +393,7 @@ for (var i=0, len=divs.length; i &lt; len; i++){  //not an infinite loop
                         <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
                             I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
                             I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
-                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="http://127.0.0.1:8000/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
                             and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
                     </div>
                 </div>

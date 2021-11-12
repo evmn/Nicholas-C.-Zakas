@@ -205,7 +205,7 @@
 
 <p>There probably is a balancing point where applying some of these techniques, but not all, would result in the smallest possible file size and I’ll continue to research to see if there’s a way to optimize in that direction.</p>
 
-<p>For the second criticism, you’ll note <a href="../../../02/10/javascript-variable-performance/index.html">my research on variable performance</a> in JavaScript shows that out-of-scope variables take longer to read to and write from than in-scope ones. I’ve also done some research on data access and found that local variables have roughly the same performance characteristics as literal values (<a href="https://humanwhocodes.com/experiments/javascript/performance/data-access/">experiment</a>), so replacing the literal true with a variable won’t have much of a performance impact when the variable is local. Replacing a literal with an out-of-scope variable will have an effect on execution time.</p>
+<p>For the second criticism, you’ll note <a href="http://127.0.0.1:8000/blog/2009/02/10/javascript-variable-performance/index.html">my research on variable performance</a> in JavaScript shows that out-of-scope variables take longer to read to and write from than in-scope ones. I’ve also done some research on data access and found that local variables have roughly the same performance characteristics as literal values (<a href="https://humanwhocodes.com/experiments/javascript/performance/data-access/">experiment</a>), so replacing the literal true with a variable won’t have much of a performance impact when the variable is local. Replacing a literal with an out-of-scope variable will have an effect on execution time.</p>
 
 <p>This is the classic performance optimization struggle of space vs. time. If this approach results in smaller file size and therefore faster network transfer time and parse time, are you willing to take a small execution time performance hit? That’s not a question I can answer for you or anyone else, it’s a tradeoff you have to ask yourself if you’re willing to make. It’s impossible to get the fastest executing code and the smallest, so there’s a balancing point that you as the developer need to make a decision on.</p>
 
@@ -414,7 +414,7 @@
                         <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
                             I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
                             I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
-                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="http://127.0.0.1:8000/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
                             and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
                     </div>
                 </div>

@@ -83,7 +83,7 @@
     </header>
     <section id="post-body" class="content-font">
         
-<p>In my <a href="../../08/working-with-files-in-javascript-part-1/index.html">previous post</a>, I introduced using files in JavaScript, focusing specifically on how to get access to <code class="highlighter-rouge">File</code> objects. These objects contain file metadata obtained only when the user opts to either upload a file or drags and drops a file onto the web page. Once you have files, however, the next step is to read data from them.</p>
+<p>In my <a href="http://127.0.0.1:8000/blog/2012/05/08/working-with-files-in-javascript-part-1/index.html">previous post</a>, I introduced using files in JavaScript, focusing specifically on how to get access to <code class="highlighter-rouge">File</code> objects. These objects contain file metadata obtained only when the user opts to either upload a file or drags and drops a file onto the web page. Once you have files, however, the next step is to read data from them.</p>
 
 <h2 id="the-filereader-type">The FileReader type</h2>
 
@@ -163,7 +163,7 @@ reader.readAsDataURL(file);
 
 <h3 id="reading-arraybuffers">Reading ArrayBuffers</h3>
 
-<p>The <code class="highlighter-rouge">ArrayBuffer</code> type<sup><a href="../../08/working-with-files-in-javascript-part-1/index.html">1</a></sup> was first introduced as part of WebGL. An <code class="highlighter-rouge">ArrayBuffer</code> represents a finite number of bytes that may be used to store numbers of any size. The way data is read from an <code class="highlighter-rouge">ArrayBuffer</code> is by using a specific view, such as <code class="highlighter-rouge">Int8Array</code>, which treats the underlying bytes as a collection of 8-bit signed integers or <code class="highlighter-rouge">Float32Array</code>, which treats the underlying bytes as a collection of 32-bit floating point numbers. These are called typed arrays<sup><a href="https://developer.mozilla.org/en/JavaScript_typed_arrays/ArrayBuffer">2</a></sup>, which force you to work with a specific numeric type rather than containing any type of data (as with traditional arrays).</p>
+<p>The <code class="highlighter-rouge">ArrayBuffer</code> type<sup><a href="http://127.0.0.1:8000/blog/2012/05/08/working-with-files-in-javascript-part-1/index.html">1</a></sup> was first introduced as part of WebGL. An <code class="highlighter-rouge">ArrayBuffer</code> represents a finite number of bytes that may be used to store numbers of any size. The way data is read from an <code class="highlighter-rouge">ArrayBuffer</code> is by using a specific view, such as <code class="highlighter-rouge">Int8Array</code>, which treats the underlying bytes as a collection of 8-bit signed integers or <code class="highlighter-rouge">Float32Array</code>, which treats the underlying bytes as a collection of 32-bit floating point numbers. These are called typed arrays<sup><a href="https://developer.mozilla.org/en/JavaScript_typed_arrays/ArrayBuffer">2</a></sup>, which force you to work with a specific numeric type rather than containing any type of data (as with traditional arrays).</p>
 
 <p>You use an <code class="highlighter-rouge">ArrayBuffer</code> primarily when dealing with binary files, to have more fine-grained control over the data. It’s beyond the scope of this post to explain all the ins and outs of <code class="highlighter-rouge">ArrayBuffer</code>, just realize that you can read a file into an <code class="highlighter-rouge">ArrayBuffer</code> pretty easily if you need it. You can pass an <code class="highlighter-rouge">ArrayBuffer</code> directly into an XHR object’s <code class="highlighter-rouge">send()</code> method to send the raw data to the server (you’ll have to read this data from the request on the server to reconstruct the file), so long as your browser fully supports <cite>XMLHttpRequest Level 2</cite><sup><a href="http://www.khronos.org/registry/typedarray/specs/latest/">3</a></sup> (most recent browsers, including Internet Explorer 10 and Opera 12).</p>
 
@@ -376,7 +376,7 @@ reader.readAsDataURL(file);
                         <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
                             I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
                             I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
-                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="http://127.0.0.1:8000/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
                             and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
                     </div>
                 </div>

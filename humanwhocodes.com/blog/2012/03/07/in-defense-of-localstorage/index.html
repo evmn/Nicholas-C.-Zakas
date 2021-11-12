@@ -155,7 +155,7 @@ worker.onmessage = function(event) {
 };
 </code></pre></div></div>
 
-<p>All of the reading and writing would be done off of the UI thread, so blocking really doesn’t matter. I know I’m not alone in thinking this is the way of the future as the IndexedDB spec has a whole section on synchronous APIs available in workers<sup><a href="../../../../2010/09/07/learning-from-xauth-cross-domain-localstorage/index.html">5</a></sup>. Having synchronous APIs for IndexedDB makes it less horrible to deal with, but you need to use them in a worker. This hasn’t been implemented by all browsers yet, but should be coming soon. Add to that the concept of shared workers, web workers that are shared amongst all tabs with pages from the same origin, and you have a great recipe for resolving a lot of I/O issues.</p>
+<p>All of the reading and writing would be done off of the UI thread, so blocking really doesn’t matter. I know I’m not alone in thinking this is the way of the future as the IndexedDB spec has a whole section on synchronous APIs available in workers<sup><a href="http://127.0.0.1:8000/blog/2010/09/07/learning-from-xauth-cross-domain-localstorage/index.html">5</a></sup>. Having synchronous APIs for IndexedDB makes it less horrible to deal with, but you need to use them in a worker. This hasn’t been implemented by all browsers yet, but should be coming soon. Add to that the concept of shared workers, web workers that are shared amongst all tabs with pages from the same origin, and you have a great recipe for resolving a lot of I/O issues.</p>
 
 <p>Workers currently have access to <code class="highlighter-rouge">XMLHttpRequest</code>, Web Sockets, File Readers, and the such…and yet no access to <code class="highlighter-rouge">localStorage</code>. Why? This is really the solution to the problem: don’t throw away a great API because in some cases it will cause issues. Instead, make it available in workers so that we have an option for moving the reading/writing off of the UI thread.</p>
 
@@ -177,7 +177,7 @@ worker.onmessage = function(event) {
   <li><a href="http://jsperf.com/localstorage-vs-objects/19">localStorage vs. cookies</a> by Nicholas C. Zakas</li>
   <li><a href="http://msdn.microsoft.com/en-us/library/cc197062(v=vs.85).aspx">Introduction to Web Storage</a> by MSDN</li>
   <li><a href="http://www.w3.org/TR/IndexedDB/#sync-database">Indexed Database – Synchronous APIs</a></li>
-  <li><a href="../../../../2010/09/07/learning-from-xauth-cross-domain-localstorage/index.html">Learning from XAuth: Cross-Domain localStorage</a> by Nicholas C. Zakas</li>
+  <li><a href="http://127.0.0.1:8000/blog/2010/09/07/learning-from-xauth-cross-domain-localstorage/index.html">Learning from XAuth: Cross-Domain localStorage</a> by Nicholas C. Zakas</li>
 </ol>
 
 
@@ -377,7 +377,7 @@ worker.onmessage = function(event) {
                         <p>Hi, I'm Nicholas C. Zakas, an independent software developer living in Mountain View, California. 
                             I've been a software architect at companies like Yahoo and Box, as well as an author and speaker. 
                             I created the <a href="https://eslint.org">ESLint</a> open source project and wrote several 
-                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="../../../../2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
+                            <a href="https://humanwhocodes.com/books">books</a>. At the moment, I'm <a href="http://127.0.0.1:8000/blog/2014/04/02/i-have-lyme-disease/index.html">recovering from Lyme disease</a> 
                             and haven't been able to leave my home much in the past five years. (<a href="https://medium.com/lyme-disease-warrior/progress-report-october-2018-fc38d4769e65">Health update</a>, <a rel="me" href="https://humanwhocodes.com/about">More about me</a>)</p>
                     </div>
                 </div>
