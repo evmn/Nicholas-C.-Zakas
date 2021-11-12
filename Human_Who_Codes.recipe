@@ -1,0 +1,61 @@
+# encoding: utf-8
+from calibre.web.feeds.recipes import BasicNewsRecipe
+from calibre.ebooks.BeautifulSoup import BeautifulSoup
+from urllib2 import urlopen
+from datetime import datetime
+base_url = 'http://127.0.0.1:8000/'
+
+class Human_Who_Codes(BasicNewsRecipe):
+
+        title = 'Human Who Codes'
+        description = u'Hi, I’m Nicholas C. Zakas, an independent software developer living in Mountain View, California. I’ve been a software architect at companies like Yahoo and Box, as well as an author and speaker. I created the ESLint open source project and wrote several books. At the moment, I’m recovering from Lyme disease and haven’t been able to leave my home much in the past six years.'
+        cover_url = 'http://127.0.0.1:8000/images/cover.jpg'
+#        masthead_url = ''
+        remove_tags_before = dict(id='article')
+        remove_tags_after= dict(id='article')
+        #remove_tags = ['footer']
+        remove_tags = [dict(attrs={'class':['grid-columns', 'col-organic', 'nav', 'highlight-background', 'tags', 'post-meta']}),
+                dict(id=['sidebar', 'thread__wrapper']),
+                dict(attrs={'itemprop':['description']}),
+                dict(name=['script', 'noscript', 'style', 'footer', 'hr'])]
+        __author__ = 'Nicholas C. Zakas'
+        language = 'en'
+        encoding = 'utf-8'
+        timefmt = ''
+#        extra_css = 'h1 {font: sans-serif;}\n.byline {font:monospace;}'
+
+        #keep_only_tags = [{ 'class': 'example' }]
+        no_stylesheets = True
+        resolve_internal_links = True
+        remove_javascript = True
+        auto_cleanup = False
+        delay = 1
+        simultaneous_downloads = 5
+        oldest_article = 999
+        max_articles_per_feed = 999
+
+        def parse_index(self):
+                soup = self.index_to_soup(base_url)
+                archives = soup.find('div', id='sidebar').findAll('ul')[3]
+                feeds = []
+                desc = ''
+                for section in archives.findAll('a'):
+                        articles = []
+                        secname = section.getText()
+                        sec_url = base_url + section['href']
+
+                        sec = urlopen(sec_url)
+                        blogs = BeautifulSoup(sec.read(), 'html.parser').find('main', id='content').findAll('li')
+
+                        for blog in blogs:
+                                date = datetime.strptime(blog.find('small').getText(), '%b %d, %Y').strftime("%m-%d: ")
+                                title = date + blog.find('a').getText()
+                                link =  base_url + "blog/" + secname + "/" + blog.find('a')['href']
+                                print("<li><a href=" + link +">" + title  + "</a><br></li>")
+
+                                articles.append({'title': title, 'url': link})
+
+                        feeds.append((secname, reversed(articles)))
+#                        feeds.append((secname, articles))
+                return feeds
+
