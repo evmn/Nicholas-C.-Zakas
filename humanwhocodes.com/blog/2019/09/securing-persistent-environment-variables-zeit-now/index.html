@@ -10,7 +10,7 @@
 <title>Securing persistent environment variables using Vercel (formerly Vercel) - Human Who Codes</title>
 <meta name="twitter:site" content="@humanwhocodes">
 <meta name="twitter:creator" content="@slicknet">
-<meta name="twitter:url" content="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/" />
+<meta name="twitter:url" content="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/" />
 <meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
 <meta name="twitter:image:alt" content="Human Who Codes" />
 <meta name="twitter:title" content="Securing persistent environment variables using Vercel (formerly Vercel)">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary">
 
 <meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
-<meta name="og:url" content="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/" />
+<meta name="og:url" content="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/" />
 <meta name="og:title" content="Securing persistent environment variables using Vercel (formerly Vercel)">
 <meta name="og:description" content="">
 <meta name="og:type" content="article">
@@ -35,7 +35,7 @@
 <link rel="icon" type="image/png" href="../../../../images/favicon.png">
 
 
-<link rel="canonical" href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html">
+<link rel="canonical" href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html">
 
 
 
@@ -49,7 +49,7 @@
         <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
             <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
             <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
-                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#content">Skip to content</a></li>
+                <li class="hide-offscreen"><a href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#content">Skip to content</a></li>
                 <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
                 <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
                 <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
@@ -85,13 +85,13 @@
     </header>
     <section id="post-body" class="content-font">
         
-<p>I’m a big fan of Vercel<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:1" class="footnote">1</a></sup> as an application hosting provider. The way the service abstracts all of the cloud computing details and allows teams to focus on building and deploying web applications is fantastic. That said, I had a lot of trouble setting up secure environment variables for my first application to use. I was used to other services like Netlify<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:2" class="footnote">2</a></sup> and AwS Lambda<sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:3" class="footnote">3</a></sup> exposing environment variables in the web interface to allow secure transmission of important information. When Vercel didn’t provide the same option in its web interface, I had to spend some time researching how to securely set persistent environment variables on my application.</p>
+<p>I’m a big fan of Vercel<sup id="fnref:1"><a href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:1" class="footnote">1</a></sup> as an application hosting provider. The way the service abstracts all of the cloud computing details and allows teams to focus on building and deploying web applications is fantastic. That said, I had a lot of trouble setting up secure environment variables for my first application to use. I was used to other services like Netlify<sup id="fnref:2"><a href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:2" class="footnote">2</a></sup> and AwS Lambda<sup id="fnref:3"><a href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:3" class="footnote">3</a></sup> exposing environment variables in the web interface to allow secure transmission of important information. When Vercel didn’t provide the same option in its web interface, I had to spend some time researching how to securely set persistent environment variables on my application.</p>
 
 <p>For the purposes of this post, assume that you need to set two environment variables, <code class="highlighter-rouge">CLIENT_ID</code> and <code class="highlighter-rouge">CLIENT_SECRET</code>. These values won’t change between deployments (presumably because they are used to authenticate the application with OAuth). As such, you don’t want to manually set these environment variables during every deployment but would rather have them stored and used each time the application is deployed.</p>
 
 <h2 id="setting-environment-variables-in-vercel">Setting environment variables in Vercel</h2>
 
-<p>According to the documentation<sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:4" class="footnote">4</a></sup>, there are two ways to set environment variables for your Vercel project. The first is to use the <code class="highlighter-rouge">vercel</code> command line tool with the <code class="highlighter-rouge">-e</code> option, such as:</p>
+<p>According to the documentation<sup id="fnref:4"><a href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:4" class="footnote">4</a></sup>, there are two ways to set environment variables for your Vercel project. The first is to use the <code class="highlighter-rouge">vercel</code> command line tool with the <code class="highlighter-rouge">-e</code> option, such as:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vercel <span class="nt">-e</span> <span class="nv">CLIENT_ID</span><span class="o">=</span><span class="s2">"abcdefg"</span> <span class="nt">-e</span> <span class="nv">CLIENT_SECRET</span><span class="o">=</span><span class="s2">"123456789abcdefg"</span>
 </code></pre></div></div>
@@ -131,7 +131,7 @@
 
 <h2 id="using-vercel-secrets">Using Vercel secrets</h2>
 
-<p>Vercel has the ability to store secrets associated with each project. You can set a secret using the <code class="highlighter-rouge">vercel</code> CLI. You can name these secrets whatever you want, but the documentation<sup id="fnref:4:1"><a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:4" class="footnote">4</a></sup> suggests using lower dash case, Here’s an example:</p>
+<p>Vercel has the ability to store secrets associated with each project. You can set a secret using the <code class="highlighter-rouge">vercel</code> CLI. You can name these secrets whatever you want, but the documentation<sup id="fnref:4:1"><a href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fn:4" class="footnote">4</a></sup> suggests using lower dash case, Here’s an example:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>vercel secrets add client-id abcdefg
 vercel secrets add client-secret 123456890abcdefg
@@ -176,16 +176,16 @@ vercel secrets add client-secret 123456890abcdefg
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p><a href="https://vercel.com">Vercel</a> <a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://vercel.com">Vercel</a> <a href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:2">
-      <p><a href="https://netlify.com">Netlify</a> <a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://netlify.com">Netlify</a> <a href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:3">
-      <p><a href="https://aws.amazon.com/lambda">AWS Lambda</a> <a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://aws.amazon.com/lambda">AWS Lambda</a> <a href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:4">
-      <p><a href="https://vercel.com/docs/v2/build-step#environment-variables">Vercel - Build Step - Environment Variables</a> <a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:4" class="reversefootnote">&#8617;</a> <a href="https://humanwhocodes.com/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:4:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
+      <p><a href="https://vercel.com/docs/v2/build-step#environment-variables">Vercel - Build Step - Environment Variables</a> <a href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:4" class="reversefootnote">&#8617;</a> <a href="http://127.0.0.1:8000/blog/2019/09/securing-persistent-environment-variables-zeit-now/index.html#fnref:4:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
     </li>
   </ol>
 </div>

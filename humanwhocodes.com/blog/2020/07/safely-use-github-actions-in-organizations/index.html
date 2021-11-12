@@ -10,7 +10,7 @@
 <title>How to safely use GitHub Actions in organizations - Human Who Codes</title>
 <meta name="twitter:site" content="@humanwhocodes">
 <meta name="twitter:creator" content="@slicknet">
-<meta name="twitter:url" content="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/" />
+<meta name="twitter:url" content="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/" />
 <meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
 <meta name="twitter:image:alt" content="Human Who Codes" />
 <meta name="twitter:title" content="How to safely use GitHub Actions in organizations">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary">
 
 <meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
-<meta name="og:url" content="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/" />
+<meta name="og:url" content="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/" />
 <meta name="og:title" content="How to safely use GitHub Actions in organizations">
 <meta name="og:description" content="">
 <meta name="og:type" content="article">
@@ -35,7 +35,7 @@
 <link rel="icon" type="image/png" href="../../../../images/favicon.png">
 
 
-<link rel="canonical" href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html">
+<link rel="canonical" href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html">
 
 
 
@@ -49,7 +49,7 @@
         <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
             <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
             <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
-                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#content">Skip to content</a></li>
+                <li class="hide-offscreen"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#content">Skip to content</a></li>
                 <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
                 <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
                 <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
@@ -89,7 +89,7 @@
     </header>
     <section id="post-body" class="content-font">
         
-<p>GitHub Actions<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:1" class="footnote">1</a></sup> are programs designed to run inside of workflows<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:2" class="footnote">2</a></sup>, triggered by specific events inside a GitHub repository. To date, people use GitHub Actions to do things like run continuous integration (CI) tests, publish releases, respond to issues, and more. Because the workflows are executed inside a fresh virtual machine that is deleted after the workflow completes, there isn’t much risk of abuse inside of the system. There is a risk, however, to your data.</p>
+<p>GitHub Actions<sup id="fnref:1"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:1" class="footnote">1</a></sup> are programs designed to run inside of workflows<sup id="fnref:2"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:2" class="footnote">2</a></sup>, triggered by specific events inside a GitHub repository. To date, people use GitHub Actions to do things like run continuous integration (CI) tests, publish releases, respond to issues, and more. Because the workflows are executed inside a fresh virtual machine that is deleted after the workflow completes, there isn’t much risk of abuse inside of the system. There is a risk, however, to your data.</p>
 
 <aside>
   <p>This post is aimed at those who are using GitHub organizations to manage their projects, which is to say, there is more than one maintainer. In that situation, you may not always be aware of who is accessing your repository, whether that be another coworker or a collaborator you’ve never met. If you are the only maintainer of a project then your risk is limited to people who steal your credentials and the other recommendations in this post aren’t as necessary.</p>
@@ -104,7 +104,7 @@
   <li>Intentional - an attacker is able to insert a program into your workflow that steals credentials and sends them to the attacker</li>
 </ol>
 
-<p>GitHub, to its credit, is aware of this possibility and allows you to store sensitive information in secrets<sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:3" class="footnote">3</a></sup>. You can store secrets either on a single repository or on an organization, where they can be shared across multiple repositories. You can store things like API tokens or deploy keys securely and then reference them directly inside of a workflow.</p>
+<p>GitHub, to its credit, is aware of this possibility and allows you to store sensitive information in secrets<sup id="fnref:3"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:3" class="footnote">3</a></sup>. You can store secrets either on a single repository or on an organization, where they can be shared across multiple repositories. You can store things like API tokens or deploy keys securely and then reference them directly inside of a workflow.</p>
 
 <p>By default, there are some important security features built in to GitHub secrets:</p>
 
@@ -150,7 +150,7 @@
 
 <ul>
   <li>This is most likely an accident rather than an attack. An attacker would most likely want to hide the fact that they were able to get access to your secret. By outputting it into the log, it’s there for anyone to see and trace back to the source.</li>
-  <li>An accident like this can open the door for opportunistic credential stealing<sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:4" class="footnote">4</a></sup> by someone who notices the secrets were exposed.</li>
+  <li>An accident like this can open the door for opportunistic credential stealing<sup id="fnref:4"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:4" class="footnote">4</a></sup> by someone who notices the secrets were exposed.</li>
 </ul>
 
 <p>Although accidentally outputting secrets to the log is a bad situation, remote credential stealing is worse.</p>
@@ -165,7 +165,7 @@
 
 <ul>
   <li>As with outputting secrets to the log, a well-intentioned developer might have copy-pasted something from another workflow file and introduced it into your codebase. Maybe it was committed directly to the development branch without review because it’s a small project. This scenario plays out every day as attackers try to trick developers into installing malicious software that otherwise looks harmless.</li>
-  <li>An attacker might have gained control of a package that already has a reputation as reliable and update it to contain malicious code. (I’m painfully aware of how this can happen.<sup id="fnref:5"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:5" class="footnote">5</a></sup>) Your workflow may blindly pull in the package and use it expecting it to be safe.</li>
+  <li>An attacker might have gained control of a package that already has a reputation as reliable and update it to contain malicious code. (I’m painfully aware of how this can happen.<sup id="fnref:5"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:5" class="footnote">5</a></sup>) Your workflow may blindly pull in the package and use it expecting it to be safe.</li>
   <li>An attacker might submit a pull request to your repository containing a workflow change, hoping no one will look at it too closely before merging.</li>
   <li>An attacker might have stolen someone’s credentials and used them to modify a workflow to contain a malicious command.</li>
 </ul>
@@ -189,8 +189,8 @@
 
 <ul>
   <li>Use a password manager and generate a strong, unique password for each site you use. Your GitHub password should not be the same as your npm password, for example.</li>
-  <li>Enable two-factor authentication (2FA) on GitHub<sup id="fnref:6"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:6" class="footnote">6</a></sup> and any other sites you use. Prefer to use an authentication app or a security key instead of text messages whenever possible.</li>
-  <li>If you are a GitHub organization administrator, require all organization members to enable 2FA.<sup id="fnref:7"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:7" class="footnote">7</a></sup></li>
+  <li>Enable two-factor authentication (2FA) on GitHub<sup id="fnref:6"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:6" class="footnote">6</a></sup> and any other sites you use. Prefer to use an authentication app or a security key instead of text messages whenever possible.</li>
+  <li>If you are a GitHub organization administrator, require all organization members to enable 2FA.<sup id="fnref:7"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:7" class="footnote">7</a></sup></li>
 </ul>
 
 <p>By protecting your own login information, you make it a lot harder for attackers to use your projects to attack you or others.</p>
@@ -199,7 +199,7 @@
 
 <p>At a minimum, you should protect your development branch with rules about what is allowed to be merged. Your development branch is the branch where pull requests are sent and where your releases are cut from. In many cases that will be the <code class="highlighter-rouge">master</code> branch, but some teams also use <code class="highlighter-rouge">dev</code>, <code class="highlighter-rouge">trunk</code>, or any number of other names. Once code makes it into your development branch, it is effectively “live” (for workflows) and highly likely to make it into a release (where it could negatively affect others). That’s why protecting your development branch is important.</p>
 
-<p>GitHub allows you to protect any branch in a number of ways.<sup id="fnref:8"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:8" class="footnote">8</a></sup> To set up a protected branch, go to your repository settings, click on “Branches” on the menu, then under “Branch Protection Rules” click the “Add Rule” button. Then, you can specify the branches to protect and exactly how to protect them.</p>
+<p>GitHub allows you to protect any branch in a number of ways.<sup id="fnref:8"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:8" class="footnote">8</a></sup> To set up a protected branch, go to your repository settings, click on “Branches” on the menu, then under “Branch Protection Rules” click the “Add Rule” button. Then, you can specify the branches to protect and exactly how to protect them.</p>
 
 <p>There are a lot of options, but here are the ones I recommend as a starting point for your development branch:</p>
 
@@ -207,7 +207,7 @@
   <li><strong>Require pull requests before merging</strong> - this prevents you from pushing directly to the development branch. All changes must go through a pull request, even from admins (though you can override this to allow specific people to override the protection – but that’s not advisable). This is important to ensure that there’s some notification of any changes made to the development branch and someone has the opportunity to review them before merging.</li>
   <li><strong>Required approval reviews</strong> - by default this is set to one. Ideally, you should require approvals from at least two people to avoid the case where a malicious actor has secured the login of one team member and can therefore self-approve a pull request.</li>
   <li><strong>Dismiss stale pull request approvals when new commits are pushed</strong> - by default this is off, and you should turn it on. This prevents an attack where a malicious actor submits an appropriate pull request, waits for approval, and then adds new commits to the pull request before merging. With this option enabled, new commits pushed to the pull request will invalidate previous approvals.</li>
-  <li><strong>Require review from Code Owners</strong> - it’s a good idea to set up code owners<sup id="fnref:8:1"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:8" class="footnote">8</a></sup> for workflow files and other sensitive files. Once you do, you can enable this option to require the code owners approve any pull requests related to the code they own. This ensures that those who are most knowledgeable about GitHub Actions are required to approve any pull requests.</li>
+  <li><strong>Require review from Code Owners</strong> - it’s a good idea to set up code owners<sup id="fnref:8:1"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:8" class="footnote">8</a></sup> for workflow files and other sensitive files. Once you do, you can enable this option to require the code owners approve any pull requests related to the code they own. This ensures that those who are most knowledgeable about GitHub Actions are required to approve any pull requests.</li>
   <li><strong>Require status checks to pass before merging</strong> - assuming you have status checks running on pull requests (such as automated testing or linting), enable this option to ensure pull requests can’t be merged that have failing status checks. This is another layer of security to prevent malicious code from making it into your repository.</li>
   <li><strong>Include administrators</strong> - this option ensures that even administrators must adhere to the rules you’ve set up for the branch. While a compromised administrator account can turn this setting off, turning it on ensures administrators don’t accidentally merge or push changes.</li>
   <li><strong>Allow force pushes</strong> - this is off by default and should remain off. Force pushes allow someone to completely overwrite the remote branch, which opens you up to all kinds of bad situations. Force pushes to the development branch should never be allowed in an organization.</li>
@@ -234,7 +234,7 @@
 <p>Even if you don’t follow any of the other advice in this article, limiting the scope of your secrets is really the minimum you should do to protect them.</p>
 
 <aside class="warn">
-  <p>Never store a GitHub token with administrator privileges as a secret. This would allow any workflow in any branch (even unprotected branches) to modify your repository in any way it wants, including pushing to protected branches.<sup id="fnref:10"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:10" class="footnote">9</a></sup></p>
+  <p>Never store a GitHub token with administrator privileges as a secret. This would allow any workflow in any branch (even unprotected branches) to modify your repository in any way it wants, including pushing to protected branches.<sup id="fnref:10"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:10" class="footnote">9</a></sup></p>
 </aside>
 
 <h3 id="workflow-best-practices">Workflow best practices</h3>
@@ -243,13 +243,13 @@
 
 <h4 id="disabling-actions">Disabling Actions</h4>
 
-<p>If you don’t intend to use GitHub Actions in your organization, you can disable them for the entire organization. On the organization Settings page, go to “Actions” and then select “Disable actions for this organization.”<sup id="fnref:11"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:11" class="footnote">10</a></sup> This ensures that no repositories can use GitHub Actions and is the safest setting if you don’t intend to use them.</p>
+<p>If you don’t intend to use GitHub Actions in your organization, you can disable them for the entire organization. On the organization Settings page, go to “Actions” and then select “Disable actions for this organization.”<sup id="fnref:11"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:11" class="footnote">10</a></sup> This ensures that no repositories can use GitHub Actions and is the safest setting if you don’t intend to use them.</p>
 
 <h4 id="use-only-local-actions">Use only local Actions</h4>
 
 <p>Another options is to allow the organization to use workflows but only with actions that are contained inside the same repository. This effectively forces repositories to install their own copies of actions to control which actions may be executed.</p>
 
-<p>To enable this setting, go to the organization Settings page, go to “Actions”, and then select “Enable local Actions only for this organization.”<sup id="fnref:11:1"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:11" class="footnote">10</a></sup></p>
+<p>To enable this setting, go to the organization Settings page, go to “Actions”, and then select “Enable local Actions only for this organization.”<sup id="fnref:11:1"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:11" class="footnote">10</a></sup></p>
 
 <h4 id="identifying-safe-actions">Identifying safe Actions</h4>
 
@@ -257,7 +257,7 @@
 
 <ol>
   <li>It begins with <code class="highlighter-rouge">action/</code>, such as <code class="highlighter-rouge">actions/checkout</code>. These are published by GitHub itself and are therefore safe to use.</li>
-  <li>The action is published in the GitHub Action Marketplace<sup id="fnref:12"><a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:12" class="footnote">11</a></sup> and has a “verified creator” badge next to the author. This indicates that the creator is a verified partner of GitHub and therefore the action is safe.</li>
+  <li>The action is published in the GitHub Action Marketplace<sup id="fnref:12"><a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fn:12" class="footnote">11</a></sup> and has a “verified creator” badge next to the author. This indicates that the creator is a verified partner of GitHub and therefore the action is safe.</li>
 </ol>
 
 <p>If an action doesn’t fall into one of these two categories, that doesn’t mean it’s not safe, just that you need to do more research into the action.</p>
@@ -312,37 +312,37 @@
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p><a href="https://docs.github.com/en/actions">GitHub: GitHub Actions</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://docs.github.com/en/actions">GitHub: GitHub Actions</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:2">
-      <p><a href="https://help.github.com/en/actions/configuring-and-managing-workflows/configuring-and-managing-workflow-files-and-runs">GitHub: Configuring and managing workflow files and runs</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://help.github.com/en/actions/configuring-and-managing-workflows/configuring-and-managing-workflow-files-and-runs">GitHub: Configuring and managing workflow files and runs</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:3">
-      <p><a href="https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets">GitHub: Creating and storing encrypted secrets</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets">GitHub: Creating and storing encrypted secrets</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:4">
-      <p><a href="https://www.schneier.com/blog/archives/2016/05/credential_stea.html">Credential Stealing as an Attack Vector</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.schneier.com/blog/archives/2016/05/credential_stea.html">Credential Stealing as an Attack Vector</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:5">
-      <p><a href="https://eslint.org/blog/2018/07/postmortem-for-malicious-package-publishes">ESLint postmortem for malicious package publishes</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://eslint.org/blog/2018/07/postmortem-for-malicious-package-publishes">ESLint postmortem for malicious package publishes</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:6">
-      <p><a href="https://help.github.com/en/github/authenticating-to-github/securing-your-account-with-two-factor-authentication-2fa">GitHub: Securing your account with two-factor authentication (2FA)</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://help.github.com/en/github/authenticating-to-github/securing-your-account-with-two-factor-authentication-2fa">GitHub: Securing your account with two-factor authentication (2FA)</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:7">
-      <p><a href="https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/requiring-two-factor-authentication-in-your-organization">GitHub: Requiring two-factor authentication in your organization</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:7" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://help.github.com/en/github/setting-up-and-managing-organizations-and-teams/requiring-two-factor-authentication-in-your-organization">GitHub: Requiring two-factor authentication in your organization</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:7" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:8">
-      <p><a href="https://docs.github.com/en/github/administering-a-repository/configuring-protected-branches">GitHub: Configuring protected branches</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:8" class="reversefootnote">&#8617;</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:8:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
+      <p><a href="https://docs.github.com/en/github/administering-a-repository/configuring-protected-branches">GitHub: Configuring protected branches</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:8" class="reversefootnote">&#8617;</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:8:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
     </li>
     <li id="fn:10">
-      <p><a href="https://github.community/t/allowing-github-actions-bot-to-push-to-protected-branch/16536/2">Allowing github-actions(bot) to push to protected branch</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:10" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://github.community/t/allowing-github-actions-bot-to-push-to-protected-branch/16536/2">Allowing github-actions(bot) to push to protected branch</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:10" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:11">
-      <p><a href="https://docs.github.com/en/github/setting-up-and-managing-organizations-and-teams/disabling-or-limiting-github-actions-for-your-organization">GitHub: Disabling or limiting GitHub Actions for your organization</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:11" class="reversefootnote">&#8617;</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:11:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
+      <p><a href="https://docs.github.com/en/github/setting-up-and-managing-organizations-and-teams/disabling-or-limiting-github-actions-for-your-organization">GitHub: Disabling or limiting GitHub Actions for your organization</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:11" class="reversefootnote">&#8617;</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:11:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
     </li>
     <li id="fn:12">
-      <p><a href="https://github.com/marketplace?type=actions">GitHub Actions Marketplace</a> <a href="https://humanwhocodes.com/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:12" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://github.com/marketplace?type=actions">GitHub Actions Marketplace</a> <a href="http://127.0.0.1:8000/blog/2020/07/safely-use-github-actions-in-organizations/index.html#fnref:12" class="reversefootnote">&#8617;</a></p>
     </li>
   </ol>
 </div>

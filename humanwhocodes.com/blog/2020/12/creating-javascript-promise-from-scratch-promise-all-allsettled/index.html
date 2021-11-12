@@ -10,7 +10,7 @@
 <title>Creating a JavaScript promise from scratch, Part 6: Promise.all() and Promise.allSettled() - Human Who Codes</title>
 <meta name="twitter:site" content="@humanwhocodes">
 <meta name="twitter:creator" content="@slicknet">
-<meta name="twitter:url" content="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/" />
+<meta name="twitter:url" content="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/" />
 <meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
 <meta name="twitter:image:alt" content="Human Who Codes" />
 <meta name="twitter:title" content="Creating a JavaScript promise from scratch, Part 6: Promise.all() and Promise.allSettled()">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary">
 
 <meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
-<meta name="og:url" content="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/" />
+<meta name="og:url" content="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/" />
 <meta name="og:title" content="Creating a JavaScript promise from scratch, Part 6: Promise.all() and Promise.allSettled()">
 <meta name="og:description" content="">
 <meta name="og:type" content="article">
@@ -35,7 +35,7 @@
 <link rel="icon" type="image/png" href="../../../../images/favicon.png">
 
 
-<link rel="canonical" href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html">
+<link rel="canonical" href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html">
 
 
 
@@ -49,7 +49,7 @@
         <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
             <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
             <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
-                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#content">Skip to content</a></li>
+                <li class="hide-offscreen"><a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#content">Skip to content</a></li>
                 <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
                 <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
                 <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
@@ -83,16 +83,16 @@
     </header>
     <section id="post-body" class="content-font">
         
-<p>In my <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html">last post</a>, I walked you through the creation of the <code class="highlighter-rouge">Promice.race()</code> and <code class="highlighter-rouge">Promise.any()</code> methods, both of which work on multiple promises and return a single promise that indicates the result of the operation. This post continues on to discuss <code class="highlighter-rouge">Promise.all()</code> and <code class="highlighter-rouge">Promise.allSettled()</code>, two operations that are similar to one another as well as <code class="highlighter-rouge">Promise.any()</code>. Each of these methods use the same basic algorithm so if you’re able to understand one of them then you can understand them all.</p>
+<p>In my <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html">last post</a>, I walked you through the creation of the <code class="highlighter-rouge">Promice.race()</code> and <code class="highlighter-rouge">Promise.any()</code> methods, both of which work on multiple promises and return a single promise that indicates the result of the operation. This post continues on to discuss <code class="highlighter-rouge">Promise.all()</code> and <code class="highlighter-rouge">Promise.allSettled()</code>, two operations that are similar to one another as well as <code class="highlighter-rouge">Promise.any()</code>. Each of these methods use the same basic algorithm so if you’re able to understand one of them then you can understand them all.</p>
 
 <p>This is the sixth post in my series about creating JavaScript promises from scratch. If you haven’t already read the previous posts, I’d suggest you do before continuing on:</p>
 
 <ul>
-  <li><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">Part 1: Constructor</a></li>
-  <li><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">Part 2: Resolving to a promise</a></li>
-  <li><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">Part 3: then(), catch(), and finally()</a></li>
-  <li><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html">Part 4: Promise.resolve() and Promise.reject()</a></li>
-  <li><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html">Part 5: Promise.race() and Promise.any()</a></li>
+  <li><a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">Part 1: Constructor</a></li>
+  <li><a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">Part 2: Resolving to a promise</a></li>
+  <li><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">Part 3: then(), catch(), and finally()</a></li>
+  <li><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html">Part 4: Promise.resolve() and Promise.reject()</a></li>
+  <li><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html">Part 5: Promise.race() and Promise.any()</a></li>
 </ul>
 
 <p>As a reminder, this series is based on my promise library, <a href="https://github.com/humanwhocodes/pledge">Pledge</a>. You can view and download all of the source code from GitHub.</p>
@@ -128,7 +128,7 @@
 
 <h3 id="creating-the-pledgeall-method">Creating the <code class="highlighter-rouge">Pledge.all()</code> method</h3>
 
-<p>The specification<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:1" class="footnote">1</a></sup> for <code class="highlighter-rouge">Promise.all()</code> describes the same basic algorithm that you’ve already seen for <code class="highlighter-rouge">Promise.race()</code> and <code class="highlighter-rouge">Promise.any()</code>.</p>
+<p>The specification<sup id="fnref:1"><a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:1" class="footnote">1</a></sup> for <code class="highlighter-rouge">Promise.all()</code> describes the same basic algorithm that you’ve already seen for <code class="highlighter-rouge">Promise.race()</code> and <code class="highlighter-rouge">Promise.any()</code>.</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
 
@@ -163,9 +163,9 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>I’ve explained this algorithm in detail in part 5, so I’m going to skip right to discussing the <code class="highlighter-rouge">PerformPromiseAll()</code> <sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:2" class="footnote">2</a></sup> operation and how I’ve implemented it as <code class="highlighter-rouge">performPledgeAll()</code>.</p>
+<p>I’ve explained this algorithm in detail in part 5, so I’m going to skip right to discussing the <code class="highlighter-rouge">PerformPromiseAll()</code> <sup id="fnref:2"><a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:2" class="footnote">2</a></sup> operation and how I’ve implemented it as <code class="highlighter-rouge">performPledgeAll()</code>.</p>
 
-<p>As I’ve already mentioned, this algorithm is so close to <code class="highlighter-rouge">PerformPromiseAny()</code><sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:3" class="footnote">3</a></sup> that it’s almost copy-and-paste. The first difference is that instead of tracking rejected values, you instead track fulfilled values (so the array is named <code class="highlighter-rouge">values</code> instead of <code class="highlighter-rouge">errors</code>). Then, instead of attaching a common fulfillment handler and a custom rejection handler, you attach a custom fulfillment handler and a common rejection handler. The last difference is that instead of tracking remaining elements so you can reject an array of errors, you track remaining elements to so you can fulfill an array of values. All of that is wrapped in the wacky iteration algorithm just as in <code class="highlighter-rouge">Promise.any()</code>. Here’s the code:</p>
+<p>As I’ve already mentioned, this algorithm is so close to <code class="highlighter-rouge">PerformPromiseAny()</code><sup id="fnref:3"><a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:3" class="footnote">3</a></sup> that it’s almost copy-and-paste. The first difference is that instead of tracking rejected values, you instead track fulfilled values (so the array is named <code class="highlighter-rouge">values</code> instead of <code class="highlighter-rouge">errors</code>). Then, instead of attaching a common fulfillment handler and a custom rejection handler, you attach a custom fulfillment handler and a common rejection handler. The last difference is that instead of tracking remaining elements so you can reject an array of errors, you track remaining elements to so you can fulfill an array of values. All of that is wrapped in the wacky iteration algorithm just as in <code class="highlighter-rouge">Promise.any()</code>. Here’s the code:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">performPledgeAll</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="kd">constructor</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">)</span> <span class="p">{</span>
 
@@ -223,7 +223,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>I’ve commented in the code the differences from <code class="highlighter-rouge">performPledgeAny()</code> so hopefully you can see that there really isn’t a big difference. You’ll also find that the  <code class="highlighter-rouge">createPledgeAllResolveElement()</code> function (which implements the <code class="highlighter-rouge">Promise.all</code> Resolve Element Functions algorithm<sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:4" class="footnote">4</a></sup>) is very similar to the <code class="highlighter-rouge">createPledgeAnyRejectElement()</code> function:</p>
+<p>I’ve commented in the code the differences from <code class="highlighter-rouge">performPledgeAny()</code> so hopefully you can see that there really isn’t a big difference. You’ll also find that the  <code class="highlighter-rouge">createPledgeAllResolveElement()</code> function (which implements the <code class="highlighter-rouge">Promise.all</code> Resolve Element Functions algorithm<sup id="fnref:4"><a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:4" class="footnote">4</a></sup>) is very similar to the <code class="highlighter-rouge">createPledgeAnyRejectElement()</code> function:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">createPledgeAllResolveElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">)</span> <span class="p">{</span>
 
@@ -310,7 +310,7 @@
 
 <h3 id="creating-the-pledgeallsettled-method">Creating the <code class="highlighter-rouge">Pledge.allSettled()</code> method</h3>
 
-<p>Once again, the <code class="highlighter-rouge">Promise.allSettled()</code> method follows the same basic algorithm<sup id="fnref:5"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:5" class="footnote">5</a></sup> as the other three multi-promise methods, so the <code class="highlighter-rouge">Pledge.allSettled()</code> implementation is the same the others except for naming:</p>
+<p>Once again, the <code class="highlighter-rouge">Promise.allSettled()</code> method follows the same basic algorithm<sup id="fnref:5"><a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:5" class="footnote">5</a></sup> as the other three multi-promise methods, so the <code class="highlighter-rouge">Pledge.allSettled()</code> implementation is the same the others except for naming:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
 
@@ -346,7 +346,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>The algorithm for the <code class="highlighter-rouge">PerformPromiseAllSettled()</code> operation<sup id="fnref:6"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:6" class="footnote">6</a></sup> should look very familiar at this point. In fact, it is almost exactly the same as the <code class="highlighter-rouge">PerformPromiseAll()</code> operation. Just like <code class="highlighter-rouge">PerformPromiseAll()</code>, <code class="highlighter-rouge">PerformPromiseAllSettled()</code> uses a <code class="highlighter-rouge">remainingElementsCount</code> object to track how many promises must still be settled, and <code class="highlighter-rouge">index</code> variable to track where each result should go in the <code class="highlighter-rouge">values</code> array, and a <code class="highlighter-rouge">values</code> array to keep track of promise results. Unlike <code class="highlighter-rouge">PerformPromiseAll()</code>, the values stored in the <code class="highlighter-rouge">values</code> array in <code class="highlighter-rouge">PerformPromiseAllSettled()</code> are the result objects I mentioned in the previous section.</p>
+<p>The algorithm for the <code class="highlighter-rouge">PerformPromiseAllSettled()</code> operation<sup id="fnref:6"><a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:6" class="footnote">6</a></sup> should look very familiar at this point. In fact, it is almost exactly the same as the <code class="highlighter-rouge">PerformPromiseAll()</code> operation. Just like <code class="highlighter-rouge">PerformPromiseAll()</code>, <code class="highlighter-rouge">PerformPromiseAllSettled()</code> uses a <code class="highlighter-rouge">remainingElementsCount</code> object to track how many promises must still be settled, and <code class="highlighter-rouge">index</code> variable to track where each result should go in the <code class="highlighter-rouge">values</code> array, and a <code class="highlighter-rouge">values</code> array to keep track of promise results. Unlike <code class="highlighter-rouge">PerformPromiseAll()</code>, the values stored in the <code class="highlighter-rouge">values</code> array in <code class="highlighter-rouge">PerformPromiseAllSettled()</code> are the result objects I mentioned in the previous section.</p>
 
 <p>The other significant difference between <code class="highlighter-rouge">PerformPromiseAll()</code> and <code class="highlighter-rouge">PerformPromiseAllSettled()</code> is that the latter creates a custom rejection handler for each promise in addition to a custom fulfillment handler. Those handlers are also created using the same basic algorithm you’ve already seen in other multi-promise methods.</p>
 
@@ -407,7 +407,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>As you can see, the only significant change from <code class="highlighter-rouge">performPledgeAll()</code> is the addition of the <code class="highlighter-rouge">rejectElement</code> that is used instead of <code class="highlighter-rouge">resultCapability.reject</code>. Otherwise, the functionality is exactly the same. The heavy lifting is really done by the <code class="highlighter-rouge">createPledgeAllSettledResolveElement()</code> and <code class="highlighter-rouge">createPledgeAllSettledRejectElement()</code> functions. These functions represent the corresponding steps in the specification for Promise.allSettled Resolve Element Functions<sup id="fnref:7"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:7" class="footnote">7</a></sup> and Promise.allSettled Reject Element Functions<sup id="fnref:8"><a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:8" class="footnote">8</a></sup> and are essentially the same function with the notable exception that one specifies the result as “fulfilled” and the other specifies the result as “rejected”. Here are the implementations:</p>
+<p>As you can see, the only significant change from <code class="highlighter-rouge">performPledgeAll()</code> is the addition of the <code class="highlighter-rouge">rejectElement</code> that is used instead of <code class="highlighter-rouge">resultCapability.reject</code>. Otherwise, the functionality is exactly the same. The heavy lifting is really done by the <code class="highlighter-rouge">createPledgeAllSettledResolveElement()</code> and <code class="highlighter-rouge">createPledgeAllSettledRejectElement()</code> functions. These functions represent the corresponding steps in the specification for Promise.allSettled Resolve Element Functions<sup id="fnref:7"><a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:7" class="footnote">7</a></sup> and Promise.allSettled Reject Element Functions<sup id="fnref:8"><a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fn:8" class="footnote">8</a></sup> and are essentially the same function with the notable exception that one specifies the result as “fulfilled” and the other specifies the result as “rejected”. Here are the implementations:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">createPledgeAllSettledResolveElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">values</span><span class="p">,</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">)</span> <span class="p">{</span>
 
@@ -477,28 +477,28 @@
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p><a href="https://tc39.es/ecma262/#sec-promise.all">Promise.all ( iterable )</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-promise.all">Promise.all ( iterable )</a> <a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:2">
-      <p><a href="https://tc39.es/ecma262/#sec-performpromiseall">PerformPromiseAll ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiseall">PerformPromiseAll ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:3">
-      <p><a href="https://tc39.es/ecma262/#sec-performpromiseany">PerformPromiseAny ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiseany">PerformPromiseAny ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:4">
-      <p><a href="https://tc39.es/ecma262/#sec-promise.all-resolve-element-functions">Promise.all Resolve Element Functions</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-promise.all-resolve-element-functions">Promise.all Resolve Element Functions</a> <a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:5">
-      <p><a href="https://tc39.es/ecma262/#sec-performpromiseallsettled">Promise.allSettled ( iterable )</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiseallsettled">Promise.allSettled ( iterable )</a> <a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:6">
-      <p><a href="https://tc39.es/ecma262/#sec-performpromiseallsettled">PerformPromiseAllSettled ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiseallsettled">PerformPromiseAllSettled ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:7">
-      <p><a href="https://tc39.es/ecma262/#sec-promise.allsettled-resolve-element-functions">Promise.allSetled Resolve Element Functions</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:7" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-promise.allsettled-resolve-element-functions">Promise.allSetled Resolve Element Functions</a> <a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:7" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:8">
-      <p><a href="https://tc39.es/ecma262/#sec-promise.allsettled-reject-element-functions">Promise.allSetled Reject Element Functions</a> <a href="https://humanwhocodes.com/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:8" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-promise.allsettled-reject-element-functions">Promise.allSetled Reject Element Functions</a> <a href="http://127.0.0.1:8000/blog/2020/12/creating-javascript-promise-from-scratch-promise-all-allsettled/index.html#fnref:8" class="reversefootnote">&#8617;</a></p>
     </li>
   </ol>
 </div>
@@ -537,15 +537,15 @@
         <h2 class="no-margin-top">Popular Posts</h2>
 <ul class="block-list">
 
-<li><a href="https://humanwhocodes.com/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
 
 </ul>
 

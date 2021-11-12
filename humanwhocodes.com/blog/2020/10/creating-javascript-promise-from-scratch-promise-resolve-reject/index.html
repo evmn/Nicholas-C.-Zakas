@@ -10,7 +10,7 @@
 <title>Creating a JavaScript promise from scratch, Part 4: Promise.resolve() and Promise.reject() - Human Who Codes</title>
 <meta name="twitter:site" content="@humanwhocodes">
 <meta name="twitter:creator" content="@slicknet">
-<meta name="twitter:url" content="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/" />
+<meta name="twitter:url" content="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/" />
 <meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
 <meta name="twitter:image:alt" content="Human Who Codes" />
 <meta name="twitter:title" content="Creating a JavaScript promise from scratch, Part 4: Promise.resolve() and Promise.reject()">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary">
 
 <meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
-<meta name="og:url" content="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/" />
+<meta name="og:url" content="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/" />
 <meta name="og:title" content="Creating a JavaScript promise from scratch, Part 4: Promise.resolve() and Promise.reject()">
 <meta name="og:description" content="">
 <meta name="og:type" content="article">
@@ -35,7 +35,7 @@
 <link rel="icon" type="image/png" href="../../../../images/favicon.png">
 
 
-<link rel="canonical" href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html">
+<link rel="canonical" href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html">
 
 
 
@@ -49,7 +49,7 @@
         <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
             <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
             <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
-                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#content">Skip to content</a></li>
+                <li class="hide-offscreen"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#content">Skip to content</a></li>
                 <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
                 <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
                 <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
@@ -85,7 +85,7 @@
         
 <p>When you create a promise with the <code class="highlighter-rouge">Promise</code> constructor, you’re creating an <em>unsettled promise</em>, meaning the promise state is pending until either the <code class="highlighter-rouge">resolve</code> or <code class="highlighter-rouge">reject</code> function is called inside the constructor. You can also created promises by using the <code class="highlighter-rouge">Promise.resolve()</code> and <code class="highlighter-rouge">Promise.reject()</code> methods, in which case, the promises might already be fulfilled or rejected as soon as they are created. These methods are helpful for wrapping known values in promises without going through the trouble of defining an executor function. However, <code class="highlighter-rouge">Promise.resolve()</code> doesn’t directly map to <code class="highlighter-rouge">resolve</code> inside an executor, and <code class="highlighter-rouge">Promise.reject()</code> doesn’t directly map to <code class="highlighter-rouge">reject</code> inside an executor.</p>
 
-<p>Note: This is the fourth post in my series about creating JavaScript promises from scratch. If you haven’t already read the <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">first post</a>, the <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">second post</a>, and the <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">third post</a>, I would suggest you do so because this post builds on the topics covered in those posts.</p>
+<p>Note: This is the fourth post in my series about creating JavaScript promises from scratch. If you haven’t already read the <a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">first post</a>, the <a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">second post</a>, and the <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">third post</a>, I would suggest you do so because this post builds on the topics covered in those posts.</p>
 
 <p>As a reminder, this series is based on my promise library, <a href="https://github.com/humanwhocodes/pledge">Pledge</a>. You can view and download all of the source code from GitHub.</p>
 
@@ -126,7 +126,7 @@
 
 <h3 id="creating-the-pledgeresolve-method">Creating the <code class="highlighter-rouge">Pledge.resolve()</code> method</h3>
 
-<p>The specification<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fn:1" class="footnote">1</a></sup> defines a simple, three-step process for the <code class="highlighter-rouge">Promise.resolve()</code> method:</p>
+<p>The specification<sup id="fnref:1"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fn:1" class="footnote">1</a></sup> defines a simple, three-step process for the <code class="highlighter-rouge">Promise.resolve()</code> method:</p>
 
 <ol>
   <li>Let <code class="highlighter-rouge">C</code> be the <code class="highlighter-rouge">this</code> value.</li>
@@ -134,7 +134,7 @@
   <li>Return <code class="highlighter-rouge">?</code> <code class="highlighter-rouge">PromiseResolve(C, x)</code>.</li>
 </ol>
 
-<p>As with many of the methods discussed in this blog post series, <code class="highlighter-rouge">Promise.resolve()</code> delegates much of the work to another operation called <code class="highlighter-rouge">PromiseResolve()</code><sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fn:2" class="footnote">2</a></sup>, which I’ve implemented as <code class="highlighter-rouge">pledgeResolve()</code>. The actual code for <code class="highlighter-rouge">Pledge.resolve()</code> is therefore quite succinct:</p>
+<p>As with many of the methods discussed in this blog post series, <code class="highlighter-rouge">Promise.resolve()</code> delegates much of the work to another operation called <code class="highlighter-rouge">PromiseResolve()</code><sup id="fnref:2"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fn:2" class="footnote">2</a></sup>, which I’ve implemented as <code class="highlighter-rouge">pledgeResolve()</code>. The actual code for <code class="highlighter-rouge">Pledge.resolve()</code> is therefore quite succinct:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
 
@@ -206,7 +206,7 @@
 
 <h3 id="creating-the-pledgereject-method">Creating the <code class="highlighter-rouge">Pledge.reject()</code> method</h3>
 
-<p>According to the specification<sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fn:3" class="footnote">3</a></sup>, the following steps must be taken when <code class="highlighter-rouge">Promise.reject()</code> is called with an argument <code class="highlighter-rouge">r</code>:</p>
+<p>According to the specification<sup id="fnref:3"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fn:3" class="footnote">3</a></sup>, the following steps must be taken when <code class="highlighter-rouge">Promise.reject()</code> is called with an argument <code class="highlighter-rouge">r</code>:</p>
 
 <ol>
   <li>Let <code class="highlighter-rouge">C</code> be the <code class="highlighter-rouge">this</code> value.</li>
@@ -259,13 +259,13 @@
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p><a href="https://www.ecma-international.org/ecma-262/#sec-promise.resolve">Promise.resolve( x )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/#sec-promise.resolve">Promise.resolve( x )</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:2">
-      <p><a href="https://www.ecma-international.org/ecma-262/#sec-promise-resolve">PromiseResolve( C, x )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/#sec-promise-resolve">PromiseResolve( C, x )</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:3">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promise.reject">Promise.reject( r )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promise.reject">Promise.reject( r )</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
     </li>
   </ol>
 </div>

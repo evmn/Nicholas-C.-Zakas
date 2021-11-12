@@ -10,7 +10,7 @@
 <title>Creating a JavaScript promise from scratch, Part 5: Promise.race() and Promise.any() - Human Who Codes</title>
 <meta name="twitter:site" content="@humanwhocodes">
 <meta name="twitter:creator" content="@slicknet">
-<meta name="twitter:url" content="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/" />
+<meta name="twitter:url" content="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/" />
 <meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
 <meta name="twitter:image:alt" content="Human Who Codes" />
 <meta name="twitter:title" content="Creating a JavaScript promise from scratch, Part 5: Promise.race() and Promise.any()">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary">
 
 <meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
-<meta name="og:url" content="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/" />
+<meta name="og:url" content="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/" />
 <meta name="og:title" content="Creating a JavaScript promise from scratch, Part 5: Promise.race() and Promise.any()">
 <meta name="og:description" content="">
 <meta name="og:type" content="article">
@@ -35,7 +35,7 @@
 <link rel="icon" type="image/png" href="../../../../images/favicon.png">
 
 
-<link rel="canonical" href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html">
+<link rel="canonical" href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html">
 
 
 
@@ -49,7 +49,7 @@
         <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
             <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
             <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
-                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#content">Skip to content</a></li>
+                <li class="hide-offscreen"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#content">Skip to content</a></li>
                 <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
                 <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
                 <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
@@ -85,7 +85,7 @@
         
 <p>In the previous posts in this series, I discussed implementing a promise from scratch in JavaScript. Now that there’s a full promise implementation, it’s time to look at how you can monitor multiple promises at once using <code class="highlighter-rouge">Promise.race()</code> and <code class="highlighter-rouge">Promise.any()</code> (<code class="highlighter-rouge">Promise.all()</code> and <code class="highlighter-rouge">Promise.allSettled()</code> will be covered in the next post). You’ll see that, for the most part, all of the methods that work with multiple promises follow a similar algorithm, which makes it fairly easy to move from implementing one of these methods to the next.</p>
 
-<p>Note: This is the fifth post in my series about creating JavaScript promises from scratch. If you haven’t already read the <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">first post</a>, the <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">second post</a>, the <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">third post</a>, and the <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html">fourth post</a>, I would suggest you do so because this post builds on the topics covered in those posts.</p>
+<p>Note: This is the fifth post in my series about creating JavaScript promises from scratch. If you haven’t already read the <a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">first post</a>, the <a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">second post</a>, the <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">third post</a>, and the <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-promise-resolve-reject/index.html">fourth post</a>, I would suggest you do so because this post builds on the topics covered in those posts.</p>
 
 <p>As a reminder, this series is based on my promise library, <a href="https://github.com/humanwhocodes/pledge">Pledge</a>. You can view and download all of the source code from GitHub.</p>
 
@@ -102,7 +102,7 @@
 
 <p>Arrays are iterables by default, meaning they have a default <code class="highlighter-rouge">Symbol.iterator</code> method that returns an iterator. As such, you can pass an array anywhere an iterator is required and it just works. What that means for the implementations of <code class="highlighter-rouge">Promise.race()</code> and <code class="highlighter-rouge">Promise.all()</code> is that they must work with iterables, and unfortunately, ECMA-262 makes working with iterables a little bit opaque.</p>
 
-<p>The first operation we need is <code class="highlighter-rouge">GetIterator()</code><sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:1" class="footnote">1</a></sup>, which is the operation that retrieves the iterator for an iterable and returns an <code class="highlighter-rouge">IteratorRecord</code> containing the iterator, the <code class="highlighter-rouge">next()</code> method for that iterator, and a <code class="highlighter-rouge">done</code> flag. The algorithm is a bit difficult to understand, but fundamentally <code class="highlighter-rouge">GetIterator()</code> will attempt to retrieve either an async or sync iterator based on a <code class="highlighter-rouge">hint</code> that is passed. For the purposes of this post, just know that only sync iterators will be used, so you can effectively ignore the parts that have to do with async iterators. Here’s the operation translated into JavaScript:</p>
+<p>The first operation we need is <code class="highlighter-rouge">GetIterator()</code><sup id="fnref:1"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:1" class="footnote">1</a></sup>, which is the operation that retrieves the iterator for an iterable and returns an <code class="highlighter-rouge">IteratorRecord</code> containing the iterator, the <code class="highlighter-rouge">next()</code> method for that iterator, and a <code class="highlighter-rouge">done</code> flag. The algorithm is a bit difficult to understand, but fundamentally <code class="highlighter-rouge">GetIterator()</code> will attempt to retrieve either an async or sync iterator based on a <code class="highlighter-rouge">hint</code> that is passed. For the purposes of this post, just know that only sync iterators will be used, so you can effectively ignore the parts that have to do with async iterators. Here’s the operation translated into JavaScript:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">getIterator</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="nx">hint</span><span class="o">=</span><span class="dl">"</span><span class="s2">sync</span><span class="dl">"</span><span class="p">,</span> <span class="nx">method</span><span class="p">)</span> <span class="p">{</span>
 
@@ -148,10 +148,10 @@
 <p>In ECMA-262, you always use <code class="highlighter-rouge">IteratorRecord</code> to work with iterators instead of using the iterator directly. Similarly, there are several operations that are used to manually work with an iterator:</p>
 
 <ul>
-  <li><code class="highlighter-rouge">IteratorNext()</code><sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:2" class="footnote">2</a></sup> - calls the <code class="highlighter-rouge">next()</code> method on an iterator and returns the result.</li>
-  <li><code class="highlighter-rouge">ItereatorComplete()</code><sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:3" class="footnote">3</a></sup> - returns a Boolean indicating if the iterator is done (simply reads the <code class="highlighter-rouge">done</code> field of the given result from <code class="highlighter-rouge">IteratorNext()</code>).</li>
-  <li><code class="highlighter-rouge">IteratorValue()</code><sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:4" class="footnote">4</a></sup> - returns the <code class="highlighter-rouge">value</code> field of the given result from <code class="highlighter-rouge">IteratorNext()</code>.</li>
-  <li><code class="highlighter-rouge">IteratorStep()</code><sup id="fnref:5"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:5" class="footnote">5</a></sup> - returns the result from <code class="highlighter-rouge">IteratorNext()</code> if <code class="highlighter-rouge">done</code> is <code class="highlighter-rouge">false</code>; returns <code class="highlighter-rouge">false</code> if <code class="highlighter-rouge">done</code> is <code class="highlighter-rouge">true</code> (just for fun, I suppose).</li>
+  <li><code class="highlighter-rouge">IteratorNext()</code><sup id="fnref:2"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:2" class="footnote">2</a></sup> - calls the <code class="highlighter-rouge">next()</code> method on an iterator and returns the result.</li>
+  <li><code class="highlighter-rouge">ItereatorComplete()</code><sup id="fnref:3"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:3" class="footnote">3</a></sup> - returns a Boolean indicating if the iterator is done (simply reads the <code class="highlighter-rouge">done</code> field of the given result from <code class="highlighter-rouge">IteratorNext()</code>).</li>
+  <li><code class="highlighter-rouge">IteratorValue()</code><sup id="fnref:4"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:4" class="footnote">4</a></sup> - returns the <code class="highlighter-rouge">value</code> field of the given result from <code class="highlighter-rouge">IteratorNext()</code>.</li>
+  <li><code class="highlighter-rouge">IteratorStep()</code><sup id="fnref:5"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:5" class="footnote">5</a></sup> - returns the result from <code class="highlighter-rouge">IteratorNext()</code> if <code class="highlighter-rouge">done</code> is <code class="highlighter-rouge">false</code>; returns <code class="highlighter-rouge">false</code> if <code class="highlighter-rouge">done</code> is <code class="highlighter-rouge">true</code> (just for fun, I suppose).</li>
 </ul>
 
 <p>Each of these operations is pretty straightforward as they simply wrap built-in iterator operations. Here are the operations implemented in JavaScript:</p>
@@ -296,7 +296,7 @@
 
 <h3 id="creating-the-pledgerace-method">Creating the <code class="highlighter-rouge">Pledge.race()</code> method</h3>
 
-<p>The specification<sup id="fnref:6"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:6" class="footnote">6</a></sup> for <code class="highlighter-rouge">Promise.race()</code> describes the algorithm as follows:</p>
+<p>The specification<sup id="fnref:6"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:6" class="footnote">6</a></sup> for <code class="highlighter-rouge">Promise.race()</code> describes the algorithm as follows:</p>
 
 <ol>
   <li>Let <code class="highlighter-rouge">C</code> be the <code class="highlighter-rouge">this</code> value.</li>
@@ -350,7 +350,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>Like many of the other methods in the <code class="highlighter-rouge">Pledge</code> class, this one starts by retrieving the <code class="highlighter-rouge">this</code> value and creating a <code class="highlighter-rouge">PledgeCapability</code> object. The next step is to retrieve the <code class="highlighter-rouge">resolve</code> method from the constructor, which basically means <code class="highlighter-rouge">pledgeResolve</code> is set equal to <code class="highlighter-rouge">Pledge.resolve()</code> (discussed in part 4). The <code class="highlighter-rouge">getPledgeResolve()</code> method is the equivalent of the <code class="highlighter-rouge">GetPromiseResolve</code><sup id="fnref:7"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:7" class="footnote">7</a></sup> operation in the spec. Here’s the code:</p>
+<p>Like many of the other methods in the <code class="highlighter-rouge">Pledge</code> class, this one starts by retrieving the <code class="highlighter-rouge">this</code> value and creating a <code class="highlighter-rouge">PledgeCapability</code> object. The next step is to retrieve the <code class="highlighter-rouge">resolve</code> method from the constructor, which basically means <code class="highlighter-rouge">pledgeResolve</code> is set equal to <code class="highlighter-rouge">Pledge.resolve()</code> (discussed in part 4). The <code class="highlighter-rouge">getPledgeResolve()</code> method is the equivalent of the <code class="highlighter-rouge">GetPromiseResolve</code><sup id="fnref:7"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:7" class="footnote">7</a></sup> operation in the spec. Here’s the code:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">getPledgeResolve</span><span class="p">(</span><span class="nx">pledgeConstructor</span><span class="p">)</span> <span class="p">{</span>
 
@@ -369,7 +369,7 @@
 
 <p>The <code class="highlighter-rouge">catch</code> clause of the <code class="highlighter-rouge">try-catch</code> statement handles any errors that are thrown. In order to make the code easier to compare the specification, I’ve chosen to once again use completion records (completion records were introduced in part 3 of this series). This part isn’t very important to the overall algorithm, so I’m going to skip explaining it and the <code class="highlighter-rouge">iteratorClose()</code> function in detail. Just know that when an error is thrown, the iterator might not have completed and so <code class="highlighter-rouge">iteratorClose()</code> is used to close out the iterator, freeing up any memory associated with it. The <code class="highlighter-rouge">iteratorClose()</code> function may return its own error, and if so, that’s the error that should be rejected into the created pledge. If you’d like to learn more about <code class="highlighter-rouge">iteratorClose()</code>, please check out the source code on GitHub.</p>
 
-<p>The next step is to implement the <code class="highlighter-rouge">PerformPromiseRace()</code><sup id="fnref:8"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:8" class="footnote">8</a></sup> operation as <code class="highlighter-rouge">performPledgeRace()</code>. The algorithm for this operation seems more complicated than it actually is due to the iterator loop I described at the start of this post. See if you can figure out what is happening in this code:</p>
+<p>The next step is to implement the <code class="highlighter-rouge">PerformPromiseRace()</code><sup id="fnref:8"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:8" class="footnote">8</a></sup> operation as <code class="highlighter-rouge">performPledgeRace()</code>. The algorithm for this operation seems more complicated than it actually is due to the iterator loop I described at the start of this post. See if you can figure out what is happening in this code:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">performPledgeRace</span><span class="p">(</span><span class="nx">iteratorRecord</span><span class="p">,</span> <span class="kd">constructor</span><span class="p">,</span> <span class="nx">resultCapability</span><span class="p">,</span> <span class="nx">pledgeResolve</span><span class="p">)</span> <span class="p">{</span>
 
@@ -443,7 +443,7 @@
 
 <h2 id="the-promiseany-method">The <code class="highlighter-rouge">Promise.any()</code> method</h2>
 
-<p>The <code class="highlighter-rouge">Promise.any()</code> method is a variation of the <code class="highlighter-rouge">Promise.race()</code> method. Like <code class="highlighter-rouge">Promise.race()</code>, <code class="highlighter-rouge">Promise.any()</code> will return a promise that is fulfilled with the same value as the first promise to be fulfilled. In effect, there’s still a “race” to see which promise will be fulfilled first. The difference is when none of the promises are fulfilled, in which case the returned promise is rejected with an <code class="highlighter-rouge">AggregateError</code> object<sup id="fnref:9"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:9" class="footnote">9</a></sup> that contains an <code class="highlighter-rouge">errors</code> array with the rejection reasons of each promise. Here are some examples to better illustrate:</p>
+<p>The <code class="highlighter-rouge">Promise.any()</code> method is a variation of the <code class="highlighter-rouge">Promise.race()</code> method. Like <code class="highlighter-rouge">Promise.race()</code>, <code class="highlighter-rouge">Promise.any()</code> will return a promise that is fulfilled with the same value as the first promise to be fulfilled. In effect, there’s still a “race” to see which promise will be fulfilled first. The difference is when none of the promises are fulfilled, in which case the returned promise is rejected with an <code class="highlighter-rouge">AggregateError</code> object<sup id="fnref:9"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:9" class="footnote">9</a></sup> that contains an <code class="highlighter-rouge">errors</code> array with the rejection reasons of each promise. Here are some examples to better illustrate:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">promise1</span> <span class="o">=</span> <span class="nb">Promise</span><span class="p">.</span><span class="nx">any</span><span class="p">([</span>
     <span class="nb">Promise</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="mi">42</span><span class="p">),</span>
@@ -486,7 +486,7 @@
 
 <h3 id="creating-an-aggregateerror-object">Creating an <code class="highlighter-rouge">AggregateError</code> object</h3>
 
-<p>The first step in implementing <code class="highlighter-rouge">Pledge.any()</code> is to create a representation of <code class="highlighter-rouge">AggregateError</code>. This class is new enough to JavaScript that it’s not present in a lot of runtimes yet, so it’s helpful to have a standalone representation. The specification<sup id="fnref:9:1"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:9" class="footnote">9</a></sup> indicates that <code class="highlighter-rouge">AggregateError</code> is not really a class, but rather a function that can be called with or without <code class="highlighter-rouge">new</code>. Here’s what a translation of the specification looks like:</p>
+<p>The first step in implementing <code class="highlighter-rouge">Pledge.any()</code> is to create a representation of <code class="highlighter-rouge">AggregateError</code>. This class is new enough to JavaScript that it’s not present in a lot of runtimes yet, so it’s helpful to have a standalone representation. The specification<sup id="fnref:9:1"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:9" class="footnote">9</a></sup> indicates that <code class="highlighter-rouge">AggregateError</code> is not really a class, but rather a function that can be called with or without <code class="highlighter-rouge">new</code>. Here’s what a translation of the specification looks like:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">PledgeAggregateError</span><span class="p">(</span><span class="nx">errors</span><span class="o">=</span><span class="p">[],</span> <span class="nx">message</span><span class="p">)</span> <span class="p">{</span>
 
@@ -532,7 +532,7 @@
 
 <h3 id="creating-the-pledgeany-method">Creating the <code class="highlighter-rouge">Pledge.any()</code> method</h3>
 
-<p>As I mentioned in the previous section, all of the algorithms for the static methods that work on multiple promises are similar, with the only real exception being the name of the operation that it delegates to. The <code class="highlighter-rouge">Promise.any()</code> method<sup id="fnref:10"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:10" class="footnote">10</a></sup> follows the same structure as the <code class="highlighter-rouge">Promise.race()</code> method, and so the <code class="highlighter-rouge">Pledge.any()</code> method in this library should look familiar:</p>
+<p>As I mentioned in the previous section, all of the algorithms for the static methods that work on multiple promises are similar, with the only real exception being the name of the operation that it delegates to. The <code class="highlighter-rouge">Promise.any()</code> method<sup id="fnref:10"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:10" class="footnote">10</a></sup> follows the same structure as the <code class="highlighter-rouge">Promise.race()</code> method, and so the <code class="highlighter-rouge">Pledge.any()</code> method in this library should look familiar:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
 
@@ -569,7 +569,7 @@
 
 <p>Because you’re already familiar with this basic algorithm, I’ll skip directly to what the <code class="highlighter-rouge">performPledgeAny()</code> function does.</p>
 
-<p>The algorithm for the <code class="highlighter-rouge">PerformPromiseAny()</code> method<sup id="fnref:11"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:11" class="footnote">11</a></sup> looks more complicated than it actually is. Part of the reason for that is the wacky way iterators are used, but you are already familiar with that. In fact, all this method does is attach <code class="highlighter-rouge">resultCapability.resolve</code> to be the fulfillment handler of each promise and attaches a special rejection handler that simply collects all of the rejection reasons in case they are needed.</p>
+<p>The algorithm for the <code class="highlighter-rouge">PerformPromiseAny()</code> method<sup id="fnref:11"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:11" class="footnote">11</a></sup> looks more complicated than it actually is. Part of the reason for that is the wacky way iterators are used, but you are already familiar with that. In fact, all this method does is attach <code class="highlighter-rouge">resultCapability.resolve</code> to be the fulfillment handler of each promise and attaches a special rejection handler that simply collects all of the rejection reasons in case they are needed.</p>
 
 <p>To keep track of rejection reasons, the operation defines three variables:</p>
 
@@ -644,7 +644,7 @@
 
 <p>The first important part of this function is when <code class="highlighter-rouge">remainingElementsCount.value</code> is <code class="highlighter-rouge">0</code>, then a new <code class="highlighter-rouge">PledgeAggregateError</code> object is created and passed to <code class="highlighter-rouge">resultCapability.reject()</code>. This is the condition where there are no more promises in the iterator and all of the promises have been rejected.</p>
 
-<p>The next important part of the code is the <code class="highlighter-rouge">createPledgeAnyRejectElement()</code> function. This function doesn’t have a corresponding operation in the specification, but rather, is defined as a series of steps<sup id="fnref:12"><a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:12" class="footnote">12</a></sup> to take; I split it out into a function to make the code easier to understand. The “reject element” is the rejection handler that should be attached to each promise, and it’s job is to aggregate the rejection reason. Here’s the code:</p>
+<p>The next important part of the code is the <code class="highlighter-rouge">createPledgeAnyRejectElement()</code> function. This function doesn’t have a corresponding operation in the specification, but rather, is defined as a series of steps<sup id="fnref:12"><a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fn:12" class="footnote">12</a></sup> to take; I split it out into a function to make the code easier to understand. The “reject element” is the rejection handler that should be attached to each promise, and it’s job is to aggregate the rejection reason. Here’s the code:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">createPledgeAnyRejectElement</span><span class="p">(</span><span class="nx">index</span><span class="p">,</span> <span class="nx">errors</span><span class="p">,</span> <span class="nx">pledgeCapability</span><span class="p">,</span> <span class="nx">remainingElementsCount</span><span class="p">)</span> <span class="p">{</span>
 
@@ -755,40 +755,40 @@
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p><a href="https://tc39.es/ecma262/#sec-getiterator">GetIterator ( obj [ , hint [ , method ] ] )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-getiterator">GetIterator ( obj [ , hint [ , method ] ] )</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:2">
-      <p><a href="https://tc39.es/ecma262/#sec-iteratornext">IteratorNext (IteratorNext ( iteratorRecord [ , value ] ))</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-iteratornext">IteratorNext (IteratorNext ( iteratorRecord [ , value ] ))</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:3">
-      <p><a href="https://tc39.es/ecma262/#sec-iteratorcomplete">IteratorComplete ( iterResult )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-iteratorcomplete">IteratorComplete ( iterResult )</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:4">
-      <p><a href="https://tc39.es/ecma262/#sec-iteratorvalue">IteratorValue ( iterResult )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-iteratorvalue">IteratorValue ( iterResult )</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:5">
-      <p><a href="https://tc39.es/ecma262/#sec-iteratorstep">IteratorStep ( iteratorRecord )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-iteratorstep">IteratorStep ( iteratorRecord )</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:6">
-      <p><a href="https://tc39.es/ecma262/#sec-promise.race">Promise.race ( iterable )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-promise.race">Promise.race ( iterable )</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:7">
-      <p><a href="https://tc39.es/ecma262/#sec-getpromiseresolve">GetPromiseResolve ( promiseConstructor )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:7" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-getpromiseresolve">GetPromiseResolve ( promiseConstructor )</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:7" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:8">
-      <p><a href="https://tc39.es/ecma262/#sec-performpromiserace">PerformPromiseRace ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:8" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiserace">PerformPromiseRace ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:8" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:9">
-      <p><a href="https://tc39.es/ecma262/#sec-aggregate-error-objects">AggregateError Objects</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:9" class="reversefootnote">&#8617;</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:9:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-aggregate-error-objects">AggregateError Objects</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:9" class="reversefootnote">&#8617;</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:9:1" class="reversefootnote">&#8617;<sup>2</sup></a></p>
     </li>
     <li id="fn:10">
-      <p><a href="https://tc39.es/ecma262/#sec-promise.any">Promise.any ( iterable )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:10" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-promise.any">Promise.any ( iterable )</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:10" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:11">
-      <p><a href="https://tc39.es/ecma262/#sec-performpromiseany">PerformPromiseAny ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:11" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-performpromiseany">PerformPromiseAny ( iteratorRecord, constructor, resultCapability, promiseResolve )</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:11" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:12">
-      <p><a href="https://tc39.es/ecma262/#sec-promise.any-reject-element-functions">Promise.any Reject Element Functions</a> <a href="https://humanwhocodes.com/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:12" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://tc39.es/ecma262/#sec-promise.any-reject-element-functions">Promise.any Reject Element Functions</a> <a href="http://127.0.0.1:8000/blog/2020/11/creating-javascript-promise-from-scratch-promise-race-any/index.html#fnref:12" class="reversefootnote">&#8617;</a></p>
     </li>
   </ol>
 </div>

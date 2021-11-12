@@ -10,7 +10,7 @@
 <title>Why I've stopped exporting defaults from my JavaScript modules - Human Who Codes</title>
 <meta name="twitter:site" content="@humanwhocodes">
 <meta name="twitter:creator" content="@slicknet">
-<meta name="twitter:url" content="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/" />
+<meta name="twitter:url" content="http://127.0.0.1:8000/blog/2019/01/stop-using-default-exports-javascript-module/" />
 <meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
 <meta name="twitter:image:alt" content="Human Who Codes" />
 <meta name="twitter:title" content="Why I've stopped exporting defaults from my JavaScript modules">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary">
 
 <meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
-<meta name="og:url" content="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/" />
+<meta name="og:url" content="http://127.0.0.1:8000/blog/2019/01/stop-using-default-exports-javascript-module/" />
 <meta name="og:title" content="Why I've stopped exporting defaults from my JavaScript modules">
 <meta name="og:description" content="">
 <meta name="og:type" content="article">
@@ -35,7 +35,7 @@
 <link rel="icon" type="image/png" href="../../../../images/favicon.png">
 
 
-<link rel="canonical" href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html">
+<link rel="canonical" href="http://127.0.0.1:8000/blog/2019/01/stop-using-default-exports-javascript-module/index.html">
 
 
 
@@ -49,7 +49,7 @@
         <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
             <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
             <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
-                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#content">Skip to content</a></li>
+                <li class="hide-offscreen"><a href="http://127.0.0.1:8000/blog/2019/01/stop-using-default-exports-javascript-module/index.html#content">Skip to content</a></li>
                 <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
                 <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
                 <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
@@ -243,11 +243,11 @@
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">LinkedList</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">./list.js</span><span class="dl">"</span><span class="p">;</span>
 </code></pre></div></div>
 
-<p>If <code class="highlighter-rouge">LinkedList</code> doesn’t exist in <code class="highlighter-rouge">list.js</code>, then an error is thrown. Further, tools such as IDEs and ESLint<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fn:1" class="footnote">1</a></sup> are easily able to detect a missing reference before the code is executed.</p>
+<p>If <code class="highlighter-rouge">LinkedList</code> doesn’t exist in <code class="highlighter-rouge">list.js</code>, then an error is thrown. Further, tools such as IDEs and ESLint<sup id="fnref:1"><a href="http://127.0.0.1:8000/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fn:1" class="footnote">1</a></sup> are easily able to detect a missing reference before the code is executed.</p>
 
 <h2 id="worse-tooling-support">Worse tooling support</h2>
 
-<p>Speaking of IDEs, WebStorm is able to help write <code class="highlighter-rouge">import</code> statements for you.<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fn:2" class="footnote">2</a></sup> When you have finished typing an identifier that isn’t defined in the file, WebStorm will search the modules in your project to determine if the identifier is a named export in another file. At that point, it can do any of the following:</p>
+<p>Speaking of IDEs, WebStorm is able to help write <code class="highlighter-rouge">import</code> statements for you.<sup id="fnref:2"><a href="http://127.0.0.1:8000/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fn:2" class="footnote">2</a></sup> When you have finished typing an identifier that isn’t defined in the file, WebStorm will search the modules in your project to determine if the identifier is a named export in another file. At that point, it can do any of the following:</p>
 
 <ol>
   <li>Underline the identifier that is missing its definition and show you the <code class="highlighter-rouge">import</code> statement that would fix it.</li>
@@ -255,7 +255,7 @@
 can now automatically add an <code class="highlighter-rouge">import</code> statement based on an identifier that you type. In fact, WebStorm is able to help you a great deal when using named imports:</li>
 </ol>
 
-<p>There is a plugin for Visual Studio Code<sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fn:3" class="footnote">3</a></sup> that provides similar functionality. This type of functionality isn’t possible when using default exports because there is no canonical name for things you want to import.</p>
+<p>There is a plugin for Visual Studio Code<sup id="fnref:3"><a href="http://127.0.0.1:8000/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fn:3" class="footnote">3</a></sup> that provides similar functionality. This type of functionality isn’t possible when using default exports because there is no canonical name for things you want to import.</p>
 
 <h2 id="conclusion">Conclusion</h2>
 
@@ -268,13 +268,13 @@ can now automatically add an <code class="highlighter-rouge">import</code> state
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p><a href="https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/named.md">esling-plugin-import <code class="highlighter-rouge">import/named</code> rule</a> <a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/named.md">esling-plugin-import <code class="highlighter-rouge">import/named</code> rule</a> <a href="http://127.0.0.1:8000/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:2">
-      <p><a href="https://www.jetbrains.com/help/webstorm/javascript-specific-guidelines.html#ws_js_auto_import">WebStorm: Auto Import in JavaScript</a> <a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.jetbrains.com/help/webstorm/javascript-specific-guidelines.html#ws_js_auto_import">WebStorm: Auto Import in JavaScript</a> <a href="http://127.0.0.1:8000/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:3">
-      <p><a href="https://marketplace.visualstudio.com/items?itemName=NuclleaR.vscode-extension-auto-import">Visual Studio Extension: Auto Import</a> <a href="https://humanwhocodes.com/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://marketplace.visualstudio.com/items?itemName=NuclleaR.vscode-extension-auto-import">Visual Studio Extension: Auto Import</a> <a href="http://127.0.0.1:8000/blog/2019/01/stop-using-default-exports-javascript-module/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
     </li>
   </ol>
 </div>

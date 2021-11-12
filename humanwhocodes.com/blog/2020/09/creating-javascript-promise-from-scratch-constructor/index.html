@@ -10,7 +10,7 @@
 <title>Creating a JavaScript promise from scratch, Part 1: Constructor - Human Who Codes</title>
 <meta name="twitter:site" content="@humanwhocodes">
 <meta name="twitter:creator" content="@slicknet">
-<meta name="twitter:url" content="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/" />
+<meta name="twitter:url" content="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/" />
 <meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
 <meta name="twitter:image:alt" content="Human Who Codes" />
 <meta name="twitter:title" content="Creating a JavaScript promise from scratch, Part 1: Constructor">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary">
 
 <meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
-<meta name="og:url" content="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/" />
+<meta name="og:url" content="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/" />
 <meta name="og:title" content="Creating a JavaScript promise from scratch, Part 1: Constructor">
 <meta name="og:description" content="">
 <meta name="og:type" content="article">
@@ -35,7 +35,7 @@
 <link rel="icon" type="image/png" href="../../../../images/favicon.png">
 
 
-<link rel="canonical" href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">
+<link rel="canonical" href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">
 
 
 
@@ -49,7 +49,7 @@
         <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
             <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
             <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
-                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#content">Skip to content</a></li>
+                <li class="hide-offscreen"><a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#content">Skip to content</a></li>
                 <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
                 <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
                 <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
@@ -85,7 +85,7 @@
         
 <p>Early on in my career, I learned a lot by trying to recreate functionality I saw on websites. I found it helpful to investigate why something worked the way that it worked, and that lesson has stuck with me for decades. The best way to know if you really understand something is to take it apart and put it back together again. That’s why, when I decided to deepen my understanding of promises, I started thinking about creating promises from scratch.</p>
 
-<p>Yes, I wrote a book on ECMAScript 6 in which I covered promises, but at that time, promises were still very new and not yet implemented everywhere. I made my best guess as to how certain things worked but I never felt truly comfortable with my understanding. So, I decided to turn ECMA-262’s description of promises<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:1" class="footnote">1</a></sup> and implement that functionality from scratch.</p>
+<p>Yes, I wrote a book on ECMAScript 6 in which I covered promises, but at that time, promises were still very new and not yet implemented everywhere. I made my best guess as to how certain things worked but I never felt truly comfortable with my understanding. So, I decided to turn ECMA-262’s description of promises<sup id="fnref:1"><a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:1" class="footnote">1</a></sup> and implement that functionality from scratch.</p>
 
 <p>In this series of posts, I’ll be digging into the internals of my promise library, <a href="https://github.com/humanwhocodes/pledge">Pledge</a>. My hope is that exploring this code will help everyone understand how JavaScript promises work.</p>
 
@@ -124,7 +124,7 @@
 
 <h2 id="internal-properties-of-a-promise">Internal properties of a promise</h2>
 
-<p>ECMA-262<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:2" class="footnote">2</a></sup> specifies the following internal properties (called <em>slots</em> in the spec) for instances of <code class="highlighter-rouge">Promise</code>:</p>
+<p>ECMA-262<sup id="fnref:2"><a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:2" class="footnote">2</a></sup> specifies the following internal properties (called <em>slots</em> in the spec) for instances of <code class="highlighter-rouge">Promise</code>:</p>
 
 <table>
   <thead>
@@ -257,7 +257,7 @@
 
 <h2 id="creating-the-resolving-functions">Creating the resolving functions</h2>
 
-<p>The specification defines a <code class="highlighter-rouge">CreateResolvingFunctions</code> abstract operation<sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:3" class="footnote">3</a></sup>, which is a fancy way of saying that it’s a series of steps to perform as part of some other function or method. To make it easy to go back and forth between the specification and the Pledge library, I’ve opted to use the same name for an actual function. The details in the specification aren’t all relevant to implementing the code in JavaScript, so I’ve omitted or changed some parts. I’ve also kept some parts that may seem nonsensical within the context of JavaScript – I’ve done that intentionally, once again, for ease of going back and forth with the specification.</p>
+<p>The specification defines a <code class="highlighter-rouge">CreateResolvingFunctions</code> abstract operation<sup id="fnref:3"><a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:3" class="footnote">3</a></sup>, which is a fancy way of saying that it’s a series of steps to perform as part of some other function or method. To make it easy to go back and forth between the specification and the Pledge library, I’ve opted to use the same name for an actual function. The details in the specification aren’t all relevant to implementing the code in JavaScript, so I’ve omitted or changed some parts. I’ve also kept some parts that may seem nonsensical within the context of JavaScript – I’ve done that intentionally, once again, for ease of going back and forth with the specification.</p>
 
 <p>The <code class="highlighter-rouge">createResolvingFunctions()</code> function is responsible for creating the <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions that are passed into the executor. However, this function is actually used elsewhere, as well, allowing any parts of the library to retrieve these functions in order to manipulate existing <code class="highlighter-rouge">Pledge</code> instances.</p>
 
@@ -328,7 +328,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>The <code class="highlighter-rouge">rejectPledge()</code> function is another abstract operation from the specification<sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:4" class="footnote">4</a></sup> that is used in multiple places and is responsible for changing the internal state of a promise. Here’s the steps directly from the specification:</p>
+<p>The <code class="highlighter-rouge">rejectPledge()</code> function is another abstract operation from the specification<sup id="fnref:4"><a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fn:4" class="footnote">4</a></sup> that is used in multiple places and is responsible for changing the internal state of a promise. Here’s the steps directly from the specification:</p>
 
 <ol>
   <li>Assert: The value of <code class="highlighter-rouge">promise.[[PromiseState]]</code> is <code class="highlighter-rouge">pending</code>.</li>
@@ -477,7 +477,7 @@
 
 <h2 id="wrapping-up">Wrapping Up</h2>
 
-<p>At this point, you should have a good understanding of how a <code class="highlighter-rouge">Promise</code> constructor works. The most important thing to remember is that every operation so far is synchronous; there is no asynchronous operation until we start dealing with other operations, such as <code class="highlighter-rouge">then()</code>, <code class="highlighter-rouge">catch()</code>, and <code class="highlighter-rouge">finally()</code>, which will be covered later in this series. When you create a new instance of <code class="highlighter-rouge">Promise</code> and pass in an executor, that executor is run immediately, and if either <code class="highlighter-rouge">resolve</code> or <code class="highlighter-rouge">reject</code> is called synchronously, then the newly created promise is already fulfilled or rejected, respectively. It’s only what happens after that point where you get into asynchronous operations, and asynchronous operations are discussed in the <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">next post</a>.</p>
+<p>At this point, you should have a good understanding of how a <code class="highlighter-rouge">Promise</code> constructor works. The most important thing to remember is that every operation so far is synchronous; there is no asynchronous operation until we start dealing with other operations, such as <code class="highlighter-rouge">then()</code>, <code class="highlighter-rouge">catch()</code>, and <code class="highlighter-rouge">finally()</code>, which will be covered later in this series. When you create a new instance of <code class="highlighter-rouge">Promise</code> and pass in an executor, that executor is run immediately, and if either <code class="highlighter-rouge">resolve</code> or <code class="highlighter-rouge">reject</code> is called synchronously, then the newly created promise is already fulfilled or rejected, respectively. It’s only what happens after that point where you get into asynchronous operations, and asynchronous operations are discussed in the <a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">next post</a>.</p>
 
 <p>All of this code is available in the <a href="https://github.com/humanwhocodes/pledge">Pledge</a> on GitHub. I hope you’ll download it and try it out to get a better understanding of promises.</p>
 
@@ -486,16 +486,16 @@
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promise-objects">Promise Objects</a> <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promise-objects">Promise Objects</a> <a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:2">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-properties-of-promise-instances">Properties of Promise instances</a> <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-properties-of-promise-instances">Properties of Promise instances</a> <a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:3">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-createresolvingfunctions">CreateResolvingFunctions(promise)</a> <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-createresolvingfunctions">CreateResolvingFunctions(promise)</a> <a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:4">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-rejectpromise">RejectPromise(promise, reason)</a> <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-rejectpromise">RejectPromise(promise, reason)</a> <a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
     </li>
   </ol>
 </div>
@@ -534,15 +534,15 @@
         <h2 class="no-margin-top">Popular Posts</h2>
 <ul class="block-list">
 
-<li><a href="https://humanwhocodes.com/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
 
 </ul>
 

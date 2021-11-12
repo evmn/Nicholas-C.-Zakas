@@ -10,7 +10,7 @@
 <title>Outputting Markdown from Jekyll using hooks - Human Who Codes</title>
 <meta name="twitter:site" content="@humanwhocodes">
 <meta name="twitter:creator" content="@slicknet">
-<meta name="twitter:url" content="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/" />
+<meta name="twitter:url" content="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/" />
 <meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
 <meta name="twitter:image:alt" content="Human Who Codes" />
 <meta name="twitter:title" content="Outputting Markdown from Jekyll using hooks">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary">
 
 <meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
-<meta name="og:url" content="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/" />
+<meta name="og:url" content="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/" />
 <meta name="og:title" content="Outputting Markdown from Jekyll using hooks">
 <meta name="og:description" content="">
 <meta name="og:type" content="article">
@@ -35,7 +35,7 @@
 <link rel="icon" type="image/png" href="../../../../images/favicon.png">
 
 
-<link rel="canonical" href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html">
+<link rel="canonical" href="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/index.html">
 
 
 
@@ -49,7 +49,7 @@
         <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
             <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
             <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
-                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#content">Skip to content</a></li>
+                <li class="hide-offscreen"><a href="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/index.html#content">Skip to content</a></li>
                 <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
                 <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
                 <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
@@ -85,13 +85,13 @@
     </header>
     <section id="post-body" class="content-font">
         
-<p>One of the things I most enjoy about Jekyll<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:1" class="footnote">1</a></sup> is writing my blog posts in Markdown. I love not worrying about HTML and just letting Jekyll generate it for me when a post is published. Using Liquid tags directly in Markdown is also helpful, as I can define sitewide or page-specific variables and then replace them during site generation. This is a really useful capability that I wanted to take advantage of to output Markdown for use in other sites. Places like Medium and dev.to allow you to post Markdown articles, so I thought repurposing the Markdown I used in Jekyll would make crossposting to those sites easier.</p>
+<p>One of the things I most enjoy about Jekyll<sup id="fnref:1"><a href="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:1" class="footnote">1</a></sup> is writing my blog posts in Markdown. I love not worrying about HTML and just letting Jekyll generate it for me when a post is published. Using Liquid tags directly in Markdown is also helpful, as I can define sitewide or page-specific variables and then replace them during site generation. This is a really useful capability that I wanted to take advantage of to output Markdown for use in other sites. Places like Medium and dev.to allow you to post Markdown articles, so I thought repurposing the Markdown I used in Jekyll would make crossposting to those sites easier.</p>
 
 <p>I assumed that there would be a property on the <code class="highlighter-rouge">page</code> variable that would give me access to the rendered Markdown, but I was wrong. This began a long journey through relatively undocumented corners of the Jekyll plugin ecosystem. I’m sharing that journey here in the hopes that others won’t have to go through the same frustrating experience.</p>
 
 <h2 id="an-introduction-to-jekyll-plugins">An introduction to Jekyll plugins</h2>
 
-<p>I was relatively unfamiliar with the Jekyll plugin system before trying to figure out how to get the rendered Markdown for a post. Jekyll supports a number of different plugin types<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:2" class="footnote">2</a></sup>. These plugin types affect Jekyll directly:</p>
+<p>I was relatively unfamiliar with the Jekyll plugin system before trying to figure out how to get the rendered Markdown for a post. Jekyll supports a number of different plugin types<sup id="fnref:2"><a href="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:2" class="footnote">2</a></sup>. These plugin types affect Jekyll directly:</p>
 
 <ul>
   <li><strong>Generators</strong> - plugins that create files. While it’s not required that generators create files, this is the most frequent use case. Plugins like <code class="highlighter-rouge">jekyll-archives</code> use generators to create files that wouldn’t otherwise exist.</li>
@@ -147,7 +147,7 @@
 
 <p>I figured that the <code class="highlighter-rouge">content</code> property inside of a <code class="highlighter-rouge">:document, :pre_render</code> hook would contain the Liquid-rendered Markdown instead of the final HTML, but I was only half correct. The <code class="highlighter-rouge">content</code> property actually contains the unprocessed Markdown that still contains all of the Liquid variables. It turns out that “prerender” means something different than I thought.</p>
 
-<p>The lifecycle of the <code class="highlighter-rouge">content</code> property for a given document in Jekyll looks like this<sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:4" class="footnote">3</a></sup>:</p>
+<p>The lifecycle of the <code class="highlighter-rouge">content</code> property for a given document in Jekyll looks like this<sup id="fnref:4"><a href="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:4" class="footnote">3</a></sup>:</p>
 
 <ol>
   <li>The <code class="highlighter-rouge">content</code> property contains the file content with the front matter removed (typically Markdown)</li>
@@ -203,7 +203,7 @@
 
 <p>The last line ensures that <code class="highlighter-rouge">page.rendered_content</code> will be available inside of templates later on (and remember, this is happening during <code class="highlighter-rouge">pre_render</code>, so the templates haven’t yet been used).</p>
 
-<p>The next step was to use Liquid to render the raw content. To figure out how to do this, I had to dig around in the Jekyll source<sup id="fnref:5"><a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:5" class="footnote">4</a></sup> as there wasn’t any documentation. Rendering Liquid the exact same way that Jekyll does by default requires a bit of setup and pulling in pieces of data from a couple different places. Here is the final code:</p>
+<p>The next step was to use Liquid to render the raw content. To figure out how to do this, I had to dig around in the Jekyll source<sup id="fnref:5"><a href="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/index.html#fn:5" class="footnote">4</a></sup> as there wasn’t any documentation. Rendering Liquid the exact same way that Jekyll does by default requires a bit of setup and pulling in pieces of data from a couple different places. Here is the final code:</p>
 
 <div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Jekyll</span><span class="o">::</span><span class="no">Hooks</span><span class="p">.</span><span class="nf">register</span> <span class="ss">:documents</span><span class="p">,</span> <span class="ss">:pre_render</span> <span class="k">do</span> <span class="o">|</span><span class="n">doc</span><span class="p">,</span> <span class="n">payload</span><span class="o">|</span>
 
@@ -281,16 +281,16 @@ layout: null
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p><a href="https://jekyllrb.com/">Jekyll</a> <a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://jekyllrb.com/">Jekyll</a> <a href="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:2">
-      <p><a href="https://jekyllrb.com/docs/plugins/">Jekyll Plugins</a> <a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://jekyllrb.com/docs/plugins/">Jekyll Plugins</a> <a href="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:4">
-      <p><a href="https://jekyllrb.com/tutorials/orderofinterpretation/">Jekyll Order of Interpretation</a> <a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://jekyllrb.com/tutorials/orderofinterpretation/">Jekyll Order of Interpretation</a> <a href="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:5">
-      <p><a href="https://github.com/jekyll/jekyll/blob/be78b4246c4513738eb4c18b76569182dd4f8578/lib/jekyll/renderer.rb#L70-L93">Jekyll renderer.rb</a> <a href="https://humanwhocodes.com/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://github.com/jekyll/jekyll/blob/be78b4246c4513738eb4c18b76569182dd4f8578/lib/jekyll/renderer.rb#L70-L93">Jekyll renderer.rb</a> <a href="http://127.0.0.1:8000/blog/2019/04/jekyll-hooks-output-markdown/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
     </li>
   </ol>
 </div>
@@ -329,15 +329,15 @@ layout: null
         <h2 class="no-margin-top">Popular Posts</h2>
 <ul class="block-list">
 
-<li><a href="https://humanwhocodes.com/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
 
 </ul>
 

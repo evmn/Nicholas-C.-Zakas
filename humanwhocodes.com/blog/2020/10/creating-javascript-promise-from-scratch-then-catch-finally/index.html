@@ -10,7 +10,7 @@
 <title>Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally() - Human Who Codes</title>
 <meta name="twitter:site" content="@humanwhocodes">
 <meta name="twitter:creator" content="@slicknet">
-<meta name="twitter:url" content="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/" />
+<meta name="twitter:url" content="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/" />
 <meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
 <meta name="twitter:image:alt" content="Human Who Codes" />
 <meta name="twitter:title" content="Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally()">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary">
 
 <meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
-<meta name="og:url" content="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/" />
+<meta name="og:url" content="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/" />
 <meta name="og:title" content="Creating a JavaScript promise from scratch, Part 3: then(), catch(), and finally()">
 <meta name="og:description" content="">
 <meta name="og:type" content="article">
@@ -35,7 +35,7 @@
 <link rel="icon" type="image/png" href="../../../../images/favicon.png">
 
 
-<link rel="canonical" href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">
+<link rel="canonical" href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html">
 
 
 
@@ -49,7 +49,7 @@
         <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
             <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
             <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
-                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#content">Skip to content</a></li>
+                <li class="hide-offscreen"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#content">Skip to content</a></li>
                 <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
                 <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
                 <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
@@ -83,7 +83,7 @@
     </header>
     <section id="post-body" class="content-font">
         
-<p>In my <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">first post</a> of this series, I explained how the <code class="highlighter-rouge">Promise</code> constructor works by recreating it as the <code class="highlighter-rouge">Pledge</code> constructor. In the <a href="https://humanwhocodes.com/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">second post</a> in this series, I explained how asynchronous operations work in promises through jobs. If you haven’t already read those two posts, I’d suggest doing so before continuing on with this one.</p>
+<p>In my <a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-constructor/index.html">first post</a> of this series, I explained how the <code class="highlighter-rouge">Promise</code> constructor works by recreating it as the <code class="highlighter-rouge">Pledge</code> constructor. In the <a href="http://127.0.0.1:8000/blog/2020/09/creating-javascript-promise-from-scratch-resolving-to-a-promise/index.html">second post</a> in this series, I explained how asynchronous operations work in promises through jobs. If you haven’t already read those two posts, I’d suggest doing so before continuing on with this one.</p>
 
 <p>This post focuses on implementing <code class="highlighter-rouge">then()</code>, <code class="highlighter-rouge">catch()</code>, and <code class="highlighter-rouge">finally()</code> according to ECMA-262. This functionality is surprisingly involved and relies on a lot of helper classes and utilities to get things working correctly. However, once you master a few basic concepts, the implementations are relatively straightforward.</p>
 
@@ -119,7 +119,7 @@
 
 <h3 id="the-promisecapability-record">The <code class="highlighter-rouge">PromiseCapability</code> record</h3>
 
-<p>The specification defines a <code class="highlighter-rouge">PromiseCapability</code> record<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:1" class="footnote">1</a></sup> as having the following internal-only properties:</p>
+<p>The specification defines a <code class="highlighter-rouge">PromiseCapability</code> record<sup id="fnref:1"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:1" class="footnote">1</a></sup> as having the following internal-only properties:</p>
 
 <table>
   <thead>
@@ -150,7 +150,7 @@
 
 <p>Effectively, a <code class="highlighter-rouge">PromiseCapability</code> record consists of a promise object and the <code class="highlighter-rouge">resolve</code> and <code class="highlighter-rouge">reject</code> functions that change its internal state. You can think of this as a helper object that allows easier access to changing a promise’s state.</p>
 
-<p>Along with the definition of the <code class="highlighter-rouge">PromiseCapability</code> record, there is also the definition of a <code class="highlighter-rouge">NewPromiseCapability()</code> function<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:2" class="footnote">2</a></sup> that outlines the steps you must take in order to create a new <code class="highlighter-rouge">PromiseCapability</code> record. The <code class="highlighter-rouge">NewPromiseCapability()</code> function is passed a single argument, <code class="highlighter-rouge">C</code>, that is a function assumed to be a constructor that accepts an executor function. Here’s a simplified list of steps:</p>
+<p>Along with the definition of the <code class="highlighter-rouge">PromiseCapability</code> record, there is also the definition of a <code class="highlighter-rouge">NewPromiseCapability()</code> function<sup id="fnref:2"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:2" class="footnote">2</a></sup> that outlines the steps you must take in order to create a new <code class="highlighter-rouge">PromiseCapability</code> record. The <code class="highlighter-rouge">NewPromiseCapability()</code> function is passed a single argument, <code class="highlighter-rouge">C</code>, that is a function assumed to be a constructor that accepts an executor function. Here’s a simplified list of steps:</p>
 
 <ol>
   <li>If <code class="highlighter-rouge">C</code> isn’t a constructor, throw an error.</li>
@@ -239,7 +239,7 @@
 
 <h3 id="implementing-the-then-method">Implementing the <code class="highlighter-rouge">then()</code> method</h3>
 
-<p>The <code class="highlighter-rouge">then()</code> method itself is fairly short because it delegates most of the work to a function called <code class="highlighter-rouge">PerformPromiseThen()</code>. Here’s how the specification defines <code class="highlighter-rouge">then()</code><sup id="fnref:3"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:3" class="footnote">3</a></sup>:</p>
+<p>The <code class="highlighter-rouge">then()</code> method itself is fairly short because it delegates most of the work to a function called <code class="highlighter-rouge">PerformPromiseThen()</code>. Here’s how the specification defines <code class="highlighter-rouge">then()</code><sup id="fnref:3"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:3" class="footnote">3</a></sup>:</p>
 
 <ol>
   <li>Let <code class="highlighter-rouge">promise</code> be the <code class="highlighter-rouge">this</code> value.</li>
@@ -385,7 +385,7 @@
 <span class="p">}</span>
 </code></pre></div></div>
 
-<p>In this code, the <code class="highlighter-rouge">PledgeSymbol.fulfillReactions</code> and <code class="highlighter-rouge">PledgeSymbol.rejectReactions</code> are finally used for something. If the state is pending, the reactions are stored for later so they can be triggered when the state changes (this is discussed later in this post). If the state is either fulfilled or rejected then a <code class="highlighter-rouge">PledgeReactionJob</code> is created to run the reaction. The <code class="highlighter-rouge">PledgeReactionJob</code> maps to <code class="highlighter-rouge">NewPromiseReactionJob()</code><sup id="fnref:4"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:4" class="footnote">4</a></sup> in the specification and is declared like this:</p>
+<p>In this code, the <code class="highlighter-rouge">PledgeSymbol.fulfillReactions</code> and <code class="highlighter-rouge">PledgeSymbol.rejectReactions</code> are finally used for something. If the state is pending, the reactions are stored for later so they can be triggered when the state changes (this is discussed later in this post). If the state is either fulfilled or rejected then a <code class="highlighter-rouge">PledgeReactionJob</code> is created to run the reaction. The <code class="highlighter-rouge">PledgeReactionJob</code> maps to <code class="highlighter-rouge">NewPromiseReactionJob()</code><sup id="fnref:4"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:4" class="footnote">4</a></sup> in the specification and is declared like this:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">PledgeReactionJob</span> <span class="p">{</span>
     <span class="kd">constructor</span><span class="p">(</span><span class="nx">reaction</span><span class="p">,</span> <span class="nx">argument</span><span class="p">)</span> <span class="p">{</span>
@@ -431,7 +431,7 @@
 
 <p>This code begins by extracting all of the information from the <code class="highlighter-rouge">reaction</code> that was passed in. The function is a little bit long because both <code class="highlighter-rouge">capability</code> and <code class="highlighter-rouge">handler</code> can be <code class="highlighter-rouge">undefined</code>, so there are fallback behaviors in each of those cases.</p>
 
-<p>The <code class="highlighter-rouge">PledgeReactionJob</code> class also uses the concept of a <em>completion record</em><sup id="fnref:5"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:5" class="footnote">5</a></sup>. In most of the code, I was able to avoid needing to reference completion records directly, but in this code it was necessary to better match the algorithm in the specification. A completion record is nothing more than a record of how an operation’s control flow concluded. There are four completion types:</p>
+<p>The <code class="highlighter-rouge">PledgeReactionJob</code> class also uses the concept of a <em>completion record</em><sup id="fnref:5"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:5" class="footnote">5</a></sup>. In most of the code, I was able to avoid needing to reference completion records directly, but in this code it was necessary to better match the algorithm in the specification. A completion record is nothing more than a record of how an operation’s control flow concluded. There are four completion types:</p>
 
 <ul>
   <li><strong>normal</strong> - when an operation succeeds without any change in control flow (the <code class="highlighter-rouge">return</code> statement or exiting at the end of a function)</li>
@@ -468,7 +468,7 @@
 
 <h3 id="triggering-stored-reactions">Triggering stored reactions</h3>
 
-<p>When a promise transitions from unsettled to settled, it triggers the stored reactions to execute (fulfill reactions if the promise is fulfilled and reject reactions when the promise is rejected). The specification defines this operation as <code class="highlighter-rouge">TriggerPromiseReaction()</code><sup id="fnref:6"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:6" class="footnote">6</a></sup>, and it’s one of the easier algorithms to implement. The entire algorithm is basically iterating over a list (array in JavaScript) of reactions and then creating and queueing a new <code class="highlighter-rouge">PromiseReactionJob</code> for each one. Here’s how I implemented it as <code class="highlighter-rouge">triggerPledgeReactions()</code>:</p>
+<p>When a promise transitions from unsettled to settled, it triggers the stored reactions to execute (fulfill reactions if the promise is fulfilled and reject reactions when the promise is rejected). The specification defines this operation as <code class="highlighter-rouge">TriggerPromiseReaction()</code><sup id="fnref:6"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:6" class="footnote">6</a></sup>, and it’s one of the easier algorithms to implement. The entire algorithm is basically iterating over a list (array in JavaScript) of reactions and then creating and queueing a new <code class="highlighter-rouge">PromiseReactionJob</code> for each one. Here’s how I implemented it as <code class="highlighter-rouge">triggerPledgeReactions()</code>:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">function</span> <span class="nx">triggerPledgeReactions</span><span class="p">(</span><span class="nx">reactions</span><span class="p">,</span> <span class="nx">argument</span><span class="p">)</span> <span class="p">{</span>
 
@@ -585,7 +585,7 @@
 
 <h3 id="implementing-the-finally-method">Implementing the <code class="highlighter-rouge">finally()</code> method</h3>
 
-<p>The first few steps of <code class="highlighter-rouge">finally()</code><sup id="fnref:7"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:7" class="footnote">7</a></sup> are the same as with <code class="highlighter-rouge">then()</code>, which is to assert that <code class="highlighter-rouge">this</code> is a promise and to retrieve the species constructor:</p>
+<p>The first few steps of <code class="highlighter-rouge">finally()</code><sup id="fnref:7"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:7" class="footnote">7</a></sup> are the same as with <code class="highlighter-rouge">then()</code>, which is to assert that <code class="highlighter-rouge">this</code> is a promise and to retrieve the species constructor:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
 
@@ -644,7 +644,7 @@
 
 <p>You might be confused as to why an uncallable <code class="highlighter-rouge">onFinally</code> will be passed into <code class="highlighter-rouge">then()</code>, as was I when I first read the specification. Remember that <code class="highlighter-rouge">then()</code> ultimately delegates to <code class="highlighter-rouge">performPledgeThen()</code>, which in turn sets any uncallable handlers to <code class="highlighter-rouge">undefined</code>. So <code class="highlighter-rouge">finally()</code> is relying on that validation step in <code class="highlighter-rouge">performPledgeThen()</code> to ensure that uncallable handlers are never formally added.</p>
 
-<p>The next step is to define the values for <code class="highlighter-rouge">thenFinally</code> and <code class="highlighter-rouge">catchFinally</code> if <code class="highlighter-rouge">onFinally</code> is callable. Each of these functions is defined in the specification as a sequence of steps to perform in order to pass on the settlement state and value from the first promise to the returned promise. The steps for <code class="highlighter-rouge">thenFinally</code> are a bit difficult to decipher in the specification<sup id="fnref:8"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:8" class="footnote">8</a></sup> but are really straight forward when you see the code:</p>
+<p>The next step is to define the values for <code class="highlighter-rouge">thenFinally</code> and <code class="highlighter-rouge">catchFinally</code> if <code class="highlighter-rouge">onFinally</code> is callable. Each of these functions is defined in the specification as a sequence of steps to perform in order to pass on the settlement state and value from the first promise to the returned promise. The steps for <code class="highlighter-rouge">thenFinally</code> are a bit difficult to decipher in the specification<sup id="fnref:8"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:8" class="footnote">8</a></sup> but are really straight forward when you see the code:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
 
@@ -700,7 +700,7 @@
 
 <p>After that, references to <code class="highlighter-rouge">C</code> and <code class="highlighter-rouge">onFinally</code> are stored on the function, but as noted in the code, these aren’t necessary for the JavaScript implementation. In the specification, this is the way that the <code class="highlighter-rouge">thenFinally</code> functions gets access to both <code class="highlighter-rouge">C</code> and <code class="highlighter-rouge">onFinally</code>. In JavaScript, I’m using a closure to get access to those values.</p>
 
-<p>The <code class="highlighter-rouge">pledgeResolve()</code> function is straightforward and follows the algorithm described in the specification<sup id="fnref:9"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:9" class="footnote">9</a></sup> almost exactly:</p>
+<p>The <code class="highlighter-rouge">pledgeResolve()</code> function is straightforward and follows the algorithm described in the specification<sup id="fnref:9"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:9" class="footnote">9</a></sup> almost exactly:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">pledgeResolve</span><span class="p">(</span><span class="nx">C</span><span class="p">,</span> <span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
 
@@ -722,7 +722,7 @@
 
 <p>For the purposes of this post, it’s not important to get into the specifics of checking to see if <code class="highlighter-rouge">x</code> is an instance of <code class="highlighter-rouge">Pledge</code> because that value is never used within <code class="highlighter-rouge">onFinally</code>. (This will be discussed, however, in my next post as it’s an important feature used in <code class="highlighter-rouge">Promise.resolve()</code>.) Ultimately, the function creates a new <code class="highlighter-rouge">PledgeCapability</code> so it can return a <code class="highlighter-rouge">Pledge</code> instance.</p>
 
-<p>The steps to create <code class="highlighter-rouge">catchFinally</code><sup id="fnref:10"><a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:10" class="footnote">10</a></sup> are similar, but the end result is a function that throws a reason:</p>
+<p>The steps to create <code class="highlighter-rouge">catchFinally</code><sup id="fnref:10"><a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fn:10" class="footnote">10</a></sup> are similar, but the end result is a function that throws a reason:</p>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">class</span> <span class="nx">Pledge</span> <span class="p">{</span>
 
@@ -795,34 +795,34 @@
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promisecapability-records">PromiseCapability Records</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promisecapability-records">PromiseCapability Records</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:2">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-newpromisecapability">NewPromiseCapability( C )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-newpromisecapability">NewPromiseCapability( C )</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:3">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promise.prototype.then">Promise.prototype.then( onFulfilled, onRejected )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promise.prototype.then">Promise.prototype.then( onFulfilled, onRejected )</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:3" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:4">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-newpromisereactionjob">NewPromiseReactionJob( reaction, argument )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-newpromisereactionjob">NewPromiseReactionJob( reaction, argument )</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:4" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:5">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-completion-record-specification-type">The Completion Record Specification Type</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-completion-record-specification-type">The Completion Record Specification Type</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:5" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:6">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-triggerpromisereactions">TriggerPromiseReactions( reactions, argument )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-triggerpromisereactions">TriggerPromiseReactions( reactions, argument )</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:6" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:7">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promise.prototype.finally">Promise.prototype.finally( onFinally )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:7" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-promise.prototype.finally">Promise.prototype.finally( onFinally )</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:7" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:8">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-thenfinallyfunctions">Then Finally Functions</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:8" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-thenfinallyfunctions">Then Finally Functions</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:8" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:9">
-      <p><a href="https://www.ecma-international.org/ecma-262/#sec-promise-resolve">PromiseResolve( C, x )</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:9" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/#sec-promise-resolve">PromiseResolve( C, x )</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:9" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:10">
-      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-catchfinallyfunctions">Catch Finally Functions</a> <a href="https://humanwhocodes.com/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:10" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://www.ecma-international.org/ecma-262/11.0/index.html#sec-catchfinallyfunctions">Catch Finally Functions</a> <a href="http://127.0.0.1:8000/blog/2020/10/creating-javascript-promise-from-scratch-then-catch-finally/index.html#fnref:10" class="reversefootnote">&#8617;</a></p>
     </li>
   </ol>
 </div>
@@ -861,15 +861,15 @@
         <h2 class="no-margin-top">Popular Posts</h2>
 <ul class="block-list">
 
-<li><a href="https://humanwhocodes.com/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2012/06/12/the-care-and-feeding-of-software-engineers-or-why-engineers-are-grumpy/index.html">The care and feeding of software engineers (or why engineers are grumpy)</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2018/10/my-somewhat-complete-salary-history-software-engineer/index.html">My (somewhat) complete salary history as a software engineer</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2015/09/my-favorite-interview-question/index.html">My favorite interview question</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/07/28/the-best-way-to-load-external-javascript/index.html">The best way to load external JavaScript</a></li>
 
-<li><a href="https://humanwhocodes.com/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
+<li><a href="http://127.0.0.1:8000/blog/2009/05/05/http-cookies-explained/index.html">HTTP cookies explained</a></li>
 
 </ul>
 

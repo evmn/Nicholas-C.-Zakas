@@ -10,7 +10,7 @@
 <title>Introducing Env: a better way to read environment variables in JavaScript - Human Who Codes</title>
 <meta name="twitter:site" content="@humanwhocodes">
 <meta name="twitter:creator" content="@slicknet">
-<meta name="twitter:url" content="https://humanwhocodes.com/blog/2021/02/introducing-env-javascript-environment-variables/" />
+<meta name="twitter:url" content="http://127.0.0.1:8000/blog/2021/02/introducing-env-javascript-environment-variables/" />
 <meta name="twitter:image" content="https://humanwhocodes.com/images/favicon.png" />
 <meta name="twitter:image:alt" content="Human Who Codes" />
 <meta name="twitter:title" content="Introducing Env: a better way to read environment variables in JavaScript">
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary">
 
 <meta name="og:image" content="https://humanwhocodes.com/images/favicon.png" />
-<meta name="og:url" content="https://humanwhocodes.com/blog/2021/02/introducing-env-javascript-environment-variables/" />
+<meta name="og:url" content="http://127.0.0.1:8000/blog/2021/02/introducing-env-javascript-environment-variables/" />
 <meta name="og:title" content="Introducing Env: a better way to read environment variables in JavaScript">
 <meta name="og:description" content="">
 <meta name="og:type" content="article">
@@ -35,7 +35,7 @@
 <link rel="icon" type="image/png" href="../../../../images/favicon.png">
 
 
-<link rel="canonical" href="https://humanwhocodes.com/blog/2021/02/introducing-env-javascript-environment-variables/index.html">
+<link rel="canonical" href="http://127.0.0.1:8000/blog/2021/02/introducing-env-javascript-environment-variables/index.html">
 
 
 
@@ -49,7 +49,7 @@
         <nav role="navigation" class="page-width center center-text gutters collapsible-corners">
             <h1 class="no-margin"><a href="https://humanwhocodes.com/"><img src="../../../../images/logo-full-web.svg" alt="Human Who Codes" height="50"></a></h1>
             <ul class="inline-list inline-spaced-list center-text-on-small-screens overflow-x-scroll bigger-font all-caps bold">
-                <li class="hide-offscreen"><a href="https://humanwhocodes.com/blog/2021/02/introducing-env-javascript-environment-variables/index.html#content">Skip to content</a></li>
+                <li class="hide-offscreen"><a href="http://127.0.0.1:8000/blog/2021/02/introducing-env-javascript-environment-variables/index.html#content">Skip to content</a></li>
                 <li><a href="https://humanwhocodes.com/books/" class="dark-text no-underline">Books</a></li>
                 <li><a href="https://humanwhocodes.com/reading/" class="dark-text no-underline">Reading</a></li>
                 <!-- <li><a href="/speaking/" class="dark-text no-underline">Speaking</a></li> -->
@@ -89,7 +89,7 @@
 
 <h2 id="installing-env">Installing Env</h2>
 
-<p>Env<sup id="fnref:1"><a href="https://humanwhocodes.com/blog/2021/02/introducing-env-javascript-environment-variables/index.html#fn:1" class="footnote">1</a></sup> is a zero-dependency utility designed to make reading environment variables safer and less error-prone. It does this by addressing the root causes of environment variable-related errors in server-side JavaScript. It works in both Node.js and Deno, and automatically reads environment variables from the correct location based on the runtime being used.</p>
+<p>Env<sup id="fnref:1"><a href="http://127.0.0.1:8000/blog/2021/02/introducing-env-javascript-environment-variables/index.html#fn:1" class="footnote">1</a></sup> is a zero-dependency utility designed to make reading environment variables safer and less error-prone. It does this by addressing the root causes of environment variable-related errors in server-side JavaScript. It works in both Node.js and Deno, and automatically reads environment variables from the correct location based on the runtime being used.</p>
 
 <p>To use Env in Node.js, install it with npm:</p>
 
@@ -175,7 +175,7 @@
 
 <p>This line, or something similar, appears in a lot of Node.js applications. Most of the time it doesn’t cause an issue…but it could. Can you spot the problem?</p>
 
-<p>All environment variables are strings, so the JavaScript variable <code class="highlighter-rouge">PORT</code> is a string when the environment variable is present and a number if not. Using similar code in Deno threw an error<sup id="fnref:2"><a href="https://humanwhocodes.com/blog/2021/02/introducing-env-javascript-environment-variables/index.html#fn:2" class="footnote">2</a></sup> that took me a while to figure out. It turned out that the Deno HTTP server required the port to be a number, so it worked fine locally but when I deployed it to Cloud Run, I received an error.</p>
+<p>All environment variables are strings, so the JavaScript variable <code class="highlighter-rouge">PORT</code> is a string when the environment variable is present and a number if not. Using similar code in Deno threw an error<sup id="fnref:2"><a href="http://127.0.0.1:8000/blog/2021/02/introducing-env-javascript-environment-variables/index.html#fn:2" class="footnote">2</a></sup> that took me a while to figure out. It turned out that the Deno HTTP server required the port to be a number, so it worked fine locally but when I deployed it to Cloud Run, I received an error.</p>
 
 <p>To solve this problem, Env converts all default values into strings automatically:</p>
 
@@ -206,10 +206,10 @@
 <div class="footnotes">
   <ol>
     <li id="fn:1">
-      <p><a href="https://github.com/humanwhocodes/env">Env</a> <a href="https://humanwhocodes.com/blog/2021/02/introducing-env-javascript-environment-variables/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://github.com/humanwhocodes/env">Env</a> <a href="http://127.0.0.1:8000/blog/2021/02/introducing-env-javascript-environment-variables/index.html#fnref:1" class="reversefootnote">&#8617;</a></p>
     </li>
     <li id="fn:2">
-      <p><a href="https://github.com/denoland/deno/issues/7891#issuecomment-706259974">serve() error: “Uncaught InvalidData”</a> <a href="https://humanwhocodes.com/blog/2021/02/introducing-env-javascript-environment-variables/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
+      <p><a href="https://github.com/denoland/deno/issues/7891#issuecomment-706259974">serve() error: “Uncaught InvalidData”</a> <a href="http://127.0.0.1:8000/blog/2021/02/introducing-env-javascript-environment-variables/index.html#fnref:2" class="reversefootnote">&#8617;</a></p>
     </li>
   </ol>
 </div>
